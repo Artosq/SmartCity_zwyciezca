@@ -31,7 +31,22 @@ export const theme = createTheme({
   components: {
     MuiButton: {
       defaultProps: { disableElevation: true },
-      styleOverrides: { root: { minHeight: 48, borderRadius: 16 } },
+      styleOverrides: {
+        root: {
+          minHeight: 48,
+          borderRadius: 16,
+          transition: 'transform .15s ease, box-shadow .15s ease, background-color .15s ease',
+          '&:hover': { transform: 'translateY(-2px)' },
+          '&:active': { transform: 'translateY(0) scale(0.97)' },
+          '@media (prefers-reduced-motion: reduce)': {
+            transition: 'none',
+            '&:hover, &:active': { transform: 'none' },
+          },
+        },
+        contained: {
+          '&:hover': { boxShadow: '0 8px 20px rgba(75,59,240,0.28)' },
+        },
+      },
     },
     MuiTextField: {
       defaultProps: { fullWidth: true },
@@ -40,7 +55,20 @@ export const theme = createTheme({
       styleOverrides: { root: { backgroundImage: 'none' } },
     },
     MuiFab: {
-      styleOverrides: { root: { fontWeight: 800, fontSize: '1rem', borderRadius: 20 } },
+      styleOverrides: {
+        root: {
+          fontWeight: 800,
+          fontSize: '1rem',
+          borderRadius: 20,
+          transition: 'transform .18s ease, box-shadow .18s ease',
+          '&:hover': { transform: 'translateY(-2px) scale(1.04)' },
+          '&:active': { transform: 'scale(0.96)' },
+          '@media (prefers-reduced-motion: reduce)': {
+            transition: 'none',
+            '&:hover, &:active': { transform: 'none' },
+          },
+        },
+      },
     },
   },
 })

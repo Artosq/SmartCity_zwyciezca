@@ -1,11 +1,12 @@
 import { useEffect } from 'react'
 import L from 'leaflet'
-import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet'
+import { MapContainer, Marker, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import 'react-leaflet-cluster/dist/assets/MarkerCluster.css'
 import type { City } from '../../data/cities'
 import { getGroups } from '../../data/targetGroups'
-import type { EventItem } from '../../lib/types'
+import { formatShortDate, getEventImage } from '../../lib/eventDisplay'
+import type { EventWithStats } from '../../lib/types'
 import { getClusterIcon, getEventIcon } from './eventIcon'
 
 // Od tego przybliżenia pinezki nie łączą się już w grupy.
@@ -13,7 +14,7 @@ const UNCLUSTER_ZOOM = 16
 
 interface Props {
   city: City
-  events: EventItem[]
+  events: EventWithStats[]
   selectedGroups: string[]
   selectedEventId: string | null
   onSelectEvent: (id: string | null) => void
@@ -100,9 +101,22 @@ export default function EventMap({
               key={event.id}
               position={[event.lat, event.lng]}
               icon={getEventIcon(group, event.id === selectedEventId)}
-              title={event.title}
               eventHandlers={{ click: () => onSelectEvent(event.id) }}
-            />
+            >
+              {/* Podgląd wydarzenia po najechaniu: zdjęcie + tytuł + termin. */}
+              <Tooltip direction="top" offset={[0, -44]} opacity={1} className="event-tooltip">
+                <div className="event-tooltip-card">
+                  <img src={getEventImage(event)} alt="" />
+                  <div className="event-tooltip-body">
+                    <strong>{event.title}</strong>
+                    <span>{event.category?.name ?? 'Wydarzenie'}</span>
+                    <span>
+                      {formatShortDate(event.starts_at)} · {event.attendees} os.
+                    </span>
+                  </div>
+                </div>
+              </Tooltip>
+            </Marker>
           )
         })}
       </MarkerClusterGroup>
