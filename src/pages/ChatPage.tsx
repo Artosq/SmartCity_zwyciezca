@@ -14,6 +14,7 @@ import Paper from '@mui/material/Paper'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import SendIcon from '@mui/icons-material/Send'
 import GroupIcon from '@mui/icons-material/Group'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 
 // Helper: Get user name
 const getSenderName = (profile: any) => {
@@ -167,14 +168,14 @@ export default function ChatPage() {
         <Paper 
           elevation={0}
           sx={{ 
-            width: { xs: '100%', md: '320px' }, 
+            width: { xs: '100%', md: '340px' }, 
             display: { xs: activeEvent ? 'none' : 'flex', md: 'flex' },
             flexDirection: 'column',
             bgcolor: 'transparent'
           }}
         >
           <Typography variant="h4" sx={{ mb: 2, px: 2, pt: 2, fontWeight: 900 }}>Czaty <ChatBubbleIcon /></Typography>
-          <List sx={{ overflowY: 'auto', px: 1 }}>
+          <List sx={{ overflowY: 'auto', px: 2 }}>
             {myEvents.length === 0 && (
               <Typography sx={{ p: 2, color: 'text.secondary' }}>
                 Nie jesteś zapisany(-a) na żadne wydarzenia.
@@ -186,28 +187,46 @@ export default function ChatPage() {
                 selected={activeEvent?.id === ev.id}
                 onClick={() => setActiveEvent(ev)}
                 sx={{
-                  mb: 1,
-                  borderRadius: 4,
+                  mb: 1.5,
+                  py: 1.5,
+                  px: 2,
+                  borderRadius: '16px',
                   bgcolor: activeEvent?.id === ev.id ? 'primary.main' : 'white',
                   color: activeEvent?.id === ev.id ? 'white' : 'text.primary',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                  border: '1px solid',
+                  borderColor: activeEvent?.id === ev.id ? 'primary.main' : 'grey.200',
+                  boxShadow: activeEvent?.id === ev.id ? '0 4px 12px rgba(75,59,240,0.2)' : '0 2px 8px rgba(0,0,0,0.04)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  transition: 'all 0.2s',
                   '&.Mui-selected': {
                     bgcolor: 'primary.main',
                     color: 'white',
                     '&:hover': { bgcolor: 'primary.dark' }
                   },
                   '&:hover': {
-                    bgcolor: activeEvent?.id === ev.id ? 'primary.main' : 'grey.50',
+                    borderColor: 'primary.main',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                   }
                 }}
               >
-                <Avatar sx={{ width: 40, height: 40, mr: 1.5, bgcolor: activeEvent?.id === ev.id ? 'white' : 'primary.light', color: activeEvent?.id === ev.id ? 'primary.main' : 'white' }}>
+                <Avatar 
+                  sx={{ 
+                    width: 44, 
+                    height: 44, 
+                    bgcolor: activeEvent?.id === ev.id ? 'rgba(255,255,255,0.2)' : 'primary.50', 
+                    color: activeEvent?.id === ev.id ? 'white' : 'primary.main' 
+                  }}
+                >
                   <GroupIcon />
                 </Avatar>
                 <ListItemText 
                   primary={ev.title} 
-                  slotProps={{ primary: { noWrap: true, fontWeight: 700 } }} 
+                  slotProps={{ primary: { noWrap: true, fontWeight: 800, fontSize: '1rem' } }} 
+                  sx={{ my: 0 }}
                 />
+                <ChevronRightIcon sx={{ color: activeEvent?.id === ev.id ? 'white' : 'grey.400' }} />
               </ListItemButton>
             ))}
           </List>
@@ -221,7 +240,7 @@ export default function ChatPage() {
             display: { xs: activeEvent ? 'flex' : 'none', md: 'flex' }, 
             flexDirection: 'column', 
             bgcolor: 'white',
-            borderRadius: { xs: 0, md: 6 },
+            borderRadius: { xs: 0, md: '24px' }, // Fix for desktop clipping
             overflow: 'hidden',
             boxShadow: { xs: 'none', md: '0 8px 32px rgba(0,0,0,0.08)' }
           }}
@@ -246,7 +265,7 @@ export default function ChatPage() {
               {/* Messages Area */}
               <Box sx={{ flex: 1, p: { xs: 2, md: 3 }, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2, bgcolor: '#f9fafb' }}>
                 {messages.length === 0 && (
-                  <Box sx={{ m: 'auto', textAlign: 'center', p: 3, bgcolor: 'primary.50', borderRadius: 4 }}>
+                  <Box sx={{ m: 'auto', textAlign: 'center', p: 3, bgcolor: 'primary.50', borderRadius: '24px' }}>
                     <Typography fontWeight="bold" color="primary.main">Nikt tu jeszcze nikogo nie zna, więc zacznij od „cześć”!</Typography>
                   </Box>
                 )}
@@ -261,7 +280,7 @@ export default function ChatPage() {
                       
                       {/* Avatar for others */}
                       {!isMe && (
-                        <Box sx={{ width: 40, flexShrink: 0 }}>
+                        <Box sx={{ width: '40px', flexShrink: 0 }}>
                           {showAvatar && (
                             <Avatar sx={{ width: 40, height: 40, bgcolor: stringToColor(senderName), fontSize: '1rem', fontWeight: 'bold' }}>
                               {getInitials(senderName)}
@@ -271,7 +290,7 @@ export default function ChatPage() {
                       )}
 
                       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: isMe ? 'flex-end' : 'flex-start' }}>
-                        {/* Name (only show for others if it's the first in a cluster) */}
+                        {/* Name */}
                         {showAvatar && (
                           <Typography variant="caption" sx={{ ml: 1, mb: 0.5, color: 'text.secondary', fontWeight: 700 }}>
                             {senderName}
@@ -280,19 +299,20 @@ export default function ChatPage() {
                         
                         {/* Bubble */}
                         <Paper elevation={0} sx={{ 
-                          p: 1.5, 
-                          px: 2,
+                          py: 1, 
+                          px: 1.75,
                           bgcolor: isMe ? 'primary.main' : 'white', 
                           color: isMe ? 'white' : 'text.primary', 
-                          borderRadius: 4,
-                          borderTopLeftRadius: isMe ? 16 : 4,
-                          borderTopRightRadius: isMe ? 4 : 16,
-                          boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                          borderRadius: '16px',
+                          borderTopLeftRadius: isMe ? '16px' : '4px',
+                          borderTopRightRadius: isMe ? '4px' : '16px',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                          minWidth: '75px' // Fix for squished short messages
                         }}>
                           <Typography variant="body1" sx={{ wordBreak: 'break-word', fontSize: '0.95rem' }}>{msg.content}</Typography>
                           
-                          {/* Time inside bubble */}
-                          <Typography variant="caption" sx={{ display: 'block', textAlign: 'right', mt: 0.5, opacity: 0.7, fontSize: '0.7rem' }}>
+                          {/* Time */}
+                          <Typography variant="caption" sx={{ display: 'block', textAlign: 'right', mt: 0.25, opacity: 0.7, fontSize: '0.7rem' }}>
                             {formatTime(msg.created_at)}
                           </Typography>
                         </Paper>
@@ -313,7 +333,7 @@ export default function ChatPage() {
                   onChange={(e) => setNewMessage(e.target.value)} 
                   sx={{ 
                     '& .MuiOutlinedInput-root': { 
-                      borderRadius: 999, 
+                      borderRadius: '999px', 
                       bgcolor: '#f3f4f6',
                       '& fieldset': { border: 'none' } 
                     } 
