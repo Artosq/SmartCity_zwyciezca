@@ -32,9 +32,11 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
   w miejscu publicznym. Ktoś proponuje, pierwsza chętna osoba klika „Idę" i obie dostają prywatny
   czat. Tylko dla zalogowanych, z oświadczeniem o ukończeniu 18 lat.
 - **Zasięg: Kraków.** Kolejne miasta są przygotowane w `src/data/cities.ts`, ale na razie wyłączone.
-- **Mapa miasta**: pinezki wydarzeń łączą się w grupy z liczbą
-  i rozwijają po przybliżeniu; filtr grup docelowych (chipy nad mapą):
-  małe dzieci, starsze dzieci, młodzież, dorośli, seniorzy, niepełnosprawni — każda grupa ma swój kolor.
+- **Mapa miasta**: pinezki wydarzeń łączą się w grupy z liczbą i rozwijają po przybliżeniu.
+  Jeden przycisk „Filtry" otwiera menu: wiek (małe dzieci, starsze dzieci, młodzież, dorośli,
+  seniorzy), dostępność dla osób z niepełnosprawnościami, cel wydarzenia (kategoria) oraz
+  wyjścia 1:1 z podziałem na rodzaje. Wyjścia 1:1 widać na mapie dopiero po oświadczeniu
+  o ukończeniu 18 lat (zapamiętywanym na urządzeniu).
 - **Dodawanie wydarzenia**: tytuł, opis, kategoria, grupy docelowe, miejsce na mapie,
   termin, limit miejsc, opcjonalny link do zdjęcia. Wszystkie wydarzenia są publiczne — każdy może dołączyć.
 - **Szczegóły i zapis** jednym kliknięciem, licznik wolnych miejsc.
@@ -113,7 +115,7 @@ Relacje: `profiles` 1—N `events`/`rsvps`/`messages`/`announcements`;
 | Trasa              | Ekran                                                        |
 |--------------------|-------------------------------------------------------------|
 | `/`                | Strona główna z przełącznikiem: wydarzenia (chipy preferencji + karuzele) albo wyjścia 1:1 (`?widok=1na1`) |
-| `/mapa`            | Mapa wybranego miasta z grupowanymi pinezkami, chipy filtra, rozwijana karta wydarzenia (szczegóły, zapis, licznik miejsc) |
+| `/mapa`            | Mapa miasta z grupowanymi pinezkami wydarzeń i wyjść 1:1 (18+), menu filtrów, rozwijana karta wydarzenia |
 | `/dodaj`           | Dodawanie wydarzenia albo propozycji wyjścia 1:1 (wybór miejsca na mapie) |
 | `/login`           | Logowanie bez hasła (imię + e-mail / magic link), konto     |
 | `/czat`            | Czat w czasie rzeczywistym _(w budowie)_                    |

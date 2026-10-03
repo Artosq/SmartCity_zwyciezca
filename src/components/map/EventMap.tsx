@@ -4,10 +4,11 @@ import { MapContainer, Marker, TileLayer, Tooltip, useMap, useMapEvents } from '
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import 'react-leaflet-cluster/dist/assets/MarkerCluster.css'
 import type { City } from '../../data/cities'
+import { getMeetupType } from '../../data/meetupTypes'
 import { getGroups } from '../../data/targetGroups'
-import { formatShortDate, getEventImage } from '../../lib/eventDisplay'
-import type { EventWithStats } from '../../lib/types'
-import { getClusterIcon, getEventIcon } from './eventIcon'
+import { formatRelativeDate, formatShortDate, getEventImage } from '../../lib/eventDisplay'
+import type { EventWithStats, MeetupWithHost } from '../../lib/types'
+import { getClusterIcon, getEventIcon, getMeetupIcon } from './eventIcon'
 
 // Od tego przybliżenia pinezki nie łączą się już w grupy.
 const UNCLUSTER_ZOOM = 16
@@ -15,9 +16,12 @@ const UNCLUSTER_ZOOM = 16
 interface Props {
   city: City
   events: EventWithStats[]
+  // wyjścia 1:1 — rodzic podaje je tylko osobom pełnoletnim
+  meetups: MeetupWithHost[]
   selectedGroups: string[]
   selectedEventId: string | null
   onSelectEvent: (id: string | null) => void
+  onSelectMeetup: (id: string) => void
 }
 
 // Ogranicza mapę do wybranego miasta: przesuwanie, minimalne oddalenie i widok startowy.
@@ -61,9 +65,11 @@ function MapClick({ onClick }: { onClick: () => void }) {
 export default function EventMap({
   city,
   events,
+  meetups,
   selectedGroups,
   selectedEventId,
   onSelectEvent,
+  onSelectMeetup,
 }: Props) {
   const selected = events.find((event) => event.id === selectedEventId)
 
@@ -113,6 +119,27 @@ export default function EventMap({
                     <span>
                       {formatShortDate(event.starts_at)} · {event.attendees} os.
                     </span>
+                  </div>
+                </div>
+              </Tooltip>
+            </Marker>
+          )
+        })}
+        {meetups.map((meetup) => {
+          const type = getMeetupType(meetup.type)
+          return (
+            <Marker
+              key={meetup.id}
+              position={[meetup.lat, meetup.lng]}
+              icon={getMeetupIcon(type.emoji)}
+              eventHandlers={{ click: () => onSelectMeetup(meetup.id) }}
+            >
+              <Tooltip direction="top" offset={[0, -44]} opacity={1} className="event-tooltip">
+                <div className="event-tooltip-card">
+                  <div className="event-tooltip-body">
+                    <strong>{meetup.title}</strong>
+                    <span>Wyjście 1:1 · {type.name}</span>
+                    <span>{formatRelativeDate(meetup.starts_at)}</span>
                   </div>
                 </div>
               </Tooltip>
