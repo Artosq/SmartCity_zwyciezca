@@ -90,7 +90,6 @@ export default function EventCard({ event, distanceKm, size = 'medium' }: Props)
         width: large ? { xs: '84vw', sm: 420 } : { xs: 210, sm: 250 },
         maxWidth: large ? 420 : undefined,
         textAlign: 'left',
-        scrollSnapAlign: 'start',
         borderRadius: 6,
         transition: 'transform 0.2s ease',
         '&:hover, &:focus-visible': { transform: 'translateY(-6px)' },
