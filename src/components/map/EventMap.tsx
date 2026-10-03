@@ -1,12 +1,11 @@
 import { useEffect } from 'react'
 import L from 'leaflet'
-import { MapContainer, Marker, Rectangle, TileLayer, useMap, useMapEvents } from 'react-leaflet'
+import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import 'react-leaflet-cluster/dist/assets/MarkerCluster.css'
 import type { City } from '../../data/cities'
 import { getGroups } from '../../data/targetGroups'
 import type { EventItem } from '../../lib/types'
-import { BRAND } from '../../theme'
 import { getClusterIcon, getEventIcon } from './eventIcon'
 
 // Od tego przybliżenia pinezki nie łączą się już w grupy.
@@ -82,12 +81,6 @@ export default function EventMap({
       <CityBounds city={city} />
       {selected && <FocusSelected lat={selected.lat} lng={selected.lng} />}
       <MapClick onClick={() => onSelectEvent(null)} />
-      <Rectangle
-        key={city.slug}
-        bounds={city.bounds}
-        interactive={false}
-        pathOptions={{ color: BRAND.violet, weight: 3, dashArray: '8 8', fill: false }}
-      />
       {/* Pobliskie pinezki łączą się w grupę z liczbą; kliknięcie albo przybliżenie ją rozwija. */}
       <MarkerClusterGroup
         chunkedLoading

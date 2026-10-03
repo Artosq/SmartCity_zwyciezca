@@ -1,4 +1,4 @@
-import { MapContainer, Marker, Rectangle, TileLayer, useMapEvents } from 'react-leaflet'
+import { MapContainer, Marker, TileLayer, useMapEvents } from 'react-leaflet'
 import Box from '@mui/material/Box'
 import type { City } from '../data/cities'
 import { getEventIcon } from './map/eventIcon'
@@ -38,11 +38,6 @@ export default function LocationPicker({ city, value, onChange }: Props) {
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <Rectangle
-          bounds={city.bounds}
-          interactive={false}
-          pathOptions={{ color: '#4b3bf0', weight: 3, dashArray: '8 8', fill: false }}
         />
         <ClickHandler onChange={onChange} />
         {value && <Marker position={[value.lat, value.lng]} icon={getEventIcon(undefined, true)} />}
