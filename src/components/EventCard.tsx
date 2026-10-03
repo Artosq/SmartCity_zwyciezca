@@ -35,10 +35,15 @@ export function EventMeta({ event, distanceKm }: { event: EventWithStats; distan
   return (
     <Stack direction="row" sx={{ mt: 0.75, columnGap: 1.5, rowGap: 0.25, flexWrap: 'wrap' }}>
       <Meta
-        label={`Zapisanych osób: ${event.attendees}`}
+        label={`Zapisanych osób: ${event.attendees}, ${
+          event.capacity === null ? 'bez limitu miejsc' : `limit miejsc: ${event.capacity}`
+        }`}
         icon={<GroupIcon sx={{ fontSize: 18, color: 'primary.main' }} />}
       >
-        {event.attendees}
+        {/* brak limitu (np. wydarzenia z bota) pokazujemy wprost, żeby nie wyglądał jak „0 miejsc" */}
+        {event.capacity === null
+          ? `${event.attendees} · bez limitu`
+          : `${event.attendees}/${event.capacity}`}
       </Meta>
       <Meta
         label={`${distanceKm.toFixed(1)} km od centrum miasta`}

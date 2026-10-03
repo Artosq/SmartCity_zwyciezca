@@ -23,13 +23,13 @@
     {
       "name": "Mapa wydarzeń",
       "short_name": "Mapa",
-      "url": "/mapa",
+      "url": "/mapa/",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "Dodaj wydarzenie",
       "short_name": "Dodaj",
-      "url": "/dodaj",
+      "url": "/dodaj/",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
