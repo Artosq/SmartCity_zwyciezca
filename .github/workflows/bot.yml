@@ -1,0 +1,25 @@
+# Codziennie rano bot dodaje do bazy kilka losowych wydarzeń z Karnetu.
+# Wymaga sekretów repozytorium (Settings → Secrets and variables → Actions):
+#   VITE_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+# Harmonogram działa tylko na domyślnej gałęzi repozytorium.
+name: Bot wydarzeń
+
+on:
+  schedule:
+    - cron: '0 5 * * *' # codziennie 5:00 UTC (7:00 w Polsce latem, 6:00 zimą)
+  workflow_dispatch: # ręczne uruchomienie z zakładki Actions
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run bot
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

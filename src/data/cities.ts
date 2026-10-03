@@ -8,9 +8,9 @@ export interface City {
   bounds: LatLngBoundsLiteral
 }
 
-// Miasta dostępne w liście rozwijanej. Wydarzenie należy do miasta,
+// Wszystkie przygotowane miasta. Wydarzenie należy do miasta,
 // jeśli jego współrzędne mieszczą się w `bounds`.
-export const CITIES: City[] = [
+const ALL_CITIES: City[] = [
   {
     slug: 'krakow',
     name: 'Kraków',
@@ -54,6 +54,12 @@ export const CITIES: City[] = [
     bounds: [[50.13, 18.89], [50.297, 19.124]],
   },
 ]
+
+// Na ten moment działamy tylko w Krakowie; żeby włączyć kolejne miasto, dopisz jego slug.
+const ENABLED_CITIES = ['krakow']
+
+// Miasta dostępne w aplikacji. Przy jednym mieście ekran wyboru się nie pokazuje.
+export const CITIES = ALL_CITIES.filter((city) => ENABLED_CITIES.includes(city.slug))
 
 export const getCity = (slug: string | null) =>
   CITIES.find((city) => city.slug === slug) ?? null

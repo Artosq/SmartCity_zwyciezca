@@ -80,7 +80,8 @@ export default function AppLayout() {
           onClick={(e: MouseEvent<HTMLElement>) => setCityAnchor(e.currentTarget)}
           aria-haspopup="menu"
           aria-expanded={Boolean(cityAnchor)}
-          aria-label={`Miasto: ${city?.name}. Zmień miasto`}
+          aria-label={CITIES.length > 1 ? `Miasto: ${city?.name}. Zmień miasto` : `Miasto: ${city?.name}`}
+          disabled={CITIES.length === 1}
           sx={{ gap: 0.75, minHeight: 48, borderRadius: 2, pr: 1 }}
         >
           <PlaceOutlinedIcon sx={{ fontSize: 28 }} />

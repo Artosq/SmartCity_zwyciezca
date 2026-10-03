@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from 'react'
-import { getCity, type City } from '../data/cities'
+import { CITIES, getCity, type City } from '../data/cities'
 
 const CITY_STORAGE_KEY = 'sasiedzko.city'
 
@@ -10,11 +10,14 @@ interface CityContextValue {
 
 const CityContext = createContext<CityContextValue | null>(null)
 
+// Jedyne dostępne miasto wybieramy od razu, bez pytania.
+const DEFAULT_CITY = CITIES.length === 1 ? CITIES[0] : null
+
 function readStoredCity() {
   try {
-    return getCity(localStorage.getItem(CITY_STORAGE_KEY))
+    return getCity(localStorage.getItem(CITY_STORAGE_KEY)) ?? DEFAULT_CITY
   } catch {
-    return null
+    return DEFAULT_CITY
   }
 }
 

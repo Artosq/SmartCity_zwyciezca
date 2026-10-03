@@ -8,6 +8,7 @@ import ButtonBase from '@mui/material/ButtonBase'
 import Chip from '@mui/material/Chip'
 import Collapse from '@mui/material/Collapse'
 import IconButton from '@mui/material/IconButton'
+import Link from '@mui/material/Link'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -23,6 +24,12 @@ import { formatLongDate, getEventImage } from '../../lib/eventDisplay'
 import type { EventWithStats } from '../../lib/types'
 import { EventMeta } from '../EventCard'
 import { GroupDot } from '../TargetGroupFilter'
+
+// Serwisy, z których bot importuje wydarzenia (bot/sources).
+const SOURCE_NAMES: Record<string, string> = {
+  karnet: 'Karnet Kraków',
+  facebook: 'Facebook',
+}
 
 interface Props {
   event: EventWithStats
@@ -182,6 +189,15 @@ export default function EventSheet({
               <Typography aria-live="polite">{places}</Typography>
             </Stack>
           </Stack>
+
+          {event.source_url && (
+            <Typography variant="body2" color="text.secondary">
+              Zaimportowane automatycznie.{' '}
+              <Link href={event.source_url} target="_blank" rel="noopener noreferrer">
+                Zobacz oryginał ({SOURCE_NAMES[event.source ?? ''] ?? event.source})
+              </Link>
+            </Typography>
+          )}
 
           <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1 }}>
             {getGroups(event.target_groups).map((group) => (

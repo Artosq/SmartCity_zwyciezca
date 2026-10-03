@@ -30,6 +30,9 @@ export interface EventItem {
   target_groups: string[]
   city: string | null
   image_url: string | null
+  // Wydarzenia zaimportowane przez bota: nazwa serwisu i link do oryginału (ręcznie dodane: null).
+  source: string | null
+  source_url: string | null
   created_at: string
 }
 

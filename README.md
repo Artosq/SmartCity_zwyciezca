@@ -25,15 +25,21 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
 
 ## Produkt — co robi aplikacja
 
-- **Strona główna** z propozycjami wydarzeń w wybranym mieście: najbliższe terminy,
+- **Strona główna** z propozycjami wydarzeń w mieście: najbliższe terminy,
   dopasowane do preferencji (grupy docelowe) i „lubiane przez innych" (najwięcej zapisanych).
   Karty ze zdjęciem wydarzenia, liczbą zapisanych, odległością od centrum i terminem.
+- **Zasięg: Kraków.** Kolejne miasta są przygotowane w `src/data/cities.ts`, ale na razie wyłączone.
 - **Mapa miasta**: pinezki wydarzeń łączą się w grupy z liczbą
   i rozwijają po przybliżeniu; filtr grup docelowych (chipy nad mapą):
   małe dzieci, starsze dzieci, młodzież, dorośli, seniorzy, niepełnosprawni — każda grupa ma swój kolor.
 - **Dodawanie wydarzenia**: tytuł, opis, kategoria, grupy docelowe, miejsce na mapie,
   termin, limit miejsc, opcjonalny link do zdjęcia. Wszystkie wydarzenia są publiczne — każdy może dołączyć.
 - **Szczegóły i zapis** jednym kliknięciem, licznik wolnych miejsc.
+- **Bot importujący wydarzenia** (`npm run bot`): raz dziennie losuje kilka wydarzeń z Karnetu
+  (miejski kalendarz Krakowa) zaczynających się w ciągu 3 dni, dobiera kategorię i grupy docelowe
+  regułami słów kluczowych i dodaje je do bazy bez duplikatów, z linkiem do oryginału.
+  Harmonogram: GitHub Actions (`.github/workflows/bot.yml`).
+  Facebook — tylko przez oficjalne API, dla stron, które dadzą dostęp.
 - **Logowanie bez haseł** (imię + e-mail / magic link).
 - **PWA** — instalacja na ekranie głównym telefonu.
 - **Czat w czasie rzeczywistym** — kanał dla każdej kategorii i każdego wydarzenia.
@@ -83,7 +89,7 @@ profiles        — id (=auth.users.id), name, email, created_at
 categories      — id, slug, name, color, icon
 events          — id, organizer_id→profiles, title, description, category_id→categories,
                   city, lat, lng, place_name, starts_at, capacity, target_groups[],
-                  image_url, involves_children, created_at
+                  image_url, involves_children, source, source_url, external_id, created_at
 event_addresses — event_id→events, address_private
 rsvps           — id, event_id→events, user_id→profiles, created_at  [UNIQUE(event_id,user_id)]
 messages        — id, scope(category|event), scope_id, user_id→profiles, content,
@@ -153,6 +159,10 @@ npm run dev                  # http://localhost:5173
 
 Baza: w Supabase → SQL Editor uruchom `supabase/schema.sql` (świeża baza) albo migracje
 z `supabase/migrations/` (baza ze starszego schematu), a potem `supabase/seed.sql`.
+Bot: po migracji `003_bot_import.sql` i dodaniu `SUPABASE_SERVICE_ROLE_KEY` uruchom `npm run bot`
+(`npm run bot -- --dry` tylko wypisuje wylosowane wydarzenia, `-- --count=3` ustawia ich liczbę).
+Codzienne uruchamianie: dodaj sekrety `VITE_SUPABASE_URL` i `SUPABASE_SERVICE_ROLE_KEY`
+w GitHub → Settings → Secrets and variables → Actions.
 Seed sam tworzy 12 kont demo, 25 wydarzeń i zapisy — nie wymaga wcześniejszego logowania.
 
 Zmienne środowiskowe (`.env.local`):
@@ -160,6 +170,9 @@ Zmienne środowiskowe (`.env.local`):
 ```
 VITE_SUPABASE_URL=
 VITE_SUPABASE_ANON_KEY=       # klucz publishable (publiczny)
+SUPABASE_SERVICE_ROLE_KEY=    # tylko dla bota (npm run bot) — tajny, nigdy w repo
+FACEBOOK_PAGE_IDS=            # opcjonalnie: strony, które dały botowi dostęp
+FACEBOOK_ACCESS_TOKEN=        # opcjonalnie: token do Graph API
 ```
 
 ---
@@ -180,6 +193,8 @@ _(utrzymujemy tę listę na bieżąco — wymóg regulaminu: rozumiemy i bronimy
 **Źródła danych**
 - OpenStreetMap — kafelki mapy.
 - Dane wydarzeń: wymyślone na potrzeby demo, osadzone w prawdziwych lokalizacjach.
+- Wydarzenia importowane przez bota: Karnet (karnet.krakowculture.pl, Krakowskie Biuro Festiwalowe)
+  — publiczna lista wydarzeń, każde z linkiem do oryginału.
 - Ilustracje kategorii (`public/img/events/`): własne grafiki SVG, używane gdy wydarzenie nie ma zdjęcia.
 
 ---

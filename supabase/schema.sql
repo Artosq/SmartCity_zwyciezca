@@ -44,6 +44,10 @@ create table if not exists events (
   city              text,                               -- slug miasta (src/data/cities.ts)
   image_url         text,                               -- zdjęcie; null = ilustracja kategorii
   involves_children boolean not null default false,
+  -- import przez bota (npm run bot); wydarzenia dodane ręcznie mają tu null
+  source            text,                               -- np. 'karnet', 'eventbrite', 'facebook'
+  source_url        text,                               -- link do oryginału
+  external_id       text,                               -- identyfikator w serwisie źródłowym
   created_at      timestamptz not null default now()
 );
 
@@ -98,6 +102,7 @@ create table if not exists announcements (
 -- Indeksy pod częste zapytania
 create index if not exists idx_events_category on events(category_id);
 create index if not exists idx_events_starts_at on events(starts_at);
+create unique index if not exists idx_events_source_external on events(source, external_id);
 create index if not exists idx_rsvps_event on rsvps(event_id);
 create index if not exists idx_messages_scope on messages(scope, scope_id);
 
