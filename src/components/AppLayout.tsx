@@ -64,6 +64,40 @@ export default function AppLayout() {
     item.to === '/' ? pathname === '/' : pathname.startsWith(item.to),
   )?.to
 
+  // Jedno pole wyszukiwania — w nagłówku na desktopie, osobnym paskiem na telefonie.
+  const searchField = (
+    <TextField
+      size="small"
+      placeholder="Szukaj wydarzeń…"
+      value={query}
+      onChange={(e) => runSearch(e.target.value)}
+      aria-label="Szukaj wydarzeń"
+      fullWidth
+      sx={{ '& .MuiOutlinedInput-root': { borderRadius: 999, bgcolor: 'background.paper' } }}
+      slotProps={{
+        input: {
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon />
+            </InputAdornment>
+          ),
+          endAdornment: query ? (
+            <InputAdornment position="end">
+              <IconButton
+                aria-label="Wyczyść wyszukiwanie"
+                size="small"
+                edge="end"
+                onClick={() => runSearch('')}
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </InputAdornment>
+          ) : null,
+        },
+      }}
+    />
+  )
+
   return (
     <Box sx={{ height: '100dvh', display: 'flex', flexDirection: 'column' }}>
       <Box
@@ -129,41 +163,9 @@ export default function AppLayout() {
           ))}
         </Menu>
 
-        <TextField
-          size="small"
-          placeholder="Szukaj wydarzeń…"
-          value={query}
-          onChange={(e) => runSearch(e.target.value)}
-          aria-label="Szukaj wydarzeń"
-          sx={{
-            display: { xs: 'none', md: 'flex' },
-            flex: 1,
-            maxWidth: 520,
-            mx: 2,
-            '& .MuiOutlinedInput-root': { borderRadius: 999, bgcolor: 'background.paper' },
-          }}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-              endAdornment: query ? (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="Wyczyść wyszukiwanie"
-                    size="small"
-                    edge="end"
-                    onClick={() => runSearch('')}
-                  >
-                    <CloseIcon fontSize="small" />
-                  </IconButton>
-                </InputAdornment>
-              ) : null,
-            },
-          }}
-        />
+        <Box sx={{ display: { xs: 'none', md: 'flex' }, flex: 1, maxWidth: 520, mx: 2 }}>
+          {searchField}
+        </Box>
 
         <Box
           component="nav"
@@ -203,6 +205,20 @@ export default function AppLayout() {
         >
           <MenuIcon sx={{ fontSize: 32 }} />
         </IconButton>
+      </Box>
+
+      {/* Pasek wyszukiwania na telefonie — osobny wiersz pod nagłówkiem. */}
+      <Box
+        sx={{
+          display: { xs: 'block', md: 'none' },
+          px: 2,
+          pb: 1,
+          bgcolor: 'background.paper',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
+        {searchField}
       </Box>
 
       <Drawer anchor="right" open={menuOpen} onClose={() => setMenuOpen(false)}>
