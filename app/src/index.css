@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #ffffff;
+  color: #111827;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Pinezki wydarzeń (L.divIcon) — bez domyślnego białego tła Leafleta */
+.event-marker {
+  background: transparent;
+  border: none;
+}
+
+.leaflet-popup-content {
+  margin: 12px 14px;
+  font-size: 15px;
+  line-height: 1.4;
+}
