@@ -26,7 +26,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "oxlint",
-    "bot": "node bot/index.mjs"
+    "bot": "node --use-system-ca bot/index.mjs"
   },
   "name": "sasiedzko",
   "version": "0.1.0",
