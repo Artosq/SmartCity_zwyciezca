@@ -33,23 +33,25 @@ import SearchIcon from '@mui/icons-material/Search'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import { useCity } from '../context/CityContext'
 import { CITIES } from '../data/cities'
+import { useLang } from '../i18n/LanguageContext'
 import { BRAND } from '../theme'
+import LanguageSwitcher from './LanguageSwitcher'
 
 // `bottom: false` = pozycja tylko w menu i w nagłówku na desktopie (na telefonie mapa ma swój przycisk).
 const NAV = [
-  { to: '/', label: 'Start', icon: <HomeIcon />, bottom: true },
-  { to: '/mapa', label: 'Mapa', icon: <MapIcon />, bottom: false },
-  { to: '/czat', label: 'Czat', icon: <ChatIcon />, bottom: true },
-  { to: '/ogloszenia', label: 'Ogłoszenia', icon: <MailIcon />, bottom: true },
-  { to: '/dodaj', label: 'Dodaj', icon: <AddCircleIcon />, bottom: true },
-  { to: '/login', label: 'Konto', icon: <PersonIcon />, bottom: true },
+  { to: '/', labelKey: 'nav.start', icon: <HomeIcon />, bottom: true },
+  { to: '/mapa', labelKey: 'nav.map', icon: <MapIcon />, bottom: false },
+  { to: '/czat', labelKey: 'nav.chat', icon: <ChatIcon />, bottom: true },
+  { to: '/ogloszenia', labelKey: 'nav.announcements', icon: <MailIcon />, bottom: true },
+  { to: '/dodaj', labelKey: 'nav.add', icon: <AddCircleIcon />, bottom: true },
+  { to: '/login', labelKey: 'nav.account', icon: <PersonIcon />, bottom: true },
 ]
 
 // Menu dodatkowe (hamburger) — NIE powiela głównej nawigacji; linki pomocnicze.
 const MORE = [
-  { to: '/regulamin', label: 'Warunki korzystania', icon: <GavelIcon /> },
-  { to: '/prywatnosc', label: 'Prywatność', icon: <LockOutlinedIcon /> },
-  { to: '/ustawienia', label: 'Ustawienia', icon: <SettingsOutlinedIcon /> },
+  { to: '/regulamin', labelKey: 'menu.terms', icon: <GavelIcon /> },
+  { to: '/prywatnosc', labelKey: 'menu.privacy', icon: <LockOutlinedIcon /> },
+  { to: '/ustawienia', labelKey: 'menu.settings', icon: <SettingsOutlinedIcon /> },
 ]
 
 // Wspólna rama stron: nagłówek (miasto + menu) i nawigacja
@@ -58,6 +60,7 @@ export default function AppLayout() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const { t } = useLang()
   const { city, selectCity } = useCity()
   const [cityAnchor, setCityAnchor] = useState<HTMLElement | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -81,10 +84,10 @@ export default function AppLayout() {
   const searchField = (
     <TextField
       size="small"
-      placeholder="Szukaj wydarzeń…"
+      placeholder={t('search.placeholder')}
       value={query}
       onChange={(e) => runSearch(e.target.value)}
-      aria-label="Szukaj wydarzeń"
+      aria-label={t('search.label')}
       fullWidth
       sx={{ '& .MuiOutlinedInput-root': { borderRadius: 999, bgcolor: 'background.paper' } }}
       slotProps={{
@@ -97,7 +100,7 @@ export default function AppLayout() {
           endAdornment: query ? (
             <InputAdornment position="end">
               <IconButton
-                aria-label="Wyczyść wyszukiwanie"
+                aria-label={t('search.clear')}
                 size="small"
                 edge="end"
                 onClick={() => runSearch('')}
@@ -157,7 +160,7 @@ export default function AppLayout() {
           <IconButton
             component={RouterLink}
             to="/"
-            aria-label="Wróć na stronę główną"
+            aria-label={t('header.back')}
             edge="start"
             sx={{ color: BRAND.ink, width: 48, height: 48 }}
           >
@@ -168,7 +171,11 @@ export default function AppLayout() {
           onClick={(e: MouseEvent<HTMLElement>) => setCityAnchor(e.currentTarget)}
           aria-haspopup="menu"
           aria-expanded={Boolean(cityAnchor)}
-          aria-label={CITIES.length > 1 ? `Miasto: ${city?.name}. Zmień miasto` : `Miasto: ${city?.name}`}
+          aria-label={
+            CITIES.length > 1
+              ? t('header.cityChange', { city: city?.name ?? '' })
+              : t('header.city', { city: city?.name ?? '' })
+          }
           disabled={CITIES.length === 1}
           sx={{ gap: 0.75, minHeight: 48, borderRadius: 2, pr: 1 }}
         >
@@ -226,14 +233,14 @@ export default function AppLayout() {
                 bgcolor: item.to === active ? 'rgba(75,59,240,0.1)' : 'transparent',
               }}
             >
-              {item.label}
+              {t(item.labelKey)}
             </Button>
           ))}
         </Box>
 
         <IconButton
           onClick={() => setMenuOpen(true)}
-          aria-label="Więcej"
+          aria-label={t('menu.more')}
           sx={{
             ml: { xs: 'auto', md: 0 },
             width: 52,
@@ -267,13 +274,22 @@ export default function AppLayout() {
       )}
 
       <Drawer anchor="right" open={menuOpen} onClose={() => setMenuOpen(false)}>
-        <Box component="nav" aria-label="Więcej" sx={{ width: 280, pt: 2 }}>
+        <Box component="nav" aria-label={t('menu.more')} sx={{ width: 280, pt: 2 }}>
           <Typography variant="h2" sx={{ px: 3, pb: 0.5 }}>
             Sąsiedzko
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ px: 3, pb: 1 }}>
-            Więcej
+            {t('menu.more')}
           </Typography>
+
+          {/* Przełącznik języka */}
+          <Box sx={{ px: 3, pt: 1, pb: 2 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.75, fontWeight: 700 }}>
+              {t('menu.language')}
+            </Typography>
+            <LanguageSwitcher />
+          </Box>
+
           <List>
             {MORE.map((item) => (
               <ListItemButton
@@ -286,7 +302,7 @@ export default function AppLayout() {
               >
                 <ListItemIcon sx={{ color: 'primary.main', minWidth: 44 }}>{item.icon}</ListItemIcon>
                 <ListItemText
-                  primary={item.label}
+                  primary={t(item.labelKey)}
                   slotProps={{ primary: { sx: { fontWeight: 700 } } }}
                 />
               </ListItemButton>
@@ -330,7 +346,7 @@ export default function AppLayout() {
               component={RouterLink}
               to={item.to}
               value={item.to}
-              label={item.label}
+              label={t(item.labelKey)}
               icon={item.icon}
               sx={{
                 minWidth: 0,

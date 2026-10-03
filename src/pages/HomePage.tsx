@@ -12,6 +12,7 @@ import GroupChips from '../components/GroupChips'
 import ScrollRow from '../components/ScrollRow'
 import type { City } from '../data/cities'
 import { useCityEvents } from '../hooks/useCityEvents'
+import { useLang } from '../i18n/LanguageContext'
 import { distanceKm } from '../lib/eventDisplay'
 import { isSupabaseConfigured } from '../lib/supabase'
 import type { EventWithStats } from '../lib/types'
@@ -53,6 +54,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 }
 
 export default function HomePage({ city }: { city: City }) {
+  const { t } = useLang()
   const { events, status } = useCityEvents(city)
   const [preferences, setPreferences] = useState(readPreferences)
   const [searchParams] = useSearchParams()
@@ -119,20 +121,14 @@ export default function HomePage({ city }: { city: City }) {
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto', pb: 12 }}>
       <Typography variant="h1" sx={{ position: 'absolute', left: -9999 }}>
-        Wydarzenia — {city.name}
+        {t('home.heading', { city: city.name })}
       </Typography>
 
-      <GroupChips
-        label="Twoje preferencje: dla kogo szukasz wydarzeń"
-        selected={preferences}
-        onChange={savePreferences}
-      />
+      <GroupChips label={t('home.prefsChips')} selected={preferences} onChange={savePreferences} />
 
       {status === 'error' && (
         <Alert severity="error" sx={{ mx: 2 }}>
-          {isSupabaseConfigured
-            ? 'Nie udało się pobrać wydarzeń. Spróbuj ponownie za chwilę.'
-            : 'Brak połączenia z bazą — uzupełnij klucze Supabase w pliku .env.local.'}
+          {isSupabaseConfigured ? t('home.errorFetch') : t('home.errorNoDb')}
         </Alert>
       )}
 
@@ -142,11 +138,11 @@ export default function HomePage({ city }: { city: City }) {
           sx={{ mx: 2 }}
           action={
             <Button component={RouterLink} to="/dodaj" color="inherit" size="small">
-              Dodaj
+              {t('home.add')}
             </Button>
           }
         >
-          W tym mieście nie ma jeszcze nadchodzących wydarzeń. Dodaj pierwsze!
+          {t('home.cityEmpty')}
         </Alert>
       )}
 
@@ -156,45 +152,43 @@ export default function HomePage({ city }: { city: City }) {
             variant="h2"
             sx={{ px: 2, textDecoration: 'underline', textUnderlineOffset: 4 }}
           >
-            Wyniki: „{query}"
+            {t('search.results', { query })}
           </Typography>
           {status === 'loading' ? (
-            <ScrollRow label="Wyszukiwanie">{skeletons('medium')}</ScrollRow>
+            <ScrollRow label={t('search.searching')}>{skeletons('medium')}</ScrollRow>
           ) : matches.length > 0 ? (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, px: 2, pt: 1 }}>
               {cards(matches, 'medium')}
             </Box>
           ) : (
             <Typography color="text.secondary" sx={{ px: 2, py: 2 }}>
-              Brak wydarzeń pasujących do „{query}". Spróbuj innego hasła.
+              {t('search.empty', { query })}
             </Typography>
           )}
         </Box>
       ) : (
         (status === 'loading' || events.length > 0) && (
         <>
-          <ScrollRow label="Najbliższe wydarzenia">
+          <ScrollRow label={t('home.upcoming')}>
             {status === 'loading' ? skeletons('large') : cards(upcoming, 'large')}
           </ScrollRow>
 
-          <Section title="Preferencje">
+          <Section title={t('home.prefsSection')}>
             {status === 'loading' ? (
-              <ScrollRow label="Preferencje">{skeletons('medium')}</ScrollRow>
+              <ScrollRow label={t('home.prefsSection')}>{skeletons('medium')}</ScrollRow>
             ) : preferred.length > 0 ? (
-              <ScrollRow label="Wydarzenia dopasowane do Twoich preferencji">
-                {cards(preferred, 'medium')}
-              </ScrollRow>
+              <ScrollRow label={t('home.prefsMatched')}>{cards(preferred, 'medium')}</ScrollRow>
             ) : (
               <Typography color="text.secondary" sx={{ px: 2, py: 2 }}>
                 {preferences.length === 0
-                  ? 'Zaznacz powyżej, dla kogo szukasz wydarzeń, a dopasujemy propozycje.'
-                  : 'Brak nadchodzących wydarzeń dla wybranych grup.'}
+                  ? t('home.prefsEmptyNone')
+                  : t('home.prefsEmptySelected')}
               </Typography>
             )}
           </Section>
 
-          <Section title="Lubiane przez innych">
-            <ScrollRow label="Wydarzenia z największą liczbą zapisanych">
+          <Section title={t('home.liked')}>
+            <ScrollRow label={t('home.likedRow')}>
               {status === 'loading' ? skeletons('medium') : cards(popular, 'medium')}
             </ScrollRow>
           </Section>
@@ -216,7 +210,7 @@ export default function HomePage({ city }: { city: City }) {
           height: 56,
         }}
       >
-        Mapa
+        {t('home.fabMap')}
         <MapOutlinedIcon sx={{ ml: 1 }} />
       </Fab>
     </Box>

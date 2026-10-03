@@ -7,6 +7,7 @@ import 'leaflet/dist/leaflet.css'
 import './index.css'
 import App from './App'
 import { CityProvider } from './context/CityContext'
+import { LanguageProvider } from './i18n/LanguageContext'
 import { theme } from './theme'
 
 createRoot(document.getElementById('root')!).render(
@@ -14,9 +15,11 @@ createRoot(document.getElementById('root')!).render(
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <BrowserRouter>
-        <CityProvider>
-          <App />
-        </CityProvider>
+        <LanguageProvider>
+          <CityProvider>
+            <App />
+          </CityProvider>
+        </LanguageProvider>
       </BrowserRouter>
     </ThemeProvider>
   </StrictMode>,

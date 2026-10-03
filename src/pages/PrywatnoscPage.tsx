@@ -1,18 +1,16 @@
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
+import { useLang } from '../i18n/LanguageContext'
 
-// Placeholder — polityka prywatności.
+// Polityka prywatności.
 export default function PrywatnoscPage() {
+  const { t } = useLang()
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Typography variant="h1" sx={{ mb: 2 }}>
-        Prywatność 🔒
+        {t('privacy.title')}
       </Typography>
-      <Typography color="text.secondary">
-        Szanujemy Twoją prywatność. Dokładny adres wydarzenia widoczny jest dopiero po zapisaniu
-        się, a Twoje dane chronione są regułami bezpieczeństwa bazy. Pełna polityka prywatności
-        pojawi się wkrótce.
-      </Typography>
+      <Typography color="text.secondary">{t('privacy.body')}</Typography>
     </Container>
   )
 }
