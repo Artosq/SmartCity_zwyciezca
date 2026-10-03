@@ -18,6 +18,15 @@ export default function ScrollRow({ children, label }: { children: ReactNode; la
         scrollPaddingLeft: 16,
         scrollbarWidth: { xs: 'none', md: 'thin' },
         '&::-webkit-scrollbar': { display: { xs: 'none', md: 'block' } },
+        // Dzieci (karty / chipy) „wpływają" po kolei — płynne wejście.
+        '& > *': { animation: 'fadeInUp 0.5s ease both' },
+        '& > *:nth-of-type(1)': { animationDelay: '0.04s' },
+        '& > *:nth-of-type(2)': { animationDelay: '0.1s' },
+        '& > *:nth-of-type(3)': { animationDelay: '0.16s' },
+        '& > *:nth-of-type(4)': { animationDelay: '0.22s' },
+        '& > *:nth-of-type(5)': { animationDelay: '0.28s' },
+        '& > *:nth-of-type(6)': { animationDelay: '0.34s' },
+        '& > *:nth-of-type(n+7)': { animationDelay: '0.4s' },
       }}
     >
       {children}

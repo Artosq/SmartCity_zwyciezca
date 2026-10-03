@@ -97,6 +97,17 @@ html {
     transform: none;
   }
 }
+@keyframes ambientFloat {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, -2%, 0) scale(1.06);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
 
 /* Szacujemy preferencję ograniczonego ruchu (seniorzy, dostępność) */
 @media (prefers-reduced-motion: reduce) {

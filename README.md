@@ -159,7 +159,7 @@ npm run dev                  # http://localhost:5173
 
 Baza: w Supabase → SQL Editor uruchom `supabase/schema.sql` (świeża baza) albo migracje
 z `supabase/migrations/` (baza ze starszego schematu), a potem `supabase/seed.sql`.
-Bot: po migracji `003_bot_import.sql` i dodaniu `SUPABASE_SERVICE_ROLE_KEY` uruchom `npm run bot`
+Bot: po migracjach `003_bot_import.sql` i `004_service_role_grants.sql` oraz dodaniu `SUPABASE_SERVICE_ROLE_KEY` uruchom `npm run bot`
 (`npm run bot -- --dry` tylko wypisuje wylosowane wydarzenia, `-- --count=3` ustawia ich liczbę).
 Codzienne uruchamianie: dodaj sekrety `VITE_SUPABASE_URL` i `SUPABASE_SERVICE_ROLE_KEY`
 w GitHub → Settings → Secrets and variables → Actions.

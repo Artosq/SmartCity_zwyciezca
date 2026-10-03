@@ -36,7 +36,15 @@ function readPreferences(): string[] {
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <Box component="section" sx={{ mt: 2 }}>
-      <Typography variant="h2" sx={{ px: 2, textDecoration: 'underline', textUnderlineOffset: 4 }}>
+      <Typography
+        variant="h2"
+        sx={{
+          px: 2,
+          textDecoration: 'underline',
+          textUnderlineOffset: 4,
+          animation: 'fadeInUp 0.5s ease both',
+        }}
+      >
         {title}
       </Typography>
       {children}

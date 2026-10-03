@@ -73,7 +73,13 @@ export default function EventCard({ event, distanceKm, size = 'medium' }: Props)
         textAlign: 'left',
         scrollSnapAlign: 'start',
         borderRadius: 6,
-        '&:hover img, &:focus-visible img': { transform: 'scale(1.04)' },
+        transition: 'transform 0.2s ease',
+        '&:hover, &:focus-visible': { transform: 'translateY(-6px)' },
+        '&:hover img, &:focus-visible img': { transform: 'scale(1.06)' },
+        '@media (prefers-reduced-motion: reduce)': {
+          transition: 'none',
+          '&:hover, &:focus-visible': { transform: 'none' },
+        },
       }}
     >
       <Box

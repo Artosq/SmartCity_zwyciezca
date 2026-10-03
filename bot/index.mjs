@@ -93,8 +93,8 @@ if (supabase) {
     .select('source, external_id')
     .not('source', 'is', null)
   if (error) {
-    // najczęściej: brak kolumny `source`, czyli nieuruchomiona migracja
-    const message = `Nie udało się sprawdzić zaimportowanych wydarzeń (${error.message}). Czy migracja supabase/migrations/003_bot_import.sql jest uruchomiona?`
+    // brak kolumny `source` → migracja 003; "permission denied" → migracja 004
+    const message = `Nie udało się sprawdzić zaimportowanych wydarzeń (${error.message}). Uruchom w Supabase migracje 003_bot_import.sql i 004_service_role_grants.sql.`
     if (!dryRun) throw new Error(message)
     console.warn(message)
   } else {
