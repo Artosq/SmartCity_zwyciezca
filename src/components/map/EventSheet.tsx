@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink, useNavigate } from 'react-router-dom' // Added useNavigate
 import type { User } from '@supabase/supabase-js'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
@@ -25,7 +25,7 @@ import type { EventWithStats } from '../../lib/types'
 import { EventMeta } from '../EventCard'
 import { GroupDot } from '../TargetGroupFilter'
 
-// Serwisy, z których bot importuje wydarzenia (bot/sources).
+// External services from which the bot imports events
 const SOURCE_NAMES: Record<string, string> = {
   karnet: 'Karnet Kraków',
   facebook: 'Facebook',
@@ -34,16 +34,14 @@ const SOURCE_NAMES: Record<string, string> = {
 interface Props {
   event: EventWithStats
   user: User | null
-  // Jedno z najchętniej wybieranych wydarzeń w mieście — dostaje znaczek „Popularne".
+  // One of the most frequently chosen events in the city - gets the "Popular" badge.
   popular: boolean
   distanceKm: number
-  // Rozwinięty od razu — gdy użytkownik przyszedł z karty na stronie głównej.
+  // Expanded by default - when the user came from the card on the home page.
   defaultExpanded?: boolean
   onClose: () => void
 }
 
-// Karta wydarzenia nad nawigacją: zwinięta pokazuje miniaturę, tytuł i liczby,
-// po rozwinięciu — zdjęcie, opis, grupy, licznik miejsc i zapis.
 export default function EventSheet({
   event,
   user,
@@ -56,10 +54,11 @@ export default function EventSheet({
   const [attendees, setAttendees] = useState<string[] | null>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const navigate = useNavigate() // Initialize navigation hook
 
   const loadAttendees = useCallback(async () => {
     const { data, error } = await supabase.from('rsvps').select('user_id').eq('event_id', event.id)
-    if (error) setError('Nie udało się pobrać listy zapisanych.')
+    if (error) setError('Failed to fetch the list of attendees.')
     else setAttendees(data.map((row) => row.user_id as string))
   }, [event.id])
 
@@ -75,25 +74,38 @@ export default function EventSheet({
     if (!user) return
     setBusy(true)
     setError('')
-    const { error } = joined
-      ? await supabase.from('rsvps').delete().eq('event_id', event.id).eq('user_id', user.id)
-      : await supabase.from('rsvps').insert({ event_id: event.id, user_id: user.id })
-    if (error) setError(joined ? 'Nie udało się wypisać.' : 'Nie udało się zapisać.')
+    
+    // Check if the user is joining or leaving
+    if (joined) {
+        // Leave the event
+        const { error } = await supabase.from('rsvps').delete().eq('event_id', event.id).eq('user_id', user.id)
+        if (error) setError('Failed to leave the event.')
+    } else {
+        // Join the event
+        const { error } = await supabase.from('rsvps').insert({ event_id: event.id, user_id: user.id })
+        if (error) {
+            setError('Failed to join the event.')
+        } else {
+            // Successfully joined, navigate to the chat page
+            navigate('/czat')
+        }
+    }
+    
     await loadAttendees()
     setBusy(false)
   }
 
   const places =
     attendees === null
-      ? 'Sprawdzanie miejsc…'
+      ? 'Checking places...'
       : event.capacity === null
-        ? `Zapisanych: ${count} (bez limitu miejsc)`
-        : `Wolne miejsca: ${Math.max(event.capacity - count, 0)} z ${event.capacity}`
+        ? `Attendees: ${count} (no limit)`
+        : `Available places: ${Math.max(event.capacity - count, 0)} of ${event.capacity}`
 
   return (
     <Paper
       component="section"
-      aria-label={`Wydarzenie: ${event.title}`}
+      aria-label={`Event: ${event.title}`}
       elevation={12}
       sx={{
         position: 'absolute',
@@ -121,7 +133,7 @@ export default function EventSheet({
             fontSize: '0.9rem',
           }}
         >
-          Popularne
+          Popular
         </Box>
       )}
       <Stack direction="row" sx={{ alignItems: 'flex-start' }}>
@@ -152,13 +164,13 @@ export default function EventSheet({
               {event.title}
             </Typography>
             <Typography variant="body2" noWrap sx={{ fontWeight: 700, color: 'text.secondary' }}>
-              {event.category?.name ?? 'Wydarzenie'}
+              {event.category?.name ?? 'Event'}
             </Typography>
             <EventMeta event={event} distanceKm={distanceKm} />
           </Box>
           {expanded ? <ExpandMoreIcon /> : <ExpandLessIcon />}
         </ButtonBase>
-        <IconButton onClick={onClose} aria-label="Zamknij" sx={{ mt: 1, mr: 1 }}>
+        <IconButton onClick={onClose} aria-label="Close" sx={{ mt: 1, mr: 1 }}>
           <CloseIcon />
         </IconButton>
       </Stack>
@@ -192,9 +204,9 @@ export default function EventSheet({
 
           {event.source_url && (
             <Typography variant="body2" color="text.secondary">
-              Zaimportowane automatycznie.{' '}
+              Imported automatically.{' '}
               <Link href={event.source_url} target="_blank" rel="noopener noreferrer">
-                Zobacz oryginał ({SOURCE_NAMES[event.source ?? ''] ?? event.source})
+                See original ({SOURCE_NAMES[event.source ?? ''] ?? event.source})
               </Link>
             </Typography>
           )}
@@ -215,11 +227,11 @@ export default function EventSheet({
 
           {!user ? (
             <Button component={RouterLink} to="/login" variant="contained" size="large">
-              Zaloguj się, aby dołączyć
+              Log in to join
             </Button>
           ) : joined ? (
             <Button variant="outlined" size="large" disabled={busy} onClick={toggleRsvp}>
-              Wypisz się
+              Leave
             </Button>
           ) : (
             <Button
@@ -228,10 +240,10 @@ export default function EventSheet({
               disabled={busy || full || attendees === null}
               onClick={toggleRsvp}
             >
-              {full ? 'Brak wolnych miejsc' : 'Dołącz'}
+              {full ? 'No available places' : 'Join'}
             </Button>
           )}
-          {joined && <Alert severity="success">Jesteś zapisany(-a) na to wydarzenie.</Alert>}
+          {joined && <Alert severity="success">You are registered for this event.</Alert>}
         </Stack>
       </Collapse>
     </Paper>

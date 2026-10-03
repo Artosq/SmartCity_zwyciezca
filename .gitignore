@@ -24,3 +24,4 @@ npm-debug.log*
 # auto-generated for AI agents
 AGENTS.md
 CLAUDE.md
+package-lock.json
