@@ -1,5 +1,5 @@
 import { useMemo, useState, type ReactNode } from 'react'
-import { Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink, useSearchParams } from 'react-router-dom'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -18,6 +18,11 @@ import type { EventWithStats } from '../lib/types'
 
 const PREFERENCES_STORAGE_KEY = 'sasiedzko.preferences'
 const CAROUSEL_LIMIT = 10
+
+// Porównanie bez uwzględniania wielkości liter i polskich znaków (ł, ó, ś…),
+// żeby „lodz" znajdowało „Łódź".
+const normalize = (text: string) =>
+  text.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
 
 function readPreferences(): string[] {
   try {
@@ -42,6 +47,8 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 export default function HomePage({ city }: { city: City }) {
   const { events, status } = useCityEvents(city)
   const [preferences, setPreferences] = useState(readPreferences)
+  const [searchParams] = useSearchParams()
+  const query = (searchParams.get('q') ?? '').trim()
 
   const savePreferences = (next: string[]) => {
     setPreferences(next)
@@ -65,6 +72,17 @@ export default function HomePage({ city }: { city: City }) {
     () => [...events].sort((a, b) => b.attendees - a.attendees).slice(0, CAROUSEL_LIMIT),
     [events],
   )
+
+  // Wyniki wyszukiwania: dopasowanie po tytule, opisie, miejscu i kategorii.
+  const matches = useMemo(() => {
+    if (!query) return []
+    const q = normalize(query)
+    return events.filter((event) =>
+      normalize(
+        `${event.title} ${event.description ?? ''} ${event.place_name ?? ''} ${event.category?.name ?? ''}`,
+      ).includes(q),
+    )
+  }, [events, query])
 
   const cards = (list: EventWithStats[], size: 'large' | 'medium') =>
     list.map((event) => (
@@ -110,7 +128,7 @@ export default function HomePage({ city }: { city: City }) {
         </Alert>
       )}
 
-      {status === 'ready' && events.length === 0 && (
+      {status === 'ready' && !query && events.length === 0 && (
         <Alert
           severity="info"
           sx={{ mx: 2 }}
@@ -124,7 +142,28 @@ export default function HomePage({ city }: { city: City }) {
         </Alert>
       )}
 
-      {(status === 'loading' || events.length > 0) && (
+      {query ? (
+        <Box component="section" sx={{ mt: 2 }}>
+          <Typography
+            variant="h2"
+            sx={{ px: 2, textDecoration: 'underline', textUnderlineOffset: 4 }}
+          >
+            Wyniki: „{query}"
+          </Typography>
+          {status === 'loading' ? (
+            <ScrollRow label="Wyszukiwanie">{skeletons('medium')}</ScrollRow>
+          ) : matches.length > 0 ? (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, px: 2, pt: 1 }}>
+              {cards(matches, 'medium')}
+            </Box>
+          ) : (
+            <Typography color="text.secondary" sx={{ px: 2, py: 2 }}>
+              Brak wydarzeń pasujących do „{query}". Spróbuj innego hasła.
+            </Typography>
+          )}
+        </Box>
+      ) : (
+        (status === 'loading' || events.length > 0) && (
         <>
           <ScrollRow label="Najbliższe wydarzenia">
             {status === 'loading' ? skeletons('large') : cards(upcoming, 'large')}
@@ -152,6 +191,7 @@ export default function HomePage({ city }: { city: City }) {
             </ScrollRow>
           </Section>
         </>
+        )
       )}
 
       <Fab

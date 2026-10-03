@@ -1,5 +1,5 @@
 import { useState, type MouseEvent } from 'react'
-import { Link as RouterLink, Outlet, useLocation } from 'react-router-dom'
+import { Link as RouterLink, Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import BottomNavigation from '@mui/material/BottomNavigation'
 import BottomNavigationAction from '@mui/material/BottomNavigationAction'
 import Box from '@mui/material/Box'
@@ -7,6 +7,7 @@ import Button from '@mui/material/Button'
 import ButtonBase from '@mui/material/ButtonBase'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
+import InputAdornment from '@mui/material/InputAdornment'
 import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
@@ -14,16 +15,19 @@ import ListItemText from '@mui/material/ListItemText'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
+import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ChatIcon from '@mui/icons-material/Chat'
+import CloseIcon from '@mui/icons-material/Close'
 import HomeIcon from '@mui/icons-material/Home'
 import MailIcon from '@mui/icons-material/Mail'
 import MapIcon from '@mui/icons-material/Map'
 import MenuIcon from '@mui/icons-material/Menu'
 import PersonIcon from '@mui/icons-material/Person'
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined'
+import SearchIcon from '@mui/icons-material/Search'
 import { useCity } from '../context/CityContext'
 import { CITIES } from '../data/cities'
 import { BRAND } from '../theme'
@@ -42,9 +46,19 @@ const NAV = [
 // (telefon: dolny pasek, od md: linki w nagłówku).
 export default function AppLayout() {
   const { pathname } = useLocation()
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { city, selectCity } = useCity()
   const [cityAnchor, setCityAnchor] = useState<HTMLElement | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [query, setQuery] = useState(searchParams.get('q') ?? '')
+
+  // Wyszukiwanie żyje w adresie (?q=…), a wyniki pokazuje strona główna.
+  const runSearch = (value: string) => {
+    setQuery(value)
+    const trimmed = value.trim()
+    navigate(trimmed ? `/?q=${encodeURIComponent(trimmed)}` : '/', { replace: pathname === '/' })
+  }
 
   const active = NAV.find((item) =>
     item.to === '/' ? pathname === '/' : pathname.startsWith(item.to),
@@ -113,6 +127,42 @@ export default function AppLayout() {
             </MenuItem>
           ))}
         </Menu>
+
+        <TextField
+          size="small"
+          placeholder="Szukaj wydarzeń…"
+          value={query}
+          onChange={(e) => runSearch(e.target.value)}
+          aria-label="Szukaj wydarzeń"
+          sx={{
+            display: { xs: 'none', md: 'flex' },
+            flex: 1,
+            maxWidth: 520,
+            mx: 2,
+            '& .MuiOutlinedInput-root': { borderRadius: 999, bgcolor: 'background.paper' },
+          }}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+              endAdornment: query ? (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="Wyczyść wyszukiwanie"
+                    size="small"
+                    edge="end"
+                    onClick={() => runSearch('')}
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ) : null,
+            },
+          }}
+        />
 
         <Box
           component="nav"
