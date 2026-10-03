@@ -6,19 +6,21 @@ import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import Paper from '@mui/material/Paper'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 
 export default function ChatPage() {
-  const { user } = useAuth()// Get the current user
+  const { user } = useAuth() 
   const [myEvents, setMyEvents] = useState<any[]>([])
   const [activeEvent, setActiveEvent] = useState<any | null>(null)
   const [messages, setMessages] = useState<any[]>([])
   const [newMessage, setNewMessage] = useState('')
 
-// 1. Load the events the user has signed up for
+  // 1. Load user's events
   useEffect(() => {
     if (!user) return
 
@@ -29,19 +31,22 @@ export default function ChatPage() {
         .eq('user_id', user.id)
       
       if (data) {
-        // Remove unnecessary nesting from the data
         const formattedEvents = data.map((item: any) => item.events)
         setMyEvents(formattedEvents)
+        
+        // Auto-select the first event only on desktop
+        if (formattedEvents.length > 0 && !activeEvent && window.innerWidth > 900) {
+            setActiveEvent(formattedEvents[0])
+        }
       }
     }
     loadMyEvents()
-  }, [user])
+  }, [user, activeEvent])
 
-  // 2. Load message history and listen for new messages in real time
+  // 2. Load messages and listen for new ones (Realtime)
   useEffect(() => {
     if (!activeEvent) return
 
-    // Loading old messages
     async function loadMessages() {
       const { data } = await supabase
         .from('messages')
@@ -52,7 +57,6 @@ export default function ChatPage() {
     }
     loadMessages()
 
-    // Subscription to new messages (Realtime)
     const channel = supabase
       .channel(`chat-${activeEvent.id}`)
       .on(
@@ -69,7 +73,7 @@ export default function ChatPage() {
     }
   }, [activeEvent])
 
-  // 3. Sending the message
+  // 3. Send message
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newMessage.trim() || !user || !activeEvent) return
@@ -78,7 +82,13 @@ export default function ChatPage() {
       .from('messages')
       .insert([{ event_id: activeEvent.id, user_id: user.id, content: newMessage }])
 
-    if (!error) setNewMessage('')
+    // Error handling to diagnose the issue
+    if (error) {
+      console.error("Supabase insert error:", error)
+      alert("Błąd wysyłania: " + error.message)
+    } else {
+      setNewMessage('')
+    }
   }
 
   if (!user) {
@@ -94,12 +104,18 @@ export default function ChatPage() {
       <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold' }}>Czaty 💬</Typography>
       
       <Box sx={{ display: 'flex', flex: 1, gap: 2, overflow: 'hidden' }}>
-        {/* Left panel: List of chats (events) */}
-        <Paper sx={{ width: '30%', overflowY: 'auto' }}>
+        {/* Left panel: Chat list (Hidden on mobile if a chat is active) */}
+        <Paper 
+          sx={{ 
+            width: { xs: '100%', md: '35%' }, 
+            display: { xs: activeEvent ? 'none' : 'block', md: 'block' },
+            overflowY: 'auto' 
+          }}
+        >
           <List>
             {myEvents.length === 0 && (
               <Typography sx={{ p: 2, color: 'text.secondary', fontSize: '0.9rem' }}>
-                Nie jesteś zapisany na żadne wydarzenia.
+                Nie jesteś zapisany(-a) na żadne wydarzenia.
               </Typography>
             )}
             {myEvents.map((ev) => (
@@ -114,25 +130,47 @@ export default function ChatPage() {
           </List>
         </Paper>
 
-        {/* Right panel: Conversation window */}
-        <Paper sx={{ flex: 1, display: 'flex', flexDirection: 'column', bgcolor: 'grey.50' }}>
+        {/* Right panel: Chat window (Hidden on mobile if no chat is active) */}
+        <Paper 
+          sx={{ 
+            flex: 1, 
+            display: { xs: activeEvent ? 'flex' : 'none', md: 'flex' }, 
+            flexDirection: 'column', 
+            bgcolor: 'grey.50' 
+          }}
+        >
           {activeEvent ? (
             <>
-              {/* Сообщения */}
+              {/* Mobile back button & Chat title */}
+              <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', p: 1, borderBottom: '1px solid #eee', bgcolor: 'white' }}>
+                <IconButton onClick={() => setActiveEvent(null)} sx={{ mr: 1 }}>
+                  <ArrowBackIcon />
+                </IconButton>
+                <Typography variant="subtitle1" fontWeight="bold" noWrap>
+                  {activeEvent.title}
+                </Typography>
+              </Box>
+
+              {/* Messages area */}
               <Box sx={{ flex: 1, p: 2, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 1 }}>
+                {messages.length === 0 && (
+                  <Typography color="text.secondary" sx={{ textAlign: 'center', mt: 4 }}>
+                    Brak wiadomości. Bądź pierwszy!
+                  </Typography>
+                )}
                 {messages.map((msg) => {
                   const isMe = msg.user_id === user.id
                   return (
-                    <Box key={msg.id} sx={{ alignSelf: isMe ? 'flex-end' : 'flex-start', maxWidth: '75%' }}>
-                      <Paper sx={{ p: 1.5, bgcolor: isMe ? 'primary.light' : 'white', color: isMe ? 'white' : 'black', borderRadius: 2 }}>
-                        <Typography variant="body2">{msg.content}</Typography>
+                    <Box key={msg.id} sx={{ alignSelf: isMe ? 'flex-end' : 'flex-start', maxWidth: '85%' }}>
+                      <Paper sx={{ p: 1.5, bgcolor: isMe ? 'primary.main' : 'white', color: isMe ? 'white' : 'text.primary', borderRadius: 2 }}>
+                        <Typography variant="body2" sx={{ wordBreak: 'break-word' }}>{msg.content}</Typography>
                       </Paper>
                     </Box>
                   )
                 })}
               </Box>
               
-              {/* Input field */}
+              {/* Input area */}
               <Box component="form" onSubmit={sendMessage} sx={{ p: 2, bgcolor: 'white', borderTop: '1px solid #eee', display: 'flex', gap: 1 }}>
                 <TextField 
                   fullWidth 
