@@ -99,7 +99,7 @@ export default function ChatPage() {
       if (data) {
         const formattedEvents = [
           ...data.map((item: any) => ({ ...item.events, scope: 'event' })),
-          ...(meetups ?? []).map((item: any) => ({ id: item.id, title: `1:1 · ${item.title}`, scope: 'meetup' })),
+          ...(meetups ?? []).map((item: any) => ({ id: item.id, title: `We dwoje · ${item.title}`, scope: 'meetup' })),
         ]
         setMyEvents(formattedEvents)
         

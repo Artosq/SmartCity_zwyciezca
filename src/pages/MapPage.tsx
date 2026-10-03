@@ -17,27 +17,18 @@ import MapFilters, {
 } from '../components/map/MapFilters'
 import MeetupDialog from '../components/meetups/MeetupDialog'
 import type { City } from '../data/cities'
-import { useAuth } from '../hooks/useAuth'
 import { useCityEvents } from '../hooks/useCityEvents'
 import { useMeetups } from '../hooks/useMeetups'
+import { useProfile } from '../hooks/useProfile'
 import { distanceKm } from '../lib/eventDisplay'
 import { isSupabaseConfigured } from '../lib/supabase'
 
 // Tyle najchętniej wybieranych wydarzeń w mieście dostaje znaczek „Popularne".
 const POPULAR_COUNT = 3
-// Oświadczenie o pełnoletności zapamiętujemy na urządzeniu — bez niego wyjść 1:1 nie ma na mapie.
-const ADULT_STORAGE_KEY = 'sasiedzko.adult'
-
-function readAdult() {
-  try {
-    return localStorage.getItem(ADULT_STORAGE_KEY) === '1'
-  } catch {
-    return false
-  }
-}
 
 export default function MapPage({ city }: { city: City }) {
-  const { user } = useAuth()
+  // pełnoletność z profilu: bez niej baza nie zwraca spotkań we dwoje i nie ma ich na mapie
+  const { user, isAdult: adult } = useProfile()
   const { events, status } = useCityEvents(city)
   const { meetups, reload: reloadMeetups } = useMeetups(city)
   // Wybrane wydarzenie trzymamy w adresie (?event=id), żeby karty ze strony głównej mogły je otworzyć.
@@ -49,17 +40,7 @@ export default function MapPage({ city }: { city: City }) {
 
   const [filters, setFilters] = useState<MapFilterValues>(EMPTY_FILTERS)
   const [filtersOpen, setFiltersOpen] = useState(false)
-  const [adult, setAdult] = useState(readAdult)
   const [openMeetupId, setOpenMeetupId] = useState<string | null>(null)
-
-  const confirmAdult = () => {
-    setAdult(true)
-    try {
-      localStorage.setItem(ADULT_STORAGE_KEY, '1')
-    } catch {
-      // brak dostępu do localStorage — oświadczenie działa do odświeżenia strony
-    }
-  }
 
   // Kategorie występujące wśród wydarzeń w mieście — z nich budujemy filtr „Cel wydarzenia".
   const categories = useMemo(() => {
@@ -82,7 +63,7 @@ export default function MapPage({ city }: { city: City }) {
     [events, filters.groups, filters.categories],
   )
 
-  // Wyjścia 1:1: tylko dla pełnoletnich, tylko wolne (albo własne) i pasujące do wybranych rodzajów.
+  // Spotkania we dwoje: tylko dla pełnoletnich, tylko wolne (albo własne) i pasujące do wybranych rodzajów.
   const visibleMeetups = useMemo(
     () =>
       adult && filters.showMeetups
@@ -150,7 +131,6 @@ export default function MapPage({ city }: { city: City }) {
         onChange={setFilters}
         categories={categories}
         adult={adult}
-        onConfirmAdult={confirmAdult}
         resultCount={resultCount}
       />
 
@@ -204,6 +184,7 @@ export default function MapPage({ city }: { city: City }) {
         <MeetupDialog
           meetup={openMeetup}
           user={user}
+          isAdult={adult}
           onClose={() => setOpenMeetupId(null)}
           onChanged={reloadMeetups}
         />

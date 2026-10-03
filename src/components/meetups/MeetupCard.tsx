@@ -6,7 +6,8 @@ import Typography from '@mui/material/Typography'
 import PlaceIcon from '@mui/icons-material/Place'
 import { getMeetupType } from '../../data/meetupTypes'
 import { formatRelativeDate } from '../../lib/eventDisplay'
-import type { MeetupWithHost } from '../../lib/types'
+import type { MeetupWithHost, Organizer } from '../../lib/types'
+import RatingBadge from '../RatingBadge'
 
 interface Props {
   meetup: MeetupWithHost
@@ -46,18 +47,20 @@ export function MeetupTags({ meetup }: { meetup: MeetupWithHost }) {
   )
 }
 
-export function HostLine({ name }: { name: string }) {
+export function HostLine({ host }: { host: Organizer | null }) {
+  const name = host?.name ?? 'Sąsiad'
   return (
     <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
       <Avatar sx={{ width: 32, height: 32, fontSize: '0.8rem', fontWeight: 800, bgcolor: '#7dd3fc', color: 'text.primary' }}>
         {name.slice(0, 2).toUpperCase()}
       </Avatar>
-      <Typography sx={{ fontWeight: 700 }}>{name}</Typography>
+      <Typography sx={{ fontWeight: 700, flex: 1 }}>{name}</Typography>
+      <RatingBadge avg={host?.rating_avg} count={host?.rating_count} />
     </Stack>
   )
 }
 
-// Karta wyjścia 1:1: kolorowe tło z symbolem rodzaju, odległość i termin, pod spodem tytuł i osoba.
+// Karta spotkania we dwoje: kolorowe tło z symbolem rodzaju, odległość i termin, pod spodem tytuł i osoba.
 export default function MeetupCard({ meetup, distanceKm, badge, onOpen }: Props) {
   const type = getMeetupType(meetup.type)
 
@@ -99,7 +102,7 @@ export default function MeetupCard({ meetup, distanceKm, badge, onOpen }: Props)
         <Typography variant="h3" sx={{ textDecoration: 'underline', fontSize: '1.15rem' }}>
           {meetup.title}
         </Typography>
-        <HostLine name={meetup.host?.name ?? 'Sąsiad'} />
+        <HostLine host={meetup.host} />
         <MeetupTags meetup={meetup} />
       </Stack>
     </ButtonBase>

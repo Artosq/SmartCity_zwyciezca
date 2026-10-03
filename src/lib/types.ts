@@ -13,8 +13,14 @@ export interface Profile {
   id: string
   name: string | null
   email: string | null
+  // publiczna średnia ocen (0,5–5) i ich liczba; null = brak ocen
+  rating_avg: number | null
+  rating_count: number
   created_at: string
 }
+
+// Organizator pokazywany przy wydarzeniu albo spotkaniu: imię i ocena.
+export type Organizer = Pick<Profile, 'name'> & Partial<Pick<Profile, 'rating_avg' | 'rating_count'>>
 
 export interface EventItem {
   id: string
@@ -39,6 +45,7 @@ export interface EventItem {
 // Wydarzenie z danymi do kart i mapy: kategoria + liczba zapisanych.
 export interface EventWithStats extends EventItem {
   category: Pick<Category, 'slug' | 'name'> | null
+  organizer: Organizer | null
   attendees: number
 }
 
@@ -90,5 +97,5 @@ export interface Meetup {
 }
 
 export interface MeetupWithHost extends Meetup {
-  host: Pick<Profile, 'name'> | null
+  host: Organizer | null
 }

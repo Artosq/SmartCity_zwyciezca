@@ -22,7 +22,7 @@ import { getGroups } from '../../data/targetGroups'
 import { supabase } from '../../lib/supabase'
 import { formatLongDate, getEventImage } from '../../lib/eventDisplay'
 import type { EventWithStats } from '../../lib/types'
-import { EventMeta } from '../EventCard'
+import { EventMeta, OrganizerLine } from '../EventCard'
 import { GroupDot } from '../TargetGroupFilter'
 
 // External services from which the bot imports events
@@ -185,6 +185,7 @@ export default function EventSheet({
             alt=""
             sx={{ width: '100%', height: 150, objectFit: 'cover', borderRadius: '28px' }}
           />
+          <OrganizerLine event={event} />
           {event.description && <Typography>{event.description}</Typography>}
 
           <Stack spacing={1}>

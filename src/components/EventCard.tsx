@@ -9,6 +9,7 @@ import ScheduleIcon from '@mui/icons-material/Schedule'
 import type { ReactNode } from 'react'
 import { formatShortDate, getEventImage } from '../lib/eventDisplay'
 import type { EventWithStats } from '../lib/types'
+import RatingBadge from './RatingBadge'
 
 interface Props {
   event: EventWithStats
@@ -57,6 +58,19 @@ export function EventMeta({ event, distanceKm }: { event: EventWithStats; distan
       >
         {formatShortDate(event.starts_at)}
       </Meta>
+    </Stack>
+  )
+}
+
+// Kto organizuje i jak jest oceniany. Wydarzenia z bota nie mają organizatora-osoby.
+export function OrganizerLine({ event }: { event: EventWithStats }) {
+  if (event.source || !event.organizer) return null
+  return (
+    <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mt: 0.5, minWidth: 0 }}>
+      <Typography variant="body2" noWrap sx={{ fontWeight: 700 }}>
+        {event.organizer.name ?? 'Organizator'}
+      </Typography>
+      <RatingBadge avg={event.organizer.rating_avg} count={event.organizer.rating_count} />
     </Stack>
   )
 }
@@ -118,6 +132,7 @@ export default function EventCard({ event, distanceKm, size = 'medium' }: Props)
         <Typography variant="body2" noWrap sx={{ fontWeight: 700, color: 'text.secondary' }}>
           {event.category?.name ?? 'Wydarzenie'}
         </Typography>
+        <OrganizerLine event={event} />
         <EventMeta event={event} distanceKm={distanceKm} />
       </Box>
     </ButtonBase>

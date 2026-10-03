@@ -28,15 +28,19 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
 - **Strona główna** z propozycjami wydarzeń w mieście: najbliższe terminy,
   dopasowane do preferencji (grupy docelowe) i „lubiane przez innych" (najwięcej zapisanych).
   Karty ze zdjęciem wydarzenia, liczbą zapisanych, odległością od centrum i terminem.
-- **Wyjścia 1:1** (przełącznik na stronie głównej): spacer, kawa, sport albo rozmowa z jedną osobą
+- **We dwoje** (przełącznik na stronie głównej): spacer, kawa, sport albo rozmowa z jedną osobą
   w miejscu publicznym. Ktoś proponuje, pierwsza chętna osoba klika „Idę" i obie dostają prywatny
-  czat. Tylko dla zalogowanych, z oświadczeniem o ukończeniu 18 lat.
+  czat. Tylko dla zalogowanych dorosłych: wiek wynika z daty urodzenia w profilu, a baza nie
+  zwraca spotkań osobom niepełnoletnim ani niezalogowanym.
+- **Oceny organizatorów**: po terminie wydarzenia każda zapisana osoba może ocenić organizatora
+  (0,5–5 gwiazdek, co pół), a po spotkaniu we dwoje obie osoby oceniają się nawzajem. Średnia jest
+  widoczna na kartach wydarzeń i spotkań oraz na stronie Konto; bez ocen — „Nowy organizator".
 - **Zasięg: Kraków.** Kolejne miasta są przygotowane w `src/data/cities.ts`, ale na razie wyłączone.
 - **Mapa miasta**: pinezki wydarzeń łączą się w grupy z liczbą i rozwijają po przybliżeniu.
   Jeden przycisk „Filtry" otwiera menu: wiek (małe dzieci, starsze dzieci, młodzież, dorośli,
   seniorzy), dostępność dla osób z niepełnosprawnościami, cel wydarzenia (kategoria) oraz
-  wyjścia 1:1 z podziałem na rodzaje. Wyjścia 1:1 widać na mapie dopiero po oświadczeniu
-  o ukończeniu 18 lat (zapamiętywanym na urządzeniu).
+  spotkania we dwoje z podziałem na rodzaje. Spotkania we dwoje widzą na mapie tylko
+  zalogowani dorośli.
 - **Dodawanie wydarzenia**: tytuł, opis, kategoria, grupy docelowe, miejsce na mapie,
   termin, limit miejsc, opcjonalny link do zdjęcia. Wszystkie wydarzenia są publiczne — każdy może dołączyć.
 - **Szczegóły i zapis** jednym kliknięciem, licznik wolnych miejsc.
@@ -90,7 +94,10 @@ dobry kontrast, pełna obsługa klawiaturą.
 ### Model danych
 
 ```
-profiles        — id (=auth.users.id), name, email, created_at
+profiles        — id (=auth.users.id), name, email, rating_avg, rating_count, created_at
+profile_private — id→profiles, birth_date (widoczna tylko dla właściciela)
+ratings         — id, rater_id→profiles, ratee_id→profiles, scope(event|meetup), scope_id, stars,
+                  created_at  [UNIQUE(rater_id, scope, scope_id)]
 categories      — id, slug, name, color, icon
 events          — id, organizer_id→profiles, title, description, category_id→categories,
                   city, lat, lng, place_name, starts_at, capacity, target_groups[],
@@ -114,10 +121,10 @@ Relacje: `profiles` 1—N `events`/`rsvps`/`messages`/`announcements`;
 
 | Trasa              | Ekran                                                        |
 |--------------------|-------------------------------------------------------------|
-| `/`                | Strona główna z przełącznikiem: wydarzenia (chipy preferencji + karuzele) albo wyjścia 1:1 (`?widok=1na1`) |
-| `/mapa`            | Mapa miasta z grupowanymi pinezkami wydarzeń i wyjść 1:1 (18+), menu filtrów, rozwijana karta wydarzenia |
-| `/dodaj`           | Dodawanie wydarzenia albo propozycji wyjścia 1:1 (wybór miejsca na mapie) |
-| `/login`           | Logowanie bez hasła (imię + e-mail / magic link), konto     |
+| `/`                | Strona główna z przełącznikiem: wydarzenia (chipy preferencji + karuzele) albo „We dwoje" (`?widok=1na1`) |
+| `/mapa`            | Mapa miasta z grupowanymi pinezkami wydarzeń i spotkań we dwoje (18+), menu filtrów, rozwijana karta wydarzenia |
+| `/dodaj`           | Dodawanie wydarzenia albo propozycji spotkania we dwoje (wybór miejsca na mapie) |
+| `/login`           | Logowanie bez hasła (imię + e-mail / magic link); Konto: data urodzenia, własna ocena, lista „Do oceny" |
 | `/czat`            | Czat w czasie rzeczywistym _(w budowie)_                    |
 | `/ogloszenia`      | Tablica ogłoszeń _(w budowie)_                              |
 | `/miasto`          | _(wyróżnik)_ mapa aktywności dzielnic                        |

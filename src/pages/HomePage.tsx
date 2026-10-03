@@ -55,7 +55,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   )
 }
 
-// Strona główna: przełącznik między wydarzeniami a wyjściami 1:1 (?widok=1na1).
+// Strona główna: przełącznik między wydarzeniami a spotkaniami we dwoje (?widok=1na1).
 export default function HomePage({ city }: { city: City }) {
   const [searchParams, setSearchParams] = useSearchParams()
   // wyszukiwarka z nagłówka dotyczy wydarzeń

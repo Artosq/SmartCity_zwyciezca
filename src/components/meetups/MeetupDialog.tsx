@@ -4,12 +4,10 @@ import type { User } from '@supabase/supabase-js'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Checkbox from '@mui/material/Checkbox'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import PlaceIcon from '@mui/icons-material/Place'
@@ -23,15 +21,16 @@ import { HostLine, MeetupTags } from './MeetupCard'
 interface Props {
   meetup: MeetupWithHost
   user: User | null
+  // pełnoletność z profilu (data urodzenia); baza i tak sprawdza ją przy dołączaniu
+  isAdult: boolean
   onClose: () => void
   // po dołączeniu, rezygnacji albo usunięciu lista wymaga odświeżenia
   onChanged: () => void
 }
 
-// Szczegóły wyjścia 1:1 z przyciskiem „Idę". Dołączać mogą tylko zalogowani dorośli.
-export default function MeetupDialog({ meetup, user, onClose, onChanged }: Props) {
+// Szczegóły spotkania we dwoje z przyciskiem „Idę". Dołączać mogą tylko zalogowani dorośli.
+export default function MeetupDialog({ meetup, user, isAdult, onClose, onChanged }: Props) {
   const navigate = useNavigate()
-  const [adult, setAdult] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
@@ -46,7 +45,7 @@ export default function MeetupDialog({ meetup, user, onClose, onChanged }: Props
     const { data: joined, error } = await supabase.rpc('join_meetup', { p_meetup_id: meetup.id })
     setBusy(false)
     if (error || !joined) {
-      setError(error ? 'Nie udało się dołączyć.' : 'Ktoś był szybszy — to wyjście jest już zajęte.')
+      setError(error ? 'Nie udało się dołączyć.' : 'Ktoś był szybszy — to spotkanie jest już zajęte.')
       onChanged()
       return
     }
@@ -83,7 +82,7 @@ export default function MeetupDialog({ meetup, user, onClose, onChanged }: Props
       <DialogTitle sx={{ fontWeight: 800, pb: 1 }}>{meetup.title}</DialogTitle>
       <DialogContent>
         <Stack spacing={1.5}>
-          <HostLine name={meetup.host?.name ?? 'Sąsiad'} />
+          <HostLine host={meetup.host} />
           {meetup.description && <Typography>{meetup.description}</Typography>}
           <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
             <ScheduleIcon color="action" />
@@ -105,19 +104,13 @@ export default function MeetupDialog({ meetup, user, onClose, onChanged }: Props
           {isHost && (
             <Alert severity={taken ? 'success' : 'info'}>
               {taken
-                ? 'Ktoś dołączył do Twojego wyjścia. Rozmowę znajdziesz w zakładce Czat.'
+                ? 'Ktoś dołączył do Twojego spotkania. Rozmowę znajdziesz w zakładce Czat.'
                 : 'To Twoja propozycja. Czeka na chętną osobę.'}
             </Alert>
           )}
-          {isGuest && <Alert severity="success">Idziesz na to wyjście. Rozmowa jest w zakładce Czat.</Alert>}
-          {!isHost && !isGuest && taken && <Alert severity="warning">To wyjście jest już zajęte.</Alert>}
+          {isGuest && <Alert severity="success">Idziesz na to spotkanie. Rozmowa jest w zakładce Czat.</Alert>}
+          {!isHost && !isGuest && taken && <Alert severity="warning">To spotkanie jest już zajęte.</Alert>}
 
-          {user && !isHost && !isGuest && !taken && (
-            <FormControlLabel
-              control={<Checkbox checked={adult} onChange={(e) => setAdult(e.target.checked)} />}
-              label="Oświadczam, że mam ukończone 18 lat."
-            />
-          )}
           {error && <Alert severity="error">{error}</Alert>}
         </Stack>
       </DialogContent>
@@ -136,7 +129,7 @@ export default function MeetupDialog({ meetup, user, onClose, onChanged }: Props
             Rezygnuję
           </Button>
         ) : (
-          <Button variant="contained" color="secondary" disabled={busy || taken || !adult} onClick={join}>
+          <Button variant="contained" color="secondary" disabled={busy || taken || !isAdult} onClick={join}>
             Idę
           </Button>
         )}

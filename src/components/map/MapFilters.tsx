@@ -2,7 +2,6 @@ import type { ReactNode } from 'react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import ButtonBase from '@mui/material/ButtonBase'
-import Checkbox from '@mui/material/Checkbox'
 import Drawer from '@mui/material/Drawer'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import IconButton from '@mui/material/IconButton'
@@ -25,9 +24,9 @@ export interface MapFilterValues {
   groups: string[]
   // cel wydarzenia = kategoria
   categories: string[]
-  // wyjścia 1:1 widać tylko po oświadczeniu o pełnoletności
+  // spotkania we dwoje widzą tylko pełnoletni (data urodzenia w profilu)
   showMeetups: boolean
-  // cel wyjścia 1:1 = jego rodzaj
+  // cel spotkania we dwoje = jego rodzaj
   meetupTypes: string[]
 }
 
@@ -48,8 +47,8 @@ interface Props {
   onChange: (values: MapFilterValues) => void
   // kategorie występujące wśród wydarzeń w mieście
   categories: { slug: string; name: string }[]
+  // pełnoletność z profilu — bez niej sekcji „We dwoje" nie da się włączyć
   adult: boolean
-  onConfirmAdult: () => void
   resultCount: number
 }
 
@@ -95,7 +94,7 @@ function Section({ title, hint, children }: { title: string; hint?: string; chil
   )
 }
 
-// Menu filtrów mapy: wiek, cel wydarzenia oraz wyjścia 1:1 (tylko dla dorosłych).
+// Menu filtrów mapy: wiek, cel wydarzenia oraz spotkania we dwoje (tylko dla dorosłych).
 // Na telefonie wysuwa się od dołu, na szerszym ekranie z prawej.
 export default function MapFilters({
   open,
@@ -104,7 +103,6 @@ export default function MapFilters({
   onChange,
   categories,
   adult,
-  onConfirmAdult,
   resultCount,
 }: Props) {
   const desktop = useMediaQuery(useTheme().breakpoints.up('md'))
@@ -171,7 +169,7 @@ export default function MapFilters({
         </Section>
 
         <Box component="section">
-          <Typography variant="h3">Wyjścia 1:1 · 18+</Typography>
+          <Typography variant="h3">We dwoje · 18+</Typography>
           <Typography variant="body2" color="text.secondary">
             Spotkania z jedną osobą. Widoczne na mapie tylko dla osób pełnoletnich.
           </Typography>
@@ -185,7 +183,7 @@ export default function MapFilters({
                     onChange={(e) => set({ showMeetups: e.target.checked })}
                   />
                 }
-                label="Pokaż wyjścia 1:1 na mapie"
+                label="Pokaż spotkania we dwoje na mapie"
               />
               {values.showMeetups && (
                 <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1, mt: 1 }}>
@@ -203,11 +201,9 @@ export default function MapFilters({
               )}
             </>
           ) : (
-            <FormControlLabel
-              sx={{ mt: 0.5 }}
-              control={<Checkbox checked={false} onChange={onConfirmAdult} />}
-              label="Oświadczam, że mam ukończone 18 lat — pokaż wyjścia 1:1."
-            />
+            <Typography sx={{ mt: 1, fontWeight: 600 }}>
+              Zaloguj się i uzupełnij datę urodzenia na stronie Konto, żeby je zobaczyć.
+            </Typography>
           )}
         </Box>
       </Stack>

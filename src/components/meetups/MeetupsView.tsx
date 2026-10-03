@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import ButtonBase from '@mui/material/ButtonBase'
 import Fab from '@mui/material/Fab'
 import Skeleton from '@mui/material/Skeleton'
@@ -9,7 +10,7 @@ import Typography from '@mui/material/Typography'
 import AddIcon from '@mui/icons-material/Add'
 import type { City } from '../../data/cities'
 import { MEETUP_TYPES } from '../../data/meetupTypes'
-import { useAuth } from '../../hooks/useAuth'
+import { useProfile } from '../../hooks/useProfile'
 import { useMeetups } from '../../hooks/useMeetups'
 import { distanceKm } from '../../lib/eventDisplay'
 import { isSupabaseConfigured } from '../../lib/supabase'
@@ -17,9 +18,9 @@ import ScrollRow from '../ScrollRow'
 import MeetupCard from './MeetupCard'
 import MeetupDialog from './MeetupDialog'
 
-// Widok „Wyjścia 1:1" na stronie głównej: chipy rodzajów i lista kart od najbliższych centrum.
+// Widok „We dwoje" na stronie głównej (tylko dla zalogowanych dorosłych): chipy rodzajów i lista kart od najbliższych centrum.
 export default function MeetupsView({ city }: { city: City }) {
-  const { user } = useAuth()
+  const { user, loading: loadingProfile, birthDate, isAdult } = useProfile()
   const { meetups, status, reload } = useMeetups(city)
   const [type, setType] = useState<string | null>(null)
   const [openId, setOpenId] = useState<string | null>(null)
@@ -67,13 +68,35 @@ export default function MeetupsView({ city }: { city: City }) {
   return (
     <Box>
       <Box sx={{ px: 2, pt: 1 }}>
-        <Typography variant="h1">Wyjścia 1:1</Typography>
+        <Typography variant="h1">We dwoje</Typography>
         <Typography color="text.secondary" sx={{ fontWeight: 600 }}>
           Spacer, kawa albo rozmowa. Jedna osoba, publiczne miejsce, bez presji.
         </Typography>
       </Box>
 
-      <ScrollRow label="Rodzaj wyjścia">
+      {!loadingProfile && !isAdult && (
+        <Alert
+          severity="info"
+          sx={{ m: 2 }}
+          action={
+            (!user || !birthDate) && (
+              <Button component={RouterLink} to="/login/" color="inherit" size="small">
+                {user ? 'Konto' : 'Zaloguj'}
+              </Button>
+            )
+          }
+        >
+          {!user
+            ? 'Spotkania we dwoje widzą tylko zalogowane osoby pełnoletnie. Zaloguj się.'
+            : !birthDate
+              ? 'Spotkania we dwoje są dostępne od 18 lat. Uzupełnij datę urodzenia na stronie Konto.'
+              : 'Spotkania we dwoje są dostępne od 18 lat.'}
+        </Alert>
+      )}
+
+      {isAdult && (
+        <>
+      <ScrollRow label="Rodzaj spotkania">
         {chip(null, 'Wszystkie')}
         {MEETUP_TYPES.map((item) => chip(item.slug, `${item.emoji} ${item.name}`))}
       </ScrollRow>
@@ -85,15 +108,15 @@ export default function MeetupsView({ city }: { city: City }) {
       {status === 'error' && (
         <Alert severity="error" sx={{ m: 2 }}>
           {isSupabaseConfigured
-            ? 'Nie udało się pobrać wyjść 1:1. Jeśli to świeża baza, uruchom migrację 005_meetups.sql.'
+            ? 'Nie udało się pobrać spotkań. Jeśli to świeża baza, uruchom migracje 005 i 006.'
             : 'Brak połączenia z bazą — uzupełnij klucze Supabase w pliku .env.local.'}
         </Alert>
       )}
       {status === 'ready' && visible.length === 0 && (
         <Typography color="text.secondary" sx={{ px: 2, py: 2 }}>
           {type === null
-            ? 'Nikt jeszcze nie zaproponował wyjścia. Zaproponuj pierwsze!'
-            : 'Brak wolnych wyjść tego rodzaju.'}
+            ? 'Nikt jeszcze nie zaproponował spotkania. Zaproponuj pierwsze!'
+            : 'Brak wolnych spotkań tego rodzaju.'}
         </Typography>
       )}
 
@@ -126,7 +149,10 @@ export default function MeetupsView({ city }: { city: City }) {
       </Box>
 
       {open && (
-        <MeetupDialog meetup={open} user={user} onClose={() => setOpenId(null)} onChanged={reload} />
+        <MeetupDialog meetup={open} user={user} isAdult={isAdult} onClose={() => setOpenId(null)} onChanged={reload} />
+      )}
+
+        </>
       )}
 
       <Fab

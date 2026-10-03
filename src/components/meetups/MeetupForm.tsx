@@ -3,25 +3,23 @@ import { Link as RouterLink } from 'react-router-dom'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Checkbox from '@mui/material/Checkbox'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import type { City } from '../../data/cities'
 import { MEETUP_TYPES } from '../../data/meetupTypes'
-import { useAuth } from '../../hooks/useAuth'
+import { useProfile } from '../../hooks/useProfile'
 import { supabase } from '../../lib/supabase'
 import LocationPicker, { type Pos } from '../LocationPicker'
 
 const DURATIONS = [30, 45, 60, 90, 120]
 const MAX_TAGS = 3
 
-// Krótki formularz propozycji wyjścia 1:1. Proponować mogą tylko zalogowani dorośli,
+// Krótki formularz propozycji spotkania we dwoje. Proponować mogą tylko zalogowani dorośli (wiek z profilu),
 // a miejsce spotkania musi być publiczne.
 export default function MeetupForm({ city }: { city: City }) {
-  const { user, loading: loadingAuth } = useAuth()
+  const { user, loading: loadingAuth, birthDate, isAdult } = useProfile()
 
   const [type, setType] = useState('')
   const [title, setTitle] = useState('')
@@ -31,13 +29,12 @@ export default function MeetupForm({ city }: { city: City }) {
   const [placeName, setPlaceName] = useState('')
   const [description, setDescription] = useState('')
   const [tags, setTags] = useState('')
-  const [adult, setAdult] = useState(false)
 
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [created, setCreated] = useState(false)
 
-  const canSubmit = Boolean(type && title.trim() && startsAt && pos && placeName.trim() && adult)
+  const canSubmit = Boolean(type && title.trim() && startsAt && pos && placeName.trim())
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -73,10 +70,27 @@ export default function MeetupForm({ city }: { city: City }) {
   if (!user) {
     return (
       <Stack spacing={2}>
-        <Typography color="text.secondary">Aby zaproponować wyjście 1:1, najpierw się zaloguj.</Typography>
+        <Typography color="text.secondary">Aby zaproponować spotkanie we dwoje, najpierw się zaloguj.</Typography>
         <Button component={RouterLink} to="/login/" variant="contained" size="large">
           Przejdź do logowania
         </Button>
+      </Stack>
+    )
+  }
+
+  if (!isAdult) {
+    return (
+      <Stack spacing={2}>
+        <Alert severity="info">
+          {birthDate
+            ? 'Spotkania we dwoje są dostępne od 18 lat.'
+            : 'Spotkania we dwoje są dostępne od 18 lat. Uzupełnij datę urodzenia na stronie Konto.'}
+        </Alert>
+        {!birthDate && (
+          <Button component={RouterLink} to="/login/" variant="contained" size="large">
+            Przejdź do Konta
+          </Button>
+        )}
       </Stack>
     )
   }
@@ -89,7 +103,7 @@ export default function MeetupForm({ city }: { city: City }) {
           Gdy ktoś kliknie „Idę", rozmowa pojawi się w zakładce Czat.
         </Typography>
         <Button component={RouterLink} to="/?widok=1na1" variant="contained" size="large">
-          Zobacz wyjścia 1:1
+          Zobacz spotkania we dwoje
         </Button>
       </Stack>
     )
@@ -98,7 +112,7 @@ export default function MeetupForm({ city }: { city: City }) {
   return (
     <Stack component="form" onSubmit={handleSubmit} spacing={3}>
       <Alert severity="info">
-        Wyjście 1:1 to spotkanie z jedną osobą. Wybierz miejsce publiczne — park, kawiarnię, boisko.
+        „We dwoje” to spotkanie z jedną osobą. Wybierz miejsce publiczne — park, kawiarnię, boisko.
       </Alert>
 
       <TextField select label="Rodzaj" required value={type} onChange={(e) => setType(e.target.value)}>
@@ -167,15 +181,10 @@ export default function MeetupForm({ city }: { city: City }) {
         onChange={(e) => setTags(e.target.value)}
       />
 
-      <FormControlLabel
-        control={<Checkbox checked={adult} onChange={(e) => setAdult(e.target.checked)} />}
-        label="Oświadczam, że mam ukończone 18 lat."
-      />
-
       {error && <Alert severity="error">{error}</Alert>}
 
       <Button type="submit" variant="contained" size="large" disabled={!canSubmit || submitting}>
-        {submitting ? 'Dodawanie…' : 'Zaproponuj wyjście'}
+        {submitting ? 'Dodawanie…' : 'Zaproponuj spotkanie'}
       </Button>
     </Stack>
   )

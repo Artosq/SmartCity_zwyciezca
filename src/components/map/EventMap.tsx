@@ -16,7 +16,7 @@ const UNCLUSTER_ZOOM = 16
 interface Props {
   city: City
   events: EventWithStats[]
-  // wyjścia 1:1 — rodzic podaje je tylko osobom pełnoletnim
+  // spotkania we dwoje — rodzic podaje je tylko osobom pełnoletnim
   meetups: MeetupWithHost[]
   selectedGroups: string[]
   selectedEventId: string | null
@@ -138,7 +138,7 @@ export default function EventMap({
                 <div className="event-tooltip-card">
                   <div className="event-tooltip-body">
                     <strong>{meetup.title}</strong>
-                    <span>Wyjście 1:1 · {type.name}</span>
+                    <span>We dwoje · {type.name}</span>
                     <span>{formatRelativeDate(meetup.starts_at)}</span>
                   </div>
                 </div>

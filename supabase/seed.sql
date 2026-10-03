@@ -5,7 +5,8 @@
 -- Tworzy: 12 kont demo (demo1…12@sasiedzko.example, bez możliwości logowania),
 --         25 wydarzeń w 7 miastach oraz zapisy (rsvps) o różnej liczebności,
 --         żeby sekcja „Lubiane przez innych" miała co sortować,
---         oraz 8 wyjść 1:1 w Krakowie (wymaga migracji 005_meetups.sql).
+--         oraz 8 spotkań we dwoje w Krakowie i przykładowe oceny organizatorów
+--         (wymaga migracji 005_meetups.sql i 006_age_and_ratings.sql).
 -- Skrypt można uruchamiać wielokrotnie: najpierw usuwa poprzednie konta demo,
 -- a razem z nimi (kaskadowo) ich wydarzenia i zapisy.
 -- Terminy są liczone względem dnia uruchomienia, godziny w czasie polskim.
@@ -101,7 +102,7 @@ begin
     select eid, unnest(demo_ids[1:r.signups]);
   end loop;
 
-  -- Wyjścia 1:1 (wymaga migracji 005_meetups.sql). Wszystkie wolne — czekają na chętną osobę.
+  -- Spotkania we dwoje (wymaga migracji 005_meetups.sql). Wszystkie wolne — czekają na chętną osobę.
   insert into meetups
     (host_id, type, title, description, city, lat, lng, place_name, starts_at, duration_min, tags)
   select
@@ -119,4 +120,15 @@ begin
     (10, 'sport', 'Ping-pong w Parku Jordana', 'Mam dwie rakietki i piłeczki, stoły są na miejscu.', 50.0625, 19.9170, 'Park Jordana, stoły do ping-ponga', 4, time '16:00', 60, array['Bezpłatnie']),
     (11, 'inne', 'Wspólne zakupy na Starym Kleparzu', 'Pokażę, gdzie są najlepsze warzywa, i pomogę nieść torby.', 50.0672, 19.9395, 'Stary Kleparz, wejście od ul. Basztowej', 5, time '09:00', 45, array['Pomoc sąsiedzka'])
   ) as v(host, type, title, description, lat, lng, place_name, day_offset, start_time, duration_min, tags);
-end $;
+
+  -- Przykładowe oceny organizatorów (wymaga migracji 006_age_and_ratings.sql):
+  -- każdy zapisany uczestnik demo ocenia organizatora na 3,5–5 gwiazdek.
+  -- Średnie w profilach przelicza trigger on_rating_change.
+  insert into ratings (rater_id, ratee_id, scope, scope_id, stars)
+  select r.user_id, e.organizer_id, 'event', e.id,
+         (array[3.5, 4, 4.5, 5, 5])[1 + abs(hashtext(r.user_id::text || e.id::text)) % 5]
+    from rsvps r
+    join events e on e.id = r.event_id
+   where e.description like '[demo]%'
+     and r.user_id <> e.organizer_id;
+end $$;

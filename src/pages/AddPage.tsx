@@ -6,7 +6,7 @@ import ModeToggle, { type Mode } from '../components/ModeToggle'
 import type { City } from '../data/cities'
 import AddEventPage from './AddEventPage'
 
-// Strona „Dodaj": wybór między wydarzeniem a wyjściem 1:1 (?typ=1na1).
+// Strona „Dodaj": wybór między wydarzeniem a spotkaniem we dwoje (?typ=1na1).
 export default function AddPage({ city }: { city: City }) {
   const [searchParams, setSearchParams] = useSearchParams()
   const mode: Mode = searchParams.get('typ') === '1na1' ? '1na1' : 'wydarzenia'
@@ -24,7 +24,7 @@ export default function AddPage({ city }: { city: City }) {
       {mode === '1na1' ? (
         <Container maxWidth="sm" sx={{ py: 3 }}>
           <Typography variant="h1" sx={{ mb: 3 }}>
-            Zaproponuj wyjście 1:1
+            Zaproponuj spotkanie we dwoje
           </Typography>
           <MeetupForm city={city} />
         </Container>
