@@ -35,6 +35,14 @@ export default function GroupChips({ label, selected, onChange }: Props) {
               bgcolor: active ? 'primary.main' : 'background.paper',
               color: active ? 'primary.contrastText' : 'text.primary',
               boxShadow: '0 2px 10px rgba(17,17,17,0.18)',
+              transition:
+                'transform .15s ease, box-shadow .15s ease, background-color .2s ease, color .2s ease',
+              '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 6px 16px rgba(17,17,17,0.22)' },
+              '&:active': { transform: 'scale(0.96)' },
+              '@media (prefers-reduced-motion: reduce)': {
+                transition: 'none',
+                '&:hover, &:active': { transform: 'none' },
+              },
             }}
           >
             <GroupDot color={group.color} />

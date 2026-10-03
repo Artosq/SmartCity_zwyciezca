@@ -102,10 +102,37 @@ export default function AppLayout() {
   )
 
   return (
-    <Box sx={{ height: '100dvh', display: 'flex', flexDirection: 'column' }}>
+    <Box
+      sx={{
+        height: '100dvh',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
+        overflow: 'hidden',
+        bgcolor: '#faf9ff',
+      }}
+    >
+      {/* Ożywione, markowe tło: miękkie poświaty (fiolet + limonka + róż), które delikatnie „oddychają". */}
+      <Box
+        aria-hidden
+        sx={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 0,
+          pointerEvents: 'none',
+          background:
+            'radial-gradient(900px 520px at 6% -8%, rgba(75,59,240,0.16), transparent 60%),' +
+            'radial-gradient(820px 520px at 98% -6%, rgba(200,255,0,0.20), transparent 55%),' +
+            'radial-gradient(760px 640px at 86% 110%, rgba(236,72,153,0.12), transparent 55%)',
+          animation: 'ambientFloat 20s ease-in-out infinite',
+          '@media (prefers-reduced-motion: reduce)': { animation: 'none' },
+        }}
+      />
       <Box
         component="header"
         sx={{
+          position: 'relative',
+          zIndex: 1,
           display: 'flex',
           alignItems: 'center',
           gap: 1,
@@ -216,6 +243,8 @@ export default function AppLayout() {
       {showSearch && (
         <Box
           sx={{
+            position: 'relative',
+            zIndex: 1,
             display: { xs: 'block', md: 'none' },
             px: 2,
             pb: 1,
@@ -254,7 +283,18 @@ export default function AppLayout() {
         </Box>
       </Drawer>
 
-      <Box component="main" sx={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
+      <Box
+        component="main"
+        sx={{
+          position: 'relative',
+          zIndex: 1,
+          flex: 1,
+          minHeight: 0,
+          overflowY: 'auto',
+          // Tło zapewnia ożywiona warstwa poświat pod spodem — tu zostawiamy przezroczyste.
+          bgcolor: 'transparent',
+        }}
+      >
         <Outlet />
       </Box>
 
