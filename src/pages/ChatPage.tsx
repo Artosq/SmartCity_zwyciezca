@@ -51,7 +51,8 @@ export default function ChatPage() {
       const { data } = await supabase
         .from('messages')
         .select('*')
-        .eq('event_id', activeEvent.id)
+        .eq('scope', 'event') // Updated to match schema
+        .eq('scope_id', activeEvent.id) // Updated to match schema
         .order('created_at', { ascending: true })
       if (data) setMessages(data)
     }
@@ -61,7 +62,8 @@ export default function ChatPage() {
       .channel(`chat-${activeEvent.id}`)
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'messages', filter: `event_id=eq.${activeEvent.id}` },
+        // Updated filter to match schema
+        { event: 'INSERT', schema: 'public', table: 'messages', filter: `scope_id=eq.${activeEvent.id}` },
         (payload) => {
           setMessages((prev) => [...prev, payload.new])
         }
@@ -80,9 +82,13 @@ export default function ChatPage() {
 
     const { error } = await supabase
       .from('messages')
-      .insert([{ event_id: activeEvent.id, user_id: user.id, content: newMessage }])
+      .insert([{ 
+        scope: 'event', // Updated to match schema
+        scope_id: activeEvent.id, // Updated to match schema
+        user_id: user.id, 
+        content: newMessage 
+      }])
 
-    // Error handling to diagnose the issue
     if (error) {
       console.error("Supabase insert error:", error)
       alert("Błąd wysyłania: " + error.message)
@@ -104,7 +110,7 @@ export default function ChatPage() {
       <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold' }}>Czaty 💬</Typography>
       
       <Box sx={{ display: 'flex', flex: 1, gap: 2, overflow: 'hidden' }}>
-        {/* Left panel: Chat list (Hidden on mobile if a chat is active) */}
+        {/* Left panel: Chat list */}
         <Paper 
           sx={{ 
             width: { xs: '100%', md: '35%' }, 
@@ -130,7 +136,7 @@ export default function ChatPage() {
           </List>
         </Paper>
 
-        {/* Right panel: Chat window (Hidden on mobile if no chat is active) */}
+        {/* Right panel: Chat window */}
         <Paper 
           sx={{ 
             flex: 1, 
