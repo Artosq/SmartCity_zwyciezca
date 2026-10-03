@@ -45,7 +45,7 @@ export default function LocationPicker({ city, value, onChange }: Props) {
           pathOptions={{ color: '#4b3bf0', weight: 3, dashArray: '8 8', fill: false }}
         />
         <ClickHandler onChange={onChange} />
-        {value && <Marker position={[value.lat, value.lng]} icon={getEventIcon([], true)} />}
+        {value && <Marker position={[value.lat, value.lng]} icon={getEventIcon(undefined, true)} />}
       </MapContainer>
     </Box>
   )

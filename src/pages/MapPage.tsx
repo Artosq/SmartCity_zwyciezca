@@ -2,21 +2,20 @@ import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
-import Drawer from '@mui/material/Drawer'
-import Fab from '@mui/material/Fab'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
-import FilterListIcon from '@mui/icons-material/FilterList'
+import GroupChips from '../components/GroupChips'
 import EventMap from '../components/map/EventMap'
 import EventSheet from '../components/map/EventSheet'
-import TargetGroupFilter from '../components/TargetGroupFilter'
 import type { City } from '../data/cities'
-import { ALL_GROUP_SLUGS } from '../data/targetGroups'
 import { useAuth } from '../hooks/useAuth'
 import { useCityEvents } from '../hooks/useCityEvents'
+import { distanceKm } from '../lib/eventDisplay'
 import { isSupabaseConfigured } from '../lib/supabase'
+
+// Tyle najchętniej wybieranych wydarzeń w mieście dostaje znaczek „Popularne".
+const POPULAR_COUNT = 3
 
 export default function MapPage({ city }: { city: City }) {
   const { user } = useAuth()
@@ -27,65 +26,45 @@ export default function MapPage({ city }: { city: City }) {
   const [linkedEventId] = useState(selectedEventId)
   const setSelectedEventId = (id: string | null) =>
     setSearchParams(id ? { event: id } : {}, { replace: true })
-  const [selectedGroups, setSelectedGroups] = useState(ALL_GROUP_SLUGS)
-  const [filterOpen, setFilterOpen] = useState(false)
+  const [selectedGroups, setSelectedGroups] = useState<string[]>([])
 
-  // Wydarzenie bez przypisanych grup jest widoczne zawsze.
+  // Bez zaznaczonych chipów widać wszystko; wydarzenie bez przypisanych grup jest widoczne zawsze.
   const visibleEvents = useMemo(
     () =>
       events.filter(
         (event) =>
+          selectedGroups.length === 0 ||
           event.target_groups.length === 0 ||
           event.target_groups.some((group) => selectedGroups.includes(group)),
       ),
     [events, selectedGroups],
   )
 
-  const selectedEvent = visibleEvents.find((event) => event.id === selectedEventId)
-
-  const filter = (
-    <>
-      <TargetGroupFilter legend="Dla kogo?" selected={selectedGroups} onChange={setSelectedGroups} />
-      <Typography color="text.secondary" sx={{ mt: 2 }} aria-live="polite">
-        Wydarzenia na mapie: <strong>{visibleEvents.length}</strong>
-      </Typography>
-    </>
+  const popularIds = useMemo(
+    () =>
+      [...events]
+        .filter((event) => event.attendees > 0)
+        .sort((a, b) => b.attendees - a.attendees)
+        .slice(0, POPULAR_COUNT)
+        .map((event) => event.id),
+    [events],
   )
 
+  const selectedEvent = visibleEvents.find((event) => event.id === selectedEventId)
+
   return (
-    <Box sx={{ height: '100%', display: 'flex' }}>
-      {/* Od md: stały panel boczny. Na telefonie filtr otwiera się w szufladzie od dołu. */}
-      <Paper
-        component="aside"
-        square
-        elevation={0}
-        sx={{
-          display: { xs: 'none', md: 'block' },
-          width: 300,
-          flexShrink: 0,
-          p: 3,
-          overflowY: 'auto',
-          borderRight: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        {filter}
-      </Paper>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Typography variant="h1" sx={{ position: 'absolute', left: -9999 }}>
+        Mapa wydarzeń — {city.name}
+      </Typography>
 
-      <Drawer
-        anchor="bottom"
-        open={filterOpen}
-        onClose={() => setFilterOpen(false)}
-        sx={{ display: { md: 'none' } }}
-        slotProps={{ paper: { sx: { borderRadius: '20px 20px 0 0', p: 3, pb: 4 } } }}
-      >
-        {filter}
-        <Button variant="contained" size="large" sx={{ mt: 2 }} onClick={() => setFilterOpen(false)}>
-          Pokaż mapę
-        </Button>
-      </Drawer>
+      <GroupChips
+        label="Filtr: dla kogo są wydarzenia"
+        selected={selectedGroups}
+        onChange={setSelectedGroups}
+      />
 
-      <Box sx={{ position: 'relative', flex: 1, minWidth: 0 }}>
+      <Box sx={{ position: 'relative', flex: 1, minHeight: 0 }}>
         <EventMap
           city={city}
           events={visibleEvents}
@@ -94,22 +73,12 @@ export default function MapPage({ city }: { city: City }) {
           onSelectEvent={setSelectedEventId}
         />
 
-        <Fab
-          variant="extended"
-          color="secondary"
-          onClick={() => setFilterOpen(true)}
-          sx={{ display: { md: 'none' }, position: 'absolute', top: 12, right: 12, zIndex: 1000 }}
-        >
-          <FilterListIcon sx={{ mr: 1 }} />
-          Filtry ({selectedGroups.length}/{ALL_GROUP_SLUGS.length})
-        </Fab>
-
         <Box
           sx={{
             position: 'absolute',
             zIndex: 1000,
-            top: { xs: 72, md: 12 },
-            left: { xs: 12, md: 60 },
+            top: 12,
+            left: 60,
             right: 12,
             display: 'flex',
             justifyContent: 'center',
@@ -129,9 +98,11 @@ export default function MapPage({ city }: { city: City }) {
                 : 'Brak połączenia z bazą — uzupełnij klucze Supabase w pliku .env.local.'}
             </Alert>
           )}
-          {status === 'ready' && events.length === 0 && (
+          {status === 'ready' && visibleEvents.length === 0 && (
             <Alert severity="info" elevation={4} sx={{ pointerEvents: 'auto' }}>
-              W tym mieście nie ma jeszcze nadchodzących wydarzeń. Dodaj pierwsze!
+              {events.length === 0
+                ? 'W tym mieście nie ma jeszcze nadchodzących wydarzeń. Dodaj pierwsze!'
+                : 'Brak wydarzeń dla wybranych grup.'}
             </Alert>
           )}
         </Box>
@@ -141,6 +112,8 @@ export default function MapPage({ city }: { city: City }) {
             key={selectedEvent.id}
             event={selectedEvent}
             user={user}
+            popular={popularIds.includes(selectedEvent.id)}
+            distanceKm={distanceKm(city.center, [selectedEvent.lat, selectedEvent.lng])}
             defaultExpanded={selectedEvent.id === linkedEventId}
             onClose={() => setSelectedEventId(null)}
           />

@@ -3,16 +3,14 @@ import { Link as RouterLink } from 'react-router-dom'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import ButtonBase from '@mui/material/ButtonBase'
 import Fab from '@mui/material/Fab'
 import Skeleton from '@mui/material/Skeleton'
-import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import MapOutlinedIcon from '@mui/icons-material/MapOutlined'
 import EventCard from '../components/EventCard'
-import { GroupDot } from '../components/TargetGroupFilter'
+import GroupChips from '../components/GroupChips'
+import ScrollRow from '../components/ScrollRow'
 import type { City } from '../data/cities'
-import { TARGET_GROUPS } from '../data/targetGroups'
 import { useCityEvents } from '../hooks/useCityEvents'
 import { distanceKm } from '../lib/eventDisplay'
 import { isSupabaseConfigured } from '../lib/supabase'
@@ -30,30 +28,6 @@ function readPreferences(): string[] {
   }
 }
 
-// Poziomo przewijany rząd (karty, chipy) — wychodzi poza marginesy strony jak na makiecie.
-function ScrollRow({ children, label }: { children: ReactNode; label: string }) {
-  return (
-    <Stack
-      direction="row"
-      role="group"
-      aria-label={label}
-      sx={{
-        gap: 2,
-        px: 2,
-        pt: 1,
-        pb: 2,
-        overflowX: 'auto',
-        scrollSnapType: 'x proximity',
-        scrollPaddingLeft: 16,
-        scrollbarWidth: { xs: 'none', md: 'thin' },
-        '&::-webkit-scrollbar': { display: { xs: 'none', md: 'block' } },
-      }}
-    >
-      {children}
-    </Stack>
-  )
-}
-
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <Box component="section" sx={{ mt: 2 }}>
@@ -69,10 +43,7 @@ export default function HomePage({ city }: { city: City }) {
   const { events, status } = useCityEvents(city)
   const [preferences, setPreferences] = useState(readPreferences)
 
-  const togglePreference = (slug: string) => {
-    const next = preferences.includes(slug)
-      ? preferences.filter((s) => s !== slug)
-      : [...preferences, slug]
+  const savePreferences = (next: string[]) => {
     setPreferences(next)
     try {
       localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(next))
@@ -125,34 +96,11 @@ export default function HomePage({ city }: { city: City }) {
         Wydarzenia — {city.name}
       </Typography>
 
-      <ScrollRow label="Twoje preferencje: dla kogo szukasz wydarzeń">
-        {TARGET_GROUPS.map((group) => {
-          const selected = preferences.includes(group.slug)
-          return (
-            <ButtonBase
-              key={group.slug}
-              onClick={() => togglePreference(group.slug)}
-              aria-pressed={selected}
-              sx={{
-                flexShrink: 0,
-                gap: 1,
-                px: 2,
-                minHeight: 44,
-                borderRadius: 999,
-                fontWeight: 700,
-                fontSize: '0.95rem',
-                whiteSpace: 'nowrap',
-                bgcolor: selected ? 'primary.main' : 'background.paper',
-                color: selected ? 'primary.contrastText' : 'text.primary',
-                boxShadow: '0 2px 10px rgba(17,17,17,0.18)',
-              }}
-            >
-              <GroupDot color={group.color} />
-              {group.name}
-            </ButtonBase>
-          )
-        })}
-      </ScrollRow>
+      <GroupChips
+        label="Twoje preferencje: dla kogo szukasz wydarzeń"
+        selected={preferences}
+        onChange={savePreferences}
+      />
 
       {status === 'error' && (
         <Alert severity="error" sx={{ mx: 2 }}>

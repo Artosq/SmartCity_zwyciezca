@@ -21,19 +21,30 @@ import { getGroups } from '../../data/targetGroups'
 import { supabase } from '../../lib/supabase'
 import { formatLongDate, getEventImage } from '../../lib/eventDisplay'
 import type { EventWithStats } from '../../lib/types'
+import { EventMeta } from '../EventCard'
 import { GroupDot } from '../TargetGroupFilter'
 
 interface Props {
   event: EventWithStats
   user: User | null
+  // Jedno z najchętniej wybieranych wydarzeń w mieście — dostaje znaczek „Popularne".
+  popular: boolean
+  distanceKm: number
   // Rozwinięty od razu — gdy użytkownik przyszedł z karty na stronie głównej.
   defaultExpanded?: boolean
   onClose: () => void
 }
 
-// Pasek wydarzenia nad nawigacją: zwinięty pokazuje tytuł i termin,
-// po rozwinięciu — opis, grupy, licznik miejsc i zapis.
-export default function EventSheet({ event, user, defaultExpanded = false, onClose }: Props) {
+// Karta wydarzenia nad nawigacją: zwinięta pokazuje miniaturę, tytuł i liczby,
+// po rozwinięciu — zdjęcie, opis, grupy, licznik miejsc i zapis.
+export default function EventSheet({
+  event,
+  user,
+  popular,
+  distanceKm,
+  defaultExpanded = false,
+  onClose,
+}: Props) {
   const [expanded, setExpanded] = useState(defaultExpanded)
   const [attendees, setAttendees] = useState<string[] | null>(null)
   const [busy, setBusy] = useState(false)
@@ -80,16 +91,33 @@ export default function EventSheet({ event, user, defaultExpanded = false, onClo
       sx={{
         position: 'absolute',
         zIndex: 1000,
-        bottom: { xs: 0, md: 16 },
-        left: { xs: 0, md: 16 },
-        right: { xs: 0, md: 'auto' },
+        bottom: { xs: 10, md: 16 },
+        left: { xs: 10, md: 16 },
+        right: { xs: 10, md: 'auto' },
         width: { md: 420 },
-        maxHeight: '75%',
+        maxHeight: 'calc(100% - 24px)',
         overflowY: 'auto',
-        borderRadius: { xs: '28px 28px 0 0', md: '28px' },
+        borderRadius: '24px',
       }}
     >
-      <Stack direction="row" sx={{ alignItems: 'stretch' }}>
+      {popular && (
+        <Box
+          sx={{
+            display: 'inline-block',
+            ml: 2,
+            mt: 1.5,
+            px: 2.5,
+            py: 0.5,
+            borderRadius: 999,
+            bgcolor: 'secondary.main',
+            fontWeight: 800,
+            fontSize: '0.9rem',
+          }}
+        >
+          Popularne
+        </Box>
+      )}
+      <Stack direction="row" sx={{ alignItems: 'flex-start' }}>
         <ButtonBase
           onClick={() => setExpanded((value) => !value)}
           aria-expanded={expanded}
@@ -97,33 +125,33 @@ export default function EventSheet({ event, user, defaultExpanded = false, onClo
           sx={{
             flex: 1,
             minWidth: 0,
-            display: 'block',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
             textAlign: 'left',
             p: 2,
-            pt: 1,
-            borderRadius: 'inherit',
+            pt: popular ? 1 : 2,
+            borderRadius: '24px',
           }}
         >
           <Box
-            aria-hidden
-            sx={{ width: 40, height: 4, borderRadius: 2, bgcolor: 'grey.400', mx: 'auto', mb: 1 }}
+            component="img"
+            src={getEventImage(event)}
+            alt=""
+            sx={{ width: 64, height: 64, flexShrink: 0, objectFit: 'cover', borderRadius: '18px' }}
           />
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography variant="h2" noWrap={!expanded}>
-                {event.title}
-              </Typography>
-              <Typography color="text.secondary" noWrap={!expanded}>
-                {formatLongDate(event.starts_at)}
-              </Typography>
-            </Box>
-            {expanded ? <ExpandMoreIcon /> : <ExpandLessIcon />}
-          </Stack>
-          <Typography variant="body2" color="primary.main" sx={{ fontWeight: 700, mt: 0.5 }}>
-            {expanded ? 'Zwiń' : 'Rozwiń szczegóły'}
-          </Typography>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography variant="h3" noWrap={!expanded} sx={{ textDecoration: 'underline' }}>
+              {event.title}
+            </Typography>
+            <Typography variant="body2" noWrap sx={{ fontWeight: 700, color: 'text.secondary' }}>
+              {event.category?.name ?? 'Wydarzenie'}
+            </Typography>
+            <EventMeta event={event} distanceKm={distanceKm} />
+          </Box>
+          {expanded ? <ExpandMoreIcon /> : <ExpandLessIcon />}
         </ButtonBase>
-        <IconButton onClick={onClose} aria-label="Zamknij" sx={{ alignSelf: 'flex-start', m: 1 }}>
+        <IconButton onClick={onClose} aria-label="Zamknij" sx={{ mt: 1, mr: 1 }}>
           <CloseIcon />
         </IconButton>
       </Stack>
@@ -136,9 +164,6 @@ export default function EventSheet({ event, user, defaultExpanded = false, onClo
             alt=""
             sx={{ width: '100%', height: 150, objectFit: 'cover', borderRadius: '28px' }}
           />
-          {event.category && (
-            <Typography sx={{ fontWeight: 700, color: 'text.secondary' }}>{event.category.name}</Typography>
-          )}
           {event.description && <Typography>{event.description}</Typography>}
 
           <Stack spacing={1}>

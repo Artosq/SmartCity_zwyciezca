@@ -28,7 +28,8 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
 - **Strona główna** z propozycjami wydarzeń w wybranym mieście: najbliższe terminy,
   dopasowane do preferencji (grupy docelowe) i „lubiane przez innych" (najwięcej zapisanych).
   Karty ze zdjęciem wydarzenia, liczbą zapisanych, odległością od centrum i terminem.
-- **Mapa miasta** (wybór z listy miast) z pinezkami wydarzeń i filtrem grup docelowych:
+- **Mapa miasta**: pinezki wydarzeń łączą się w grupy z liczbą
+  i rozwijają po przybliżeniu; filtr grup docelowych (chipy nad mapą):
   małe dzieci, starsze dzieci, młodzież, dorośli, seniorzy, niepełnosprawni — każda grupa ma swój kolor.
 - **Dodawanie wydarzenia**: tytuł, opis, kategoria, grupy docelowe, miejsce na mapie,
   termin, limit miejsc, opcjonalny link do zdjęcia. Wszystkie wydarzenia są publiczne — każdy może dołączyć.
@@ -59,7 +60,7 @@ Prosty, możliwy do obrony stack — bez zbędnych warstw.
 | Warstwa      | Technologia                                           |
 |--------------|-------------------------------------------------------|
 | Frontend     | **React + Vite + TypeScript + MUI (Material UI)**     |
-| Mapa         | **Leaflet + OpenStreetMap**                           |
+| Mapa         | **Leaflet + OpenStreetMap**, grupowanie pinezek       |
 | Backend/dane | **Supabase** — Postgres, Auth (magic link), Realtime  |
 | Hosting      | **Vercel**                                            |
 | PWA          | manifest (service worker w planach)                   |
@@ -101,7 +102,7 @@ Relacje: `profiles` 1—N `events`/`rsvps`/`messages`/`announcements`;
 | Trasa              | Ekran                                                        |
 |--------------------|-------------------------------------------------------------|
 | `/`                | Strona główna: chipy preferencji + karuzele wydarzeń (najbliższe, preferencje, lubiane przez innych) |
-| `/mapa`            | Mapa wybranego miasta z pinezkami, filtr grup docelowych, rozwijany pasek wydarzenia (szczegóły, zapis, licznik miejsc) |
+| `/mapa`            | Mapa wybranego miasta z grupowanymi pinezkami, chipy filtra, rozwijana karta wydarzenia (szczegóły, zapis, licznik miejsc) |
 | `/dodaj`           | Dodawanie wydarzenia (wybór miejsca na mapie)               |
 | `/login`           | Logowanie bez hasła (imię + e-mail / magic link), konto     |
 | `/czat`            | Czat w czasie rzeczywistym _(w budowie)_                    |
@@ -173,7 +174,7 @@ _(utrzymujemy tę listę na bieżąco — wymóg regulaminu: rozumiemy i bronimy
 
 **Główne biblioteki**
 - React, Vite, TypeScript, MUI (Material UI), React Router
-- Leaflet + react-leaflet
+- Leaflet + react-leaflet, react-leaflet-cluster (grupowanie pinezek)
 - @supabase/supabase-js
 
 **Źródła danych**

@@ -30,6 +30,32 @@ function Meta({ icon, label, children }: { icon: ReactNode; label: string; child
   )
 }
 
+// Wiersz liczb pod tytułem: zapisani, odległość od centrum, termin.
+export function EventMeta({ event, distanceKm }: { event: EventWithStats; distanceKm: number }) {
+  return (
+    <Stack direction="row" sx={{ mt: 0.75, columnGap: 1.5, rowGap: 0.25, flexWrap: 'wrap' }}>
+      <Meta
+        label={`Zapisanych osób: ${event.attendees}`}
+        icon={<GroupIcon sx={{ fontSize: 18, color: 'primary.main' }} />}
+      >
+        {event.attendees}
+      </Meta>
+      <Meta
+        label={`${distanceKm.toFixed(1)} km od centrum miasta`}
+        icon={<PlaceIcon sx={{ fontSize: 18, color: 'error.main' }} />}
+      >
+        {distanceKm.toFixed(1)} km
+      </Meta>
+      <Meta
+        label={`Termin: ${formatShortDate(event.starts_at)}`}
+        icon={<ScheduleIcon sx={{ fontSize: 18, color: 'text.secondary' }} />}
+      >
+        {formatShortDate(event.starts_at)}
+      </Meta>
+    </Stack>
+  )
+}
+
 // Karta wydarzenia z karuzeli: zdjęcie jako tło przycisku, pod nim tytuł, kategoria i liczby.
 // Kliknięcie otwiera wydarzenie na mapie.
 export default function EventCard({ event, distanceKm, size = 'medium' }: Props) {
@@ -81,26 +107,7 @@ export default function EventCard({ event, distanceKm, size = 'medium' }: Props)
         <Typography variant="body2" noWrap sx={{ fontWeight: 700, color: 'text.secondary' }}>
           {event.category?.name ?? 'Wydarzenie'}
         </Typography>
-        <Stack direction="row" sx={{ mt: 0.75, columnGap: 1.5, rowGap: 0.25, flexWrap: 'wrap' }}>
-          <Meta
-            label={`Zapisanych osób: ${event.attendees}`}
-            icon={<GroupIcon sx={{ fontSize: 18, color: 'primary.main' }} />}
-          >
-            {event.attendees}
-          </Meta>
-          <Meta
-            label={`${distanceKm.toFixed(1)} km od centrum miasta`}
-            icon={<PlaceIcon sx={{ fontSize: 18, color: 'error.main' }} />}
-          >
-            {distanceKm.toFixed(1)} km
-          </Meta>
-          <Meta
-            label={`Termin: ${formatShortDate(event.starts_at)}`}
-            icon={<ScheduleIcon sx={{ fontSize: 18, color: 'text.secondary' }} />}
-          >
-            {formatShortDate(event.starts_at)}
-          </Meta>
-        </Stack>
+        <EventMeta event={event} distanceKm={distanceKm} />
       </Box>
     </ButtonBase>
   )

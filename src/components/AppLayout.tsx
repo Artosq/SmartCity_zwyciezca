@@ -16,6 +16,7 @@ import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ChatIcon from '@mui/icons-material/Chat'
 import HomeIcon from '@mui/icons-material/Home'
 import MailIcon from '@mui/icons-material/Mail'
@@ -64,6 +65,17 @@ export default function AppLayout() {
           borderColor: { md: 'divider' },
         }}
       >
+        {pathname !== '/' && (
+          <IconButton
+            component={RouterLink}
+            to="/"
+            aria-label="Wróć na stronę główną"
+            edge="start"
+            sx={{ color: BRAND.ink, width: 48, height: 48 }}
+          >
+            <ArrowBackIcon sx={{ fontSize: 32 }} />
+          </IconButton>
+        )}
         <ButtonBase
           onClick={(e: MouseEvent<HTMLElement>) => setCityAnchor(e.currentTarget)}
           aria-haspopup="menu"
@@ -200,6 +212,16 @@ export default function AppLayout() {
                 color: 'primary.main',
                 opacity: 0.75,
                 '&.Mui-selected': { opacity: 1 },
+                // limonkowa kreska pod aktywną pozycją, jak na makiecie
+                '&.Mui-selected::after': {
+                  content: '""',
+                  position: 'absolute',
+                  bottom: 2,
+                  width: 36,
+                  height: 5,
+                  borderRadius: 3,
+                  bgcolor: 'secondary.main',
+                },
                 '& .MuiSvgIcon-root': { fontSize: item.to === '/dodaj' ? 40 : 30 },
                 '& .MuiBottomNavigationAction-label': { fontWeight: 700 },
               }}

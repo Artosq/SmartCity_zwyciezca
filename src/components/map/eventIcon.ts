@@ -1,35 +1,36 @@
 import L from 'leaflet'
 import type { TargetGroup } from '../../data/targetGroups'
+import { BRAND } from '../../theme'
 
-const NO_GROUP_COLOR = '#64748b'
 const iconCache = new Map<string, L.DivIcon>()
 
-// Pinezka w kolorze pierwszej grupy; pozostałe grupy wydarzenia jako kropki pod spodem.
-export function getEventIcon(groups: TargetGroup[], selected: boolean) {
-  const key = `${groups.map((group) => group.slug).join('|')}:${selected}`
+// Limonkowa pinezka z makiety; środek w kolorze grupy docelowej, wybrana — czarna.
+export function getEventIcon(group: TargetGroup | undefined, selected: boolean) {
+  const key = `${group?.slug}:${selected}`
   const cached = iconCache.get(key)
   if (cached) return cached
-
-  const [primary, ...rest] = groups
-  const dots = rest
-    .map(
-      (group) =>
-        `<span style="width:10px;height:10px;border-radius:50%;background:${group.color};border:1.5px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.35)"></span>`,
-    )
-    .join('')
 
   const icon = L.divIcon({
     className: 'event-marker',
     html: `
-      <svg width="36" height="46" viewBox="0 0 36 46" aria-hidden="true" style="display:block;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))">
-        <path d="M18 1C8.6 1 1 8.6 1 18c0 12.5 17 27 17 27s17-14.5 17-27C35 8.6 27.4 1 18 1z" fill="${primary?.color ?? NO_GROUP_COLOR}" stroke="${selected ? '#0f172a' : '#fff'}" stroke-width="${selected ? 3 : 2}"/>
-        <circle cx="18" cy="18" r="6.5" fill="#fff"/>
-      </svg>
-      <div style="display:flex;justify-content:center;gap:2px;margin-top:1px">${dots}</div>`,
-    iconSize: [36, 58],
-    iconAnchor: [18, 46],
+      <svg width="38" height="48" viewBox="0 0 38 48" aria-hidden="true" style="display:block;filter:drop-shadow(0 2px 3px rgba(0,0,0,.55))">
+        <path d="M19 2C9.6 2 2 9.6 2 19c0 12.500 17 27 17 27s17-14.500 17-27C36 9.600 28.400 2 19 2z" fill="${selected ? BRAND.ink : BRAND.lime}" stroke="${selected ? BRAND.lime : BRAND.ink}" stroke-width="2"/>
+        <circle cx="19" cy="19" r="7.500" fill="${group?.color ?? '#ffffff'}" stroke="${selected ? '#ffffff' : BRAND.ink}" stroke-width="2"/>
+      </svg>`,
+    iconSize: [38, 48],
+    iconAnchor: [19, 46],
   })
 
   iconCache.set(key, icon)
   return icon
+}
+
+// Grupa pobliskich pinezek: limonkowe kółko z liczbą wydarzeń.
+export function getClusterIcon(count: number) {
+  const size = count < 10 ? 44 : 52
+  return L.divIcon({
+    className: 'event-marker',
+    html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${BRAND.lime};border:3px solid ${BRAND.ink};box-shadow:0 2px 6px rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;font:800 17px system-ui,sans-serif;color:${BRAND.ink}">${count}</div>`,
+    iconSize: [size, size],
+  })
 }
