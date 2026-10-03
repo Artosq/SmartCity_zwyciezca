@@ -65,12 +65,13 @@ export default function ChatPage() {
   // 1. Load user's events
   useEffect(() => {
     if (!user) return
+    const userId = user.id
 
     async function loadMyEvents() {
       const { data } = await supabase
         .from('rsvps')
         .select('event_id, events(id, title)')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
       
       if (data) {
         const formattedEvents = data.map((item: any) => item.events)
@@ -206,7 +207,7 @@ export default function ChatPage() {
                 </Avatar>
                 <ListItemText 
                   primary={ev.title} 
-                  slotProps={{ primary: { noWrap: true, fontWeight: 700 } }} 
+                  slotProps={{ primary: { noWrap: true, sx: { fontWeight: 700 } } }}
                 />
               </ListItemButton>
             ))}
@@ -247,7 +248,7 @@ export default function ChatPage() {
               <Box sx={{ flex: 1, p: { xs: 2, md: 3 }, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2, bgcolor: '#f9fafb' }}>
                 {messages.length === 0 && (
                   <Box sx={{ m: 'auto', textAlign: 'center', p: 3, bgcolor: 'primary.50', borderRadius: 4 }}>
-                    <Typography fontWeight="bold" color="primary.main">Nikt tu jeszcze nikogo nie zna, więc zacznij od „cześć”!</Typography>
+                    <Typography sx={{ fontWeight: 'bold' }} color="primary.main">Nikt tu jeszcze nikogo nie zna, więc zacznij od „cześć”!</Typography>
                   </Box>
                 )}
                 

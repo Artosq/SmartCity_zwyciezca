@@ -8,6 +8,9 @@ import ChatPage from './pages/ChatPage'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import MapPage from './pages/MapPage'
+import PrywatnoscPage from './pages/PrywatnoscPage'
+import RegulaminPage from './pages/RegulaminPage'
+import UstawieniaPage from './pages/UstawieniaPage'
 
 export default function App() {
   const { city, selectCity } = useCity()
@@ -24,6 +27,9 @@ export default function App() {
         <Route path="/czat" element={<ChatPage />} />
         <Route path="/ogloszenia" element={<AnnouncementsPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/regulamin" element={<RegulaminPage />} />
+        <Route path="/prywatnosc" element={<PrywatnoscPage />} />
+        <Route path="/ustawienia" element={<UstawieniaPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
