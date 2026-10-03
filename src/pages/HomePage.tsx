@@ -77,6 +77,7 @@ export default function HomePage({ city }: { city: City }) {
 }
 
 function EventsView({ city }: { city: City }) {
+  const { t } = useLang()
   const { events, status } = useCityEvents(city)
   const [preferences, setPreferences] = useState(readPreferences)
   const [searchParams] = useSearchParams()

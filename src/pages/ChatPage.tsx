@@ -81,12 +81,13 @@ export default function ChatPage() {
   // 1. Load user's events
   useEffect(() => {
     if (!user) return
+    const userId = user.id
 
     async function loadMyEvents() {
       const { data } = await supabase
         .from('rsvps')
         .select('event_id, events(id, title)')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
       
       // wyjścia 1:1, w których biorę udział i ktoś już dołączył — rozmowa dwóch osób
       const { data: meetups } = await supabase
@@ -310,7 +311,7 @@ export default function ChatPage() {
                   </Badge>
                   <ListItemText 
                     primary={ev.title} 
-                    slotProps={{ primary: { noWrap: true, fontWeight: unread > 0 ? 900 : 800, fontSize: '1rem' } }} 
+                    slotProps={{ primary: { noWrap: true, sx: { fontWeight: unread > 0 ? 900 : 800, fontSize: '1rem' } } }} 
                     sx={{ my: 0 }}
                   />
                   <ChevronRightIcon sx={{ color: activeEvent?.id === ev.id ? 'white' : 'grey.400' }} />
@@ -379,7 +380,7 @@ export default function ChatPage() {
 
                 {messages.length === 0 && (
                   <Box sx={{ m: 'auto', textAlign: 'center', p: 3, bgcolor: 'primary.50', borderRadius: '24px' }}>
-                    <Typography fontWeight="bold" color="primary.main">Nikt tu jeszcze nikogo nie zna, więc zacznij od „cześć”!</Typography>
+                    <Typography color="primary.main" sx={{ fontWeight: 'bold' }}>Nikt tu jeszcze nikogo nie zna, więc zacznij od „cześć”!</Typography>
                   </Box>
                 )}
                 
