@@ -2,9 +2,11 @@
 const USER_AGENT = 'SasiedzkoBot/0.1 (HackYeah 2026; mapa wydarzen sasiedzkich)'
 const DELAY_MS = 1000
 
+const ATTEMPTS = 3
+
 let lastRequest = 0
 
-export async function fetchText(url) {
+async function fetchOnce(url) {
   const wait = lastRequest + DELAY_MS - Date.now()
   if (wait > 0) await new Promise((resolve) => setTimeout(resolve, wait))
   lastRequest = Date.now()
@@ -13,8 +15,22 @@ export async function fetchText(url) {
     headers: { 'User-Agent': USER_AGENT, 'Accept-Language': 'pl' },
     signal: AbortSignal.timeout(20000),
   })
-  if (!response.ok) throw new Error(`${response.status} ${response.statusText} — ${url}`)
+  if (!response.ok) throw new Error(`${response.status} ${response.statusText}`)
   return response.text()
+}
+
+// Chwilowe błędy sieci (zerwane połączenie, timeout) zdarzają się — próbujemy kilka razy.
+export async function fetchText(url) {
+  let lastError
+  for (let attempt = 1; attempt <= ATTEMPTS; attempt++) {
+    try {
+      return await fetchOnce(url)
+    } catch (error) {
+      lastError = error
+    }
+  }
+  const reason = lastError.cause?.code ?? lastError.cause?.message ?? lastError.message
+  throw new Error(`${reason} — ${url}`)
 }
 
 const ENTITIES = {
