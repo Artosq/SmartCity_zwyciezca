@@ -69,7 +69,7 @@ export default function MeetupsView({ city }: { city: City }) {
   }
 
   return (
-    <Box>
+    <Box className="stagger">
       <Box sx={{ px: 2, pt: 1 }}>
         <Typography variant="h1">We dwoje</Typography>
         <Typography color="text.secondary" sx={{ fontWeight: 600 }}>
@@ -124,6 +124,7 @@ export default function MeetupsView({ city }: { city: City }) {
       )}
 
       <Box
+        className="stagger"
         sx={{
           display: 'grid',
           gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' },

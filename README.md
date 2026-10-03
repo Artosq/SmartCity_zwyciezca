@@ -91,7 +91,8 @@ dane leżą w Postgresie Supabase. Dostęp do danych pilnuje **Row Level Securit
 Mobile-first, interfejs po polsku, duże i czytelne elementy (korzystają też seniorzy),
 dobry kontrast, pełna obsługa klawiaturą. Nawigacja: dolny pasek na telefonie, górny na komputerze
 (same ikony na średnich ekranach). Karuzele: na telefonie swobodne przewijanie palcem, na komputerze
-strzałki po bokach. Płynne przejścia między ekranami i subtelne animacje przycisków,
+strzałki po bokach. Grupy docelowe mają własne ikony i kolory (rozróżnialne nie tylko barwą).
+Płynne przejścia między ekranami, wejścia elementów po kolei i subtelne animacje przycisków,
 wyłączane przy systemowym ustawieniu ograniczenia ruchu.
 
 ### Model danych

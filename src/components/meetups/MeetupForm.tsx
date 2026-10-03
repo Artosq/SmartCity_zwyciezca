@@ -69,7 +69,7 @@ export default function MeetupForm({ city }: { city: City }) {
 
   if (!user) {
     return (
-      <Stack spacing={2}>
+      <Stack spacing={2} className="stagger">
         <Typography color="text.secondary">Aby zaproponować spotkanie we dwoje, najpierw się zaloguj.</Typography>
         <Button component={RouterLink} to="/login/" variant="contained" size="large">
           Przejdź do logowania
@@ -80,7 +80,7 @@ export default function MeetupForm({ city }: { city: City }) {
 
   if (!isAdult) {
     return (
-      <Stack spacing={2}>
+      <Stack spacing={2} className="stagger">
         <Alert severity="info">
           {birthDate
             ? 'Spotkania we dwoje są dostępne od 18 lat.'
@@ -97,7 +97,7 @@ export default function MeetupForm({ city }: { city: City }) {
 
   if (created) {
     return (
-      <Stack spacing={2}>
+      <Stack spacing={2} className="stagger">
         <Typography variant="h2">Propozycja dodana! 🎉</Typography>
         <Typography color="text.secondary">
           Gdy ktoś kliknie „Idę", rozmowa pojawi się w zakładce Czat.
@@ -110,7 +110,7 @@ export default function MeetupForm({ city }: { city: City }) {
   }
 
   return (
-    <Stack component="form" onSubmit={handleSubmit} spacing={3}>
+    <Stack component="form" onSubmit={handleSubmit} spacing={3} className="stagger">
       <Alert severity="info">
         „We dwoje” to spotkanie z jedną osobą. Wybierz miejsce publiczne — park, kawiarnię, boisko.
       </Alert>

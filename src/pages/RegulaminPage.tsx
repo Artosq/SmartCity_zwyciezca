@@ -6,7 +6,7 @@ import { useLang } from '../i18n/LanguageContext'
 export default function RegulaminPage() {
   const { t } = useLang()
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Container maxWidth="md" className="stagger" sx={{ py: 4 }}>
       <Typography variant="h1" sx={{ mb: 2 }}>
         {t('terms.title')}
       </Typography>

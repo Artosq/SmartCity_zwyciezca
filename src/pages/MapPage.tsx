@@ -110,7 +110,7 @@ export default function MapPage({ city }: { city: City }) {
       />
 
       {/* Jeden przycisk otwiera całe menu filtrów; liczba = ile filtrów jest włączonych. */}
-      <Box sx={{ position: 'absolute', zIndex: 1000, top: 12, right: 12 }}>
+      <Box sx={{ position: 'absolute', zIndex: 1000, top: 12, right: 12, animation: 'popIn 0.3s ease 0.15s backwards' }}>
         <Badge badgeContent={activeFilters} color="primary" overlap="circular">
           <Fab
             variant="extended"

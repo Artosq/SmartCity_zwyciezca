@@ -6,7 +6,7 @@ import { useLang } from '../i18n/LanguageContext'
 export default function PrywatnoscPage() {
   const { t } = useLang()
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Container maxWidth="md" className="stagger" sx={{ py: 4 }}>
       <Typography variant="h1" sx={{ mb: 2 }}>
         {t('privacy.title')}
       </Typography>

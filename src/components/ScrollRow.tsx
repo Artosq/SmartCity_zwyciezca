@@ -95,7 +95,7 @@ export default function ScrollRow({ children, label }: { children: ReactNode; la
           scrollbarWidth: 'none',
           '&::-webkit-scrollbar': { display: 'none' },
           // Dzieci (karty / chipy) „wpływają" po kolei — płynne wejście.
-          '& > *': { animation: 'fadeInUp 0.5s ease both' },
+          '& > *': { animation: 'fadeInUp 0.5s ease backwards' },
           '& > *:nth-of-type(1)': { animationDelay: '0.04s' },
           '& > *:nth-of-type(2)': { animationDelay: '0.1s' },
           '& > *:nth-of-type(3)': { animationDelay: '0.16s' },

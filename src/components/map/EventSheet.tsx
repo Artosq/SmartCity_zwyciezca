@@ -119,6 +119,7 @@ export default function EventSheet({
         maxHeight: 'calc(100% - 24px)',
         overflowY: 'auto',
         borderRadius: '24px',
+        animation: 'sheetIn 0.32s cubic-bezier(.2,.8,.2,1) backwards',
       }}
     >
       {popular && (

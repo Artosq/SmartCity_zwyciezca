@@ -111,7 +111,7 @@ export default function PendingRatings({ userId, onRated }: Props) {
   }
 
   return (
-    <Stack spacing={2}>
+    <Stack spacing={2} className="stagger">
       {error && <Alert severity="error">{error}</Alert>}
       {items.map((item) => (
         <Paper key={`${item.scope}:${item.scopeId}`} variant="outlined" sx={{ p: 2, borderRadius: '20px' }}>
@@ -127,6 +127,7 @@ export default function PendingRatings({ userId, onRated }: Props) {
               value={stars[item.scopeId] ?? null}
               onChange={(_, value) => setStars((prev) => ({ ...prev, [item.scopeId]: value ?? 0 }))}
               getLabelText={(value) => `${value} na 5 gwiazdek`}
+              sx={{ fontSize: '2.2rem', color: '#f59e0b' }}
             />
             <Button variant="contained" disabled={!stars[item.scopeId]} onClick={() => submit(item)}>
               Oceń

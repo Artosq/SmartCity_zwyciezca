@@ -13,11 +13,12 @@ import { useTheme } from '@mui/material/styles'
 import CloseIcon from '@mui/icons-material/Close'
 import { MEETUP_TYPES } from '../../data/meetupTypes'
 import { TARGET_GROUPS } from '../../data/targetGroups'
-import { GroupDot } from '../TargetGroupFilter'
+import GroupChip from '../GroupChip'
 
 // „niepelnosprawni" to nie wiek, tylko dostępność — w menu ma osobną sekcję.
 const ACCESSIBLE_GROUP = 'niepelnosprawni'
 const AGE_GROUPS = TARGET_GROUPS.filter((group) => group.slug !== ACCESSIBLE_GROUP)
+const ACCESSIBLE = TARGET_GROUPS.find((group) => group.slug === ACCESSIBLE_GROUP)!
 
 export interface MapFilterValues {
   // grupy docelowe wydarzeń (wiek + dostępność)
@@ -138,24 +139,22 @@ export default function MapFilters({
       <Stack spacing={3} sx={{ px: 3, py: 2, overflowY: 'auto' }}>
         <Section title="Wiek" hint="Dla kogo jest wydarzenie.">
           {AGE_GROUPS.map((group) => (
-            <Chip
+            <GroupChip
               key={group.slug}
+              group={group}
               active={values.groups.includes(group.slug)}
               onClick={() => set({ groups: toggle(values.groups, group.slug) })}
-            >
-              <GroupDot color={group.color} />
-              {group.name}
-            </Chip>
+            />
           ))}
         </Section>
 
         <Section title="Dostępność">
-          <Chip
+          <GroupChip
+            group={ACCESSIBLE}
+            label="Dla osób z niepełnosprawnościami"
             active={values.groups.includes(ACCESSIBLE_GROUP)}
             onClick={() => set({ groups: toggle(values.groups, ACCESSIBLE_GROUP) })}
-          >
-            Dla osób z niepełnosprawnościami
-          </Chip>
+          />
         </Section>
 
         <Section title="Cel wydarzenia">

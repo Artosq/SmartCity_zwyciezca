@@ -258,7 +258,7 @@ export default function ChatPage() {
             </Badge>
           </Typography>
 
-          <List sx={{ overflowY: 'auto', px: 2 }}>
+          <List className="stagger" sx={{ overflowY: 'auto', px: 2 }}>
             {myEvents.length === 0 && (
               <Typography sx={{ p: 2, color: 'text.secondary' }}>
                 Nie jesteś zapisany(-a) na żadne wydarzenia.

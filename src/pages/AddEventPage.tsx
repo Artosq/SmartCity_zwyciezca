@@ -109,7 +109,7 @@ export default function AddEventPage({ city }: { city: City }) {
   if (!user) {
     return (
       <Container maxWidth="sm" sx={{ py: 4 }}>
-        <Stack spacing={2}>
+        <Stack spacing={2} className="stagger">
           <Typography variant="h1">Dodaj wydarzenie</Typography>
           <Typography color="text.secondary">Aby dodać wydarzenie, najpierw się zaloguj.</Typography>
           <Button component={RouterLink} to="/login" variant="contained" size="large">
@@ -123,7 +123,7 @@ export default function AddEventPage({ city }: { city: City }) {
   if (created) {
     return (
       <Container maxWidth="sm" sx={{ py: 4 }}>
-        <Stack spacing={2}>
+        <Stack spacing={2} className="stagger">
           <Typography variant="h1">Wydarzenie dodane! 🎉</Typography>
           <Typography color="text.secondary">
             Jest już widoczne na stronie głównej i na mapie — sąsiedzi mogą do niego dołączyć.
@@ -142,7 +142,7 @@ export default function AddEventPage({ city }: { city: City }) {
         Dodaj wydarzenie
       </Typography>
 
-      <Stack component="form" onSubmit={handleSubmit} spacing={3}>
+      <Stack component="form" onSubmit={handleSubmit} spacing={3} className="stagger">
         <TextField
           label="Tytuł"
           required

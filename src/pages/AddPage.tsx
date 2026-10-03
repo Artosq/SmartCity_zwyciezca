@@ -22,7 +22,7 @@ export default function AddPage({ city }: { city: City }) {
       </Container>
 
       {mode === '1na1' ? (
-        <Container maxWidth="sm" sx={{ py: 3 }}>
+        <Container maxWidth="sm" className="stagger" sx={{ py: 3 }}>
           <Typography variant="h1" sx={{ mb: 3 }}>
             Zaproponuj spotkanie we dwoje
           </Typography>
