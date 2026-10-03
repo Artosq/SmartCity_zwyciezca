@@ -64,6 +64,9 @@ export default function AppLayout() {
     item.to === '/' ? pathname === '/' : pathname.startsWith(item.to),
   )?.to
 
+  // Wyszukiwarka tylko na stronie głównej i tablicy ogłoszeń.
+  const showSearch = pathname === '/' || pathname.startsWith('/ogloszenia')
+
   // Jedno pole wyszukiwania — w nagłówku na desktopie, osobnym paskiem na telefonie.
   const searchField = (
     <TextField
@@ -163,9 +166,11 @@ export default function AppLayout() {
           ))}
         </Menu>
 
-        <Box sx={{ display: { xs: 'none', md: 'flex' }, flex: 1, maxWidth: 520, mx: 2 }}>
-          {searchField}
-        </Box>
+        {showSearch && (
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, flex: 1, maxWidth: 520, mx: 2 }}>
+            {searchField}
+          </Box>
+        )}
 
         <Box
           component="nav"
@@ -208,18 +213,20 @@ export default function AppLayout() {
       </Box>
 
       {/* Pasek wyszukiwania na telefonie — osobny wiersz pod nagłówkiem. */}
-      <Box
-        sx={{
-          display: { xs: 'block', md: 'none' },
-          px: 2,
-          pb: 1,
-          bgcolor: 'background.paper',
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        {searchField}
-      </Box>
+      {showSearch && (
+        <Box
+          sx={{
+            display: { xs: 'block', md: 'none' },
+            px: 2,
+            pb: 1,
+            bgcolor: 'background.paper',
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          {searchField}
+        </Box>
+      )}
 
       <Drawer anchor="right" open={menuOpen} onClose={() => setMenuOpen(false)}>
         <Box component="nav" aria-label="Menu" sx={{ width: 280, pt: 2 }}>
