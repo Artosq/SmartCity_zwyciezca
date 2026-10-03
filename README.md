@@ -69,7 +69,7 @@ Prosty, możliwy do obrony stack — bez zbędnych warstw.
 | Mapa         | **Leaflet + OpenStreetMap**, grupowanie pinezek       |
 | Backend/dane | **Supabase** — Postgres, Auth (magic link), Realtime  |
 | Hosting      | **Vercel**                                            |
-| PWA          | manifest (service worker w planach)                   |
+| PWA          | manifest + ikony (instalacja na telefonie); bez trybu offline |
 
 **Jak to działa:** aplikacja React (SPA budowana przez Vite) działa w przeglądarce,
 dane leżą w Postgresie Supabase. Dostęp do danych pilnuje **Row Level Security** (RLS)

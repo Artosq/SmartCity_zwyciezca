@@ -1,24 +1,36 @@
 {
-  "name": "Sąsiedzko — mapa sąsiedzkich wydarzeń",
+  "id": "/",
+  "name": "Sąsiedzko — sąsiedzkie wydarzenia w Krakowie",
   "short_name": "Sąsiedzko",
-  "description": "Mapa miasta z wydarzeniami organizowanymi przez mieszkańców.",
+  "description": "Wydarzenia organizowane przez mieszkańców Krakowa: znajdź coś w okolicy, dołącz jednym kliknięciem albo dodaj własne.",
+  "lang": "pl",
+  "dir": "ltr",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#4b3bf0",
-  "lang": "pl",
+  "categories": ["social", "lifestyle", "events"],
   "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
     {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "name": "Mapa wydarzeń",
+      "short_name": "Mapa",
+      "url": "/mapa",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "name": "Dodaj wydarzenie",
+      "short_name": "Dodaj",
+      "url": "/dodaj",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }
