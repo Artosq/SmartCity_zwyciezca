@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import Avatar from '@mui/material/Avatar'
+import Badge from '@mui/material/Badge'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
@@ -22,12 +23,12 @@ const getSenderName = (profile: any) => {
   return profile.first_name || profile.name || profile.full_name || profile.username || 'Uczestnik'
 }
 
-// Helper: Get initials for avatar (e.g., "Kasia" -> "KA")
+// Helper: Get initials
 const getInitials = (name: string) => {
   return name.substring(0, 2).toUpperCase()
 }
 
-// Helper: Generate a consistent color based on a string (for avatars)
+// Helper: Consistent color for avatars
 const stringToColor = (string: string) => {
   let hash = 0
   for (let i = 0; i < string.length; i += 1) {
@@ -41,9 +42,21 @@ const stringToColor = (string: string) => {
   return color
 }
 
-// Helper: Format timestamp to HH:MM
+// Helper: Format time
 const formatTime = (dateString: string) => {
   return new Date(dateString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
+// Helper: Format date for separators
+const getDateLabel = (dateString: string) => {
+  const date = new Date(dateString)
+  const today = new Date()
+  const yesterday = new Date(today)
+  yesterday.setDate(yesterday.getDate() - 1)
+
+  if (date.toDateString() === today.toDateString()) return 'Dziś'
+  if (date.toDateString() === yesterday.toDateString()) return 'Wczoraj'
+  return date.toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 export default function ChatPage() {
@@ -51,10 +64,12 @@ export default function ChatPage() {
   const [myEvents, setMyEvents] = useState<any[]>([])
   const [activeEvent, setActiveEvent] = useState<any | null>(null)
   const [messages, setMessages] = useState<any[]>([])
+  const [participants, setParticipants] = useState<any[]>([])
+  const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({})
   const [newMessage, setNewMessage] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  // Auto-scroll to bottom when new messages arrive
+  // Auto-scroll
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
@@ -66,13 +81,12 @@ export default function ChatPage() {
   // 1. Load user's events
   useEffect(() => {
     if (!user) return
-    const userId = user.id
 
     async function loadMyEvents() {
       const { data } = await supabase
         .from('rsvps')
         .select('event_id, events(id, title)')
-        .eq('user_id', userId)
+        .eq('user_id', user.id)
       
       if (data) {
         const formattedEvents = data.map((item: any) => item.events)
@@ -84,23 +98,69 @@ export default function ChatPage() {
       }
     }
     loadMyEvents()
-  }, [user, activeEvent])
+  }, [user]) // Removed activeEvent from deps to prevent unnecessary re-fetches
 
-  // 2. Load messages and listen for new ones
+  // 2. Global listener for unread badges
+  useEffect(() => {
+    if (!user || myEvents.length === 0) return
+
+    const channel = supabase.channel('global-notifications')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'messages', filter: `scope=eq.event` },
+        (payload) => {
+          const evId = payload.new.scope_id
+          // If the message is for one of our events, and not the currently open chat
+          if (myEvents.some(e => e.id === evId) && activeEvent?.id !== evId) {
+            setUnreadCounts(prev => ({ ...prev, [evId]: (prev[evId] || 0) + 1 }))
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [user, myEvents, activeEvent])
+
+  // Clear unread count when opening a chat
+  useEffect(() => {
+    if (activeEvent) {
+      setUnreadCounts(prev => {
+        const next = { ...prev }
+        delete next[activeEvent.id]
+        return next
+      })
+    }
+  }, [activeEvent])
+
+  // 3. Load active chat data (messages & participants)
   useEffect(() => {
     if (!activeEvent) return
     setMessages([]) 
+    setParticipants([])
 
-    async function loadMessages() {
-      const { data } = await supabase
+    async function loadChatData() {
+      // Fetch messages
+      const { data: msgData } = await supabase
         .from('messages')
         .select('*, profiles(*)') 
         .eq('scope', 'event') 
         .eq('scope_id', activeEvent.id) 
         .order('created_at', { ascending: true })
-      if (data) setMessages(data)
+      if (msgData) setMessages(msgData)
+
+      // Fetch participants
+      const { data: rsvpData } = await supabase
+        .from('rsvps')
+        .select('profiles(*)')
+        .eq('event_id', activeEvent.id)
+      if (rsvpData) {
+        const profs = rsvpData.map((r: any) => r.profiles).filter(Boolean)
+        setParticipants(profs)
+      }
     }
-    loadMessages()
+    loadChatData()
 
     const channel = supabase
       .channel(`chat-${activeEvent.id}`)
@@ -129,7 +189,7 @@ export default function ChatPage() {
     }
   }, [activeEvent])
 
-  // 3. Send message
+  // 4. Send message
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newMessage.trim() || !user || !activeEvent) return
@@ -161,6 +221,11 @@ export default function ChatPage() {
     )
   }
 
+  const totalUnread = Object.values(unreadCounts).reduce((a, b) => a + b, 0)
+
+  // Tracking date for separators
+  let previousDateLabel: string | null = null
+
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 0, md: 3 }, px: { xs: 0, md: 2 }, height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ display: 'flex', flex: 1, gap: 3, overflow: 'hidden' }}>
@@ -175,61 +240,73 @@ export default function ChatPage() {
             bgcolor: 'transparent'
           }}
         >
-          <Typography variant="h4" sx={{ mb: 2, px: 2, pt: 2, fontWeight: 900 }}>Czaty <ChatBubbleIcon /></Typography>
+          <Typography variant="h4" sx={{ mb: 2, px: 2, pt: 2, fontWeight: 900, display: 'flex', alignItems: 'center', gap: 1 }}>
+            Czaty 
+            <Badge color="error" variant="dot" invisible={totalUnread === 0}>
+              <ChatBubbleIcon />
+            </Badge>
+          </Typography>
+
           <List sx={{ overflowY: 'auto', px: 2 }}>
             {myEvents.length === 0 && (
               <Typography sx={{ p: 2, color: 'text.secondary' }}>
                 Nie jesteś zapisany(-a) na żadne wydarzenia.
               </Typography>
             )}
-            {myEvents.map((ev) => (
-              <ListItemButton 
-                key={ev.id} 
-                selected={activeEvent?.id === ev.id}
-                onClick={() => setActiveEvent(ev)}
-                sx={{
-                  mb: 1.5,
-                  py: 1.5,
-                  px: 2,
-                  borderRadius: '16px',
-                  bgcolor: activeEvent?.id === ev.id ? 'primary.main' : 'white',
-                  color: activeEvent?.id === ev.id ? 'white' : 'text.primary',
-                  border: '1px solid',
-                  borderColor: activeEvent?.id === ev.id ? 'primary.main' : 'grey.200',
-                  boxShadow: activeEvent?.id === ev.id ? '0 4px 12px rgba(75,59,240,0.2)' : '0 2px 8px rgba(0,0,0,0.04)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1.5,
-                  transition: 'all 0.2s',
-                  '&.Mui-selected': {
-                    bgcolor: 'primary.main',
-                    color: 'white',
-                    '&:hover': { bgcolor: 'primary.dark' }
-                  },
-                  '&:hover': {
-                    borderColor: 'primary.main',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                  }
-                }}
-              >
-                <Avatar 
-                  sx={{ 
-                    width: 44, 
-                    height: 44, 
-                    bgcolor: activeEvent?.id === ev.id ? 'rgba(255,255,255,0.2)' : 'primary.50', 
-                    color: activeEvent?.id === ev.id ? 'white' : 'primary.main' 
+            {myEvents.map((ev) => {
+              const unread = unreadCounts[ev.id] || 0
+              
+              return (
+                <ListItemButton 
+                  key={ev.id} 
+                  selected={activeEvent?.id === ev.id}
+                  onClick={() => setActiveEvent(ev)}
+                  sx={{
+                    mb: 1.5,
+                    py: 1.5,
+                    px: 2,
+                    borderRadius: '16px',
+                    bgcolor: activeEvent?.id === ev.id ? 'primary.main' : 'white',
+                    color: activeEvent?.id === ev.id ? 'white' : 'text.primary',
+                    border: '1px solid',
+                    borderColor: activeEvent?.id === ev.id ? 'primary.main' : 'grey.200',
+                    boxShadow: activeEvent?.id === ev.id ? '0 4px 12px rgba(75,59,240,0.2)' : '0 2px 8px rgba(0,0,0,0.04)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.5,
+                    transition: 'all 0.2s',
+                    '&.Mui-selected': {
+                      bgcolor: 'primary.main',
+                      color: 'white',
+                      '&:hover': { bgcolor: 'primary.dark' }
+                    },
+                    '&:hover': {
+                      borderColor: 'primary.main',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                    }
                   }}
                 >
-                  <GroupIcon />
-                </Avatar>
-                <ListItemText 
-                  primary={ev.title} 
-                  slotProps={{ primary: { noWrap: true, sx: { fontWeight: 800, fontSize: '1rem' } } }} 
-                  sx={{ my: 0 }}
-                />
-                <ChevronRightIcon sx={{ color: activeEvent?.id === ev.id ? 'white' : 'grey.400' }} />
-              </ListItemButton>
-            ))}
+                  <Badge color="error" badgeContent={unread}>
+                    <Avatar 
+                      sx={{ 
+                        width: 44, 
+                        height: 44, 
+                        bgcolor: activeEvent?.id === ev.id ? 'rgba(255,255,255,0.2)' : 'primary.50', 
+                        color: activeEvent?.id === ev.id ? 'white' : 'primary.main' 
+                      }}
+                    >
+                      <GroupIcon />
+                    </Avatar>
+                  </Badge>
+                  <ListItemText 
+                    primary={ev.title} 
+                    slotProps={{ primary: { noWrap: true, fontWeight: unread > 0 ? 900 : 800, fontSize: '1rem' } }} 
+                    sx={{ my: 0 }}
+                  />
+                  <ChevronRightIcon sx={{ color: activeEvent?.id === ev.id ? 'white' : 'grey.400' }} />
+                </ListItemButton>
+              )
+            })}
           </List>
         </Paper>
 
@@ -241,7 +318,7 @@ export default function ChatPage() {
             display: { xs: activeEvent ? 'flex' : 'none', md: 'flex' }, 
             flexDirection: 'column', 
             bgcolor: 'white',
-            borderRadius: { xs: 0, md: '24px' }, // Fix for desktop clipping
+            borderRadius: { xs: 0, md: '24px' },
             overflow: 'hidden',
             boxShadow: { xs: 'none', md: '0 8px 32px rgba(0,0,0,0.08)' }
           }}
@@ -265,9 +342,34 @@ export default function ChatPage() {
 
               {/* Messages Area */}
               <Box sx={{ flex: 1, p: { xs: 2, md: 3 }, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2, bgcolor: '#f9fafb' }}>
+                
+                {/* Participants Row */}
+                {participants.length > 0 && (
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 1, textDecoration: 'underline' }}>
+                      Poznaj uczestników
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 1.5, overflowX: 'auto', pb: 1, '&::-webkit-scrollbar': { display: 'none' } }}>
+                      {participants.map(p => {
+                        const name = getSenderName(p)
+                        return (
+                          <Box key={p.id} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 60 }}>
+                            <Avatar sx={{ width: 48, height: 48, bgcolor: stringToColor(name), mb: 0.5, border: '2px solid white', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>
+                              {getInitials(name)}
+                            </Avatar>
+                            <Typography variant="caption" sx={{ fontWeight: 700, fontSize: '0.65rem', textAlign: 'center' }} noWrap>
+                              {name.split(' ')[0]}
+                            </Typography>
+                          </Box>
+                        )
+                      })}
+                    </Box>
+                  </Box>
+                )}
+
                 {messages.length === 0 && (
                   <Box sx={{ m: 'auto', textAlign: 'center', p: 3, bgcolor: 'primary.50', borderRadius: '24px' }}>
-                    <Typography color="primary.main" sx={{ fontWeight: 'bold' }}>Nikt tu jeszcze nikogo nie zna, więc zacznij od „cześć”!</Typography>
+                    <Typography fontWeight="bold" color="primary.main">Nikt tu jeszcze nikogo nie zna, więc zacznij od „cześć”!</Typography>
                   </Box>
                 )}
                 
@@ -275,48 +377,66 @@ export default function ChatPage() {
                   const isMe = msg.user_id === user.id
                   const senderName = getSenderName(msg.profiles)
                   const showAvatar = !isMe && (index === 0 || messages[index - 1].user_id !== msg.user_id)
+                  
+                  const currentDateLabel = getDateLabel(msg.created_at)
+                  const showDateSeparator = currentDateLabel !== previousDateLabel
+                  previousDateLabel = currentDateLabel
 
                   return (
-                    <Box key={msg.id} sx={{ display: 'flex', gap: 1.5, alignSelf: isMe ? 'flex-end' : 'flex-start', maxWidth: '85%' }}>
+                    <Box key={msg.id} sx={{ display: 'flex', flexDirection: 'column' }}>
                       
-                      {/* Avatar for others */}
-                      {!isMe && (
-                        <Box sx={{ width: '40px', flexShrink: 0 }}>
-                          {showAvatar && (
-                            <Avatar sx={{ width: 40, height: 40, bgcolor: stringToColor(senderName), fontSize: '1rem', fontWeight: 'bold' }}>
-                              {getInitials(senderName)}
-                            </Avatar>
-                          )}
+                      {/* Date Separator */}
+                      {showDateSeparator && (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+                          <Box sx={{ bgcolor: 'grey.200', px: 2, py: 0.5, borderRadius: 4 }}>
+                            <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary' }}>
+                              {currentDateLabel}
+                            </Typography>
+                          </Box>
                         </Box>
                       )}
 
-                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: isMe ? 'flex-end' : 'flex-start' }}>
-                        {/* Name */}
-                        {showAvatar && (
-                          <Typography variant="caption" sx={{ ml: 1, mb: 0.5, color: 'text.secondary', fontWeight: 700 }}>
-                            {senderName}
-                          </Typography>
-                        )}
+                      <Box sx={{ display: 'flex', gap: 1.5, alignSelf: isMe ? 'flex-end' : 'flex-start', maxWidth: '85%' }}>
                         
-                        {/* Bubble */}
-                        <Paper elevation={0} sx={{ 
-                          py: 1, 
-                          px: 1.75,
-                          bgcolor: isMe ? 'primary.main' : 'white', 
-                          color: isMe ? 'white' : 'text.primary', 
-                          borderRadius: '16px',
-                          borderTopLeftRadius: isMe ? '16px' : '4px',
-                          borderTopRightRadius: isMe ? '4px' : '16px',
-                          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                          minWidth: '75px' // Fix for squished short messages
-                        }}>
-                          <Typography variant="body1" sx={{ wordBreak: 'break-word', fontSize: '0.95rem' }}>{msg.content}</Typography>
+                        {/* Avatar for others */}
+                        {!isMe && (
+                          <Box sx={{ width: '40px', flexShrink: 0 }}>
+                            {showAvatar && (
+                              <Avatar sx={{ width: 40, height: 40, bgcolor: stringToColor(senderName), fontSize: '1rem', fontWeight: 'bold' }}>
+                                {getInitials(senderName)}
+                              </Avatar>
+                            )}
+                          </Box>
+                        )}
+
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: isMe ? 'flex-end' : 'flex-start' }}>
+                          {/* Name */}
+                          {showAvatar && (
+                            <Typography variant="caption" sx={{ ml: 1, mb: 0.5, color: 'text.secondary', fontWeight: 700 }}>
+                              {senderName}
+                            </Typography>
+                          )}
                           
-                          {/* Time */}
-                          <Typography variant="caption" sx={{ display: 'block', textAlign: 'right', mt: 0.25, opacity: 0.7, fontSize: '0.7rem' }}>
-                            {formatTime(msg.created_at)}
-                          </Typography>
-                        </Paper>
+                          {/* Bubble */}
+                          <Paper elevation={0} sx={{ 
+                            py: 1, 
+                            px: 1.75,
+                            bgcolor: isMe ? 'primary.main' : 'white', 
+                            color: isMe ? 'white' : 'text.primary', 
+                            borderRadius: '16px',
+                            borderTopLeftRadius: isMe ? '16px' : '4px',
+                            borderTopRightRadius: isMe ? '4px' : '16px',
+                            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                            minWidth: '75px'
+                          }}>
+                            <Typography variant="body1" sx={{ wordBreak: 'break-word', fontSize: '0.95rem' }}>{msg.content}</Typography>
+                            
+                            {/* Time */}
+                            <Typography variant="caption" sx={{ display: 'block', textAlign: 'right', mt: 0.25, opacity: 0.7, fontSize: '0.7rem' }}>
+                              {formatTime(msg.created_at)}
+                            </Typography>
+                          </Paper>
+                        </Box>
                       </Box>
                     </Box>
                   )
@@ -367,7 +487,6 @@ export default function ChatPage() {
   )
 }
 
-// Simple Chat Icon for the header
 function ChatBubbleIcon() {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: 'middle' }}>
