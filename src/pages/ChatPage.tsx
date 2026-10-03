@@ -24,12 +24,11 @@ export default function ChatPage() {
   useEffect(() => {
     if (!user) return
 
-    const uid = user.id
     async function loadMyEvents() {
       const { data } = await supabase
         .from('rsvps')
         .select('event_id, events(id, title)')
-        .eq('user_id', uid)
+        .eq('user_id', user.id)
       
       if (data) {
         const formattedEvents = data.map((item: any) => item.events)
@@ -47,13 +46,14 @@ export default function ChatPage() {
   // 2. Load messages and listen for new ones (Realtime)
   useEffect(() => {
     if (!activeEvent) return
+      setMessages([])
 
     async function loadMessages() {
       const { data } = await supabase
         .from('messages')
         .select('*')
-        .eq('scope', 'event') // Updated to match schema
-        .eq('scope_id', activeEvent.id) // Updated to match schema
+        .eq('scope', 'event') 
+        .eq('scope_id', activeEvent.id) 
         .order('created_at', { ascending: true })
       if (data) setMessages(data)
     }
@@ -63,10 +63,13 @@ export default function ChatPage() {
       .channel(`chat-${activeEvent.id}`)
       .on(
         'postgres_changes',
-        // Updated filter to match schema
         { event: 'INSERT', schema: 'public', table: 'messages', filter: `scope_id=eq.${activeEvent.id}` },
         (payload) => {
-          setMessages((prev) => [...prev, payload.new])
+          setMessages((prev) => {
+            // Prevent duplicates if optimistic UI already added it
+            if (prev.find(m => m.id === payload.new.id)) return prev
+            return [...prev, payload.new]
+          })
         }
       )
       .subscribe()
@@ -76,24 +79,30 @@ export default function ChatPage() {
     }
   }, [activeEvent])
 
-  // 3. Send message
+  // 3. Send message with instant UI update (Optimistic UI)
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newMessage.trim() || !user || !activeEvent) return
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('messages')
       .insert([{ 
-        scope: 'event', // Updated to match schema
-        scope_id: activeEvent.id, // Updated to match schema
+        scope: 'event', 
+        scope_id: activeEvent.id, 
         user_id: user.id, 
         content: newMessage 
       }])
+      .select() // Fetch the exact inserted row back instantly
 
     if (error) {
       console.error("Supabase insert error:", error)
       alert("Błąd wysyłania: " + error.message)
-    } else {
+    } else if (data) {
+      // Instantly add the message to the screen
+      setMessages((prev) => {
+        if (prev.find(m => m.id === data[0].id)) return prev
+        return [...prev, data[0]]
+      })
       setNewMessage('')
     }
   }
@@ -153,7 +162,7 @@ export default function ChatPage() {
                 <IconButton onClick={() => setActiveEvent(null)} sx={{ mr: 1 }}>
                   <ArrowBackIcon />
                 </IconButton>
-                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }} noWrap>
+                <Typography variant="subtitle1" fontWeight="bold" noWrap>
                   {activeEvent.title}
                 </Typography>
               </Box>
