@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import AppLayout from './components/AppLayout'
 import CityPicker from './components/CityPicker'
 import { useCity } from './context/CityContext'
@@ -11,6 +11,12 @@ import MapPage from './pages/MapPage'
 
 export default function App() {
   const { city, selectCity } = useCity()
+  const { pathname, search, hash } = useLocation()
+
+  // Podstrony mają adres z ukośnikiem na końcu (/mapa/). Hosting statyczny serwuje wtedy
+  // skopiowany przy buildzie plik mapa/index.html (scripts/spa-fallback.mjs), więc odświeżenie
+  // strony działa bez reguł przekierowań po stronie serwera.
+  if (!pathname.endsWith('/')) return <Navigate to={`${pathname}/${search}${hash}`} replace />
 
   // Najpierw wybór miasta — dopiero potem reszta aplikacji.
   if (!city) return <CityPicker onSelect={selectCity} />
