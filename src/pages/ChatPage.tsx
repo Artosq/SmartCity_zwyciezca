@@ -88,8 +88,18 @@ export default function ChatPage() {
         .select('event_id, events(id, title)')
         .eq('user_id', user.id)
       
+      // wyjścia 1:1, w których biorę udział i ktoś już dołączył — rozmowa dwóch osób
+      const { data: meetups } = await supabase
+        .from('meetups')
+        .select('id, title')
+        .or(`host_id.eq.${userId},guest_id.eq.${userId}`)
+        .not('guest_id', 'is', null)
+
       if (data) {
-        const formattedEvents = data.map((item: any) => item.events)
+        const formattedEvents = [
+          ...data.map((item: any) => ({ ...item.events, scope: 'event' })),
+          ...(meetups ?? []).map((item: any) => ({ id: item.id, title: `1:1 · ${item.title}`, scope: 'meetup' })),
+        ]
         setMyEvents(formattedEvents)
         
         if (formattedEvents.length > 0 && !activeEvent && window.innerWidth > 900) {
@@ -145,7 +155,7 @@ export default function ChatPage() {
       const { data: msgData } = await supabase
         .from('messages')
         .select('*, profiles(*)') 
-        .eq('scope', 'event') 
+        .eq('scope', activeEvent.scope) 
         .eq('scope_id', activeEvent.id) 
         .order('created_at', { ascending: true })
       if (msgData) setMessages(msgData)
@@ -197,7 +207,7 @@ export default function ChatPage() {
     const { data, error } = await supabase
       .from('messages')
       .insert([{ 
-        scope: 'event', 
+        scope: activeEvent.scope, 
         scope_id: activeEvent.id, 
         user_id: user.id, 
         content: newMessage 

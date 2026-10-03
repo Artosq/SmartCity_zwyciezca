@@ -2,7 +2,7 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import AppLayout from './components/AppLayout'
 import CityPicker from './components/CityPicker'
 import { useCity } from './context/CityContext'
-import AddEventPage from './pages/AddEventPage'
+import AddPage from './pages/AddPage'
 import AnnouncementsPage from './pages/AnnouncementsPage'
 import ChatPage from './pages/ChatPage'
 import HomePage from './pages/HomePage'
@@ -29,7 +29,7 @@ export default function App() {
       <Route element={<AppLayout />}>
         <Route path="/" element={<HomePage city={city} />} />
         <Route path="/mapa" element={<MapPage city={city} />} />
-        <Route path="/dodaj" element={<AddEventPage city={city} />} />
+        <Route path="/dodaj" element={<AddPage city={city} />} />
         <Route path="/czat" element={<ChatPage />} />
         <Route path="/ogloszenia" element={<AnnouncementsPage />} />
         <Route path="/login" element={<LoginPage />} />

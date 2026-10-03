@@ -70,3 +70,25 @@ export interface Announcement {
   place_name: string | null
   created_at: string
 }
+
+// Wyjście 1:1: jedna osoba proponuje (host), jedna dołącza (guest).
+export interface Meetup {
+  id: string
+  host_id: string
+  guest_id: string | null
+  type: string
+  title: string
+  description: string | null
+  city: string | null
+  lat: number
+  lng: number
+  place_name: string
+  starts_at: string
+  duration_min: number | null
+  tags: string[]
+  created_at: string
+}
+
+export interface MeetupWithHost extends Meetup {
+  host: Pick<Profile, 'name'> | null
+}

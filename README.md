@@ -28,6 +28,9 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
 - **Strona główna** z propozycjami wydarzeń w mieście: najbliższe terminy,
   dopasowane do preferencji (grupy docelowe) i „lubiane przez innych" (najwięcej zapisanych).
   Karty ze zdjęciem wydarzenia, liczbą zapisanych, odległością od centrum i terminem.
+- **Wyjścia 1:1** (przełącznik na stronie głównej): spacer, kawa, sport albo rozmowa z jedną osobą
+  w miejscu publicznym. Ktoś proponuje, pierwsza chętna osoba klika „Idę" i obie dostają prywatny
+  czat. Tylko dla zalogowanych, z oświadczeniem o ukończeniu 18 lat.
 - **Zasięg: Kraków.** Kolejne miasta są przygotowane w `src/data/cities.ts`, ale na razie wyłączone.
 - **Mapa miasta**: pinezki wydarzeń łączą się w grupy z liczbą
   i rozwijają po przybliżeniu; filtr grup docelowych (chipy nad mapą):
@@ -91,6 +94,8 @@ events          — id, organizer_id→profiles, title, description, category_id
                   city, lat, lng, place_name, starts_at, capacity, target_groups[],
                   image_url, involves_children, source, source_url, external_id, created_at
 event_addresses — event_id→events, address_private
+meetups         — id, host_id→profiles, guest_id→profiles (null = wolne), type, title, description,
+                  city, lat, lng, place_name, starts_at, duration_min, tags[], created_at
 rsvps           — id, event_id→events, user_id→profiles, created_at  [UNIQUE(event_id,user_id)]
 messages        — id, scope(category|event), scope_id, user_id→profiles, content,
                   created_at, is_hidden
@@ -107,9 +112,9 @@ Relacje: `profiles` 1—N `events`/`rsvps`/`messages`/`announcements`;
 
 | Trasa              | Ekran                                                        |
 |--------------------|-------------------------------------------------------------|
-| `/`                | Strona główna: chipy preferencji + karuzele wydarzeń (najbliższe, preferencje, lubiane przez innych) |
+| `/`                | Strona główna z przełącznikiem: wydarzenia (chipy preferencji + karuzele) albo wyjścia 1:1 (`?widok=1na1`) |
 | `/mapa`            | Mapa wybranego miasta z grupowanymi pinezkami, chipy filtra, rozwijana karta wydarzenia (szczegóły, zapis, licznik miejsc) |
-| `/dodaj`           | Dodawanie wydarzenia (wybór miejsca na mapie)               |
+| `/dodaj`           | Dodawanie wydarzenia albo propozycji wyjścia 1:1 (wybór miejsca na mapie) |
 | `/login`           | Logowanie bez hasła (imię + e-mail / magic link), konto     |
 | `/czat`            | Czat w czasie rzeczywistym _(w budowie)_                    |
 | `/ogloszenia`      | Tablica ogłoszeń _(w budowie)_                              |

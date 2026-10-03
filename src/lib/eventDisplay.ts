@@ -46,3 +46,16 @@ export function distanceKm([lat1, lng1]: LatLngTuple, [lat2, lng2]: LatLngTuple)
     Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(((lng2 - lng1) * rad) / 2) ** 2
   return 6371 * 2 * Math.asin(Math.sqrt(a))
 }
+
+const timeOnly = new Intl.DateTimeFormat('pl-PL', { hour: '2-digit', minute: '2-digit' })
+const dayKey = (date: Date) => `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
+
+// „Dziś, 18:00", „Jutro, 10:30", a dalej krótka data.
+export function formatRelativeDate(iso: string) {
+  const date = new Date(iso)
+  const today = new Date()
+  const tomorrow = new Date(today.getTime() + 86400000)
+  if (dayKey(date) === dayKey(today)) return `Dziś, ${timeOnly.format(date)}`
+  if (dayKey(date) === dayKey(tomorrow)) return `Jutro, ${timeOnly.format(date)}`
+  return formatShortDate(iso)
+}

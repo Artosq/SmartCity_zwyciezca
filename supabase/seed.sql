@@ -4,7 +4,8 @@
 --
 -- Tworzy: 12 kont demo (demo1…12@sasiedzko.example, bez możliwości logowania),
 --         25 wydarzeń w 7 miastach oraz zapisy (rsvps) o różnej liczebności,
---         żeby sekcja „Lubiane przez innych" miała co sortować.
+--         żeby sekcja „Lubiane przez innych" miała co sortować,
+--         oraz 8 wyjść 1:1 w Krakowie (wymaga migracji 005_meetups.sql).
 -- Skrypt można uruchamiać wielokrotnie: najpierw usuwa poprzednie konta demo,
 -- a razem z nimi (kaskadowo) ich wydarzenia i zapisy.
 -- Terminy są liczone względem dnia uruchomienia, godziny w czasie polskim.
@@ -99,4 +100,23 @@ begin
     insert into rsvps (event_id, user_id)
     select eid, unnest(demo_ids[1:r.signups]);
   end loop;
-end $$;
+
+  -- Wyjścia 1:1 (wymaga migracji 005_meetups.sql). Wszystkie wolne — czekają na chętną osobę.
+  insert into meetups
+    (host_id, type, title, description, city, lat, lng, place_name, starts_at, duration_min, tags)
+  select
+    demo_ids[v.host], v.type, v.title, '[demo] ' || v.description, 'krakow', v.lat, v.lng, v.place_name,
+    (date_trunc('day', now() at time zone 'Europe/Warsaw')
+      + v.day_offset * interval '1 day' + v.start_time::interval) at time zone 'Europe/Warsaw',
+    v.duration_min, v.tags
+  from (values
+    (6, 'spacer', 'Spacer z psem po Błoniach', 'Chodzę z Fafikiem codziennie, chętnie w towarzystwie.', 50.0597, 19.9120, 'Błonia, wejście od ul. Piastowskiej', 1, time '18:00', 45, array['Z psem','Bezpłatnie']),
+    (3, 'kawa', 'Wspólna kawa na Kazimierzu', 'Nowa w okolicy, szukam kogoś do pogadania przy kawie.', 50.0515, 19.9460, 'Plac Nowy', 1, time '10:30', 60, array['Kawiarnia']),
+    (4, 'sport', 'Bieganie wokół Błoń', 'Spokojne tempo, jedno okrążenie, czyli około 3,5 km.', 50.0590, 19.9150, 'Błonia, przy Cichym Kąciku', 2, time '07:00', 45, array['Początkujący','Bezpłatnie']),
+    (5, 'rozmowa', 'Rozmowa na ławce na Plantach', 'Emerytowana nauczycielka, lubię rozmawiać o książkach.', 50.0655, 19.9416, 'Planty, okolice Barbakanu', 2, time '11:00', 60, array['Bezpłatnie']),
+    (8, 'spacer', 'Spacer po Lasku Wolskim', 'Trasa do Kopca Piłsudskiego i z powrotem.', 50.0560, 19.8520, 'Lasek Wolski, parking przy ZOO', 3, time '10:00', 90, array['Bezpłatnie']),
+    (9, 'kawa', 'Herbata i planszówka w Nowej Hucie', 'Mam ze sobą Carcassonne, szukam drugiej osoby do gry.', 50.0718, 20.0370, 'Nowohuckie Centrum Kultury, kawiarnia', 3, time '17:00', 90, array['Planszówki']),
+    (10, 'sport', 'Ping-pong w Parku Jordana', 'Mam dwie rakietki i piłeczki, stoły są na miejscu.', 50.0625, 19.9170, 'Park Jordana, stoły do ping-ponga', 4, time '16:00', 60, array['Bezpłatnie']),
+    (11, 'inne', 'Wspólne zakupy na Starym Kleparzu', 'Pokażę, gdzie są najlepsze warzywa, i pomogę nieść torby.', 50.0672, 19.9395, 'Stary Kleparz, wejście od ul. Basztowej', 5, time '09:00', 45, array['Pomoc sąsiedzka'])
+  ) as v(host, type, title, description, lat, lng, place_name, day_offset, start_time, duration_min, tags);
+end $;

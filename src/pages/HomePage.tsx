@@ -9,6 +9,8 @@ import Typography from '@mui/material/Typography'
 import MapOutlinedIcon from '@mui/icons-material/MapOutlined'
 import EventCard from '../components/EventCard'
 import GroupChips from '../components/GroupChips'
+import MeetupsView from '../components/meetups/MeetupsView'
+import ModeToggle, { type Mode } from '../components/ModeToggle'
 import ScrollRow from '../components/ScrollRow'
 import type { City } from '../data/cities'
 import { useCityEvents } from '../hooks/useCityEvents'
@@ -53,8 +55,28 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   )
 }
 
+// Strona główna: przełącznik między wydarzeniami a wyjściami 1:1 (?widok=1na1).
 export default function HomePage({ city }: { city: City }) {
-  const { t } = useLang()
+  const [searchParams, setSearchParams] = useSearchParams()
+  // wyszukiwarka z nagłówka dotyczy wydarzeń
+  const mode: Mode =
+    searchParams.get('widok') === '1na1' && !searchParams.get('q') ? '1na1' : 'wydarzenia'
+
+  return (
+    <Box sx={{ maxWidth: 1200, mx: 'auto', pb: 12 }}>
+      <Box sx={{ px: 2, pt: 1, pb: 1, maxWidth: 480 }}>
+        <ModeToggle
+          label="Co chcesz zobaczyć?"
+          value={mode}
+          onChange={(next) => setSearchParams(next === '1na1' ? { widok: '1na1' } : {}, { replace: true })}
+        />
+      </Box>
+      {mode === '1na1' ? <MeetupsView city={city} /> : <EventsView city={city} />}
+    </Box>
+  )
+}
+
+function EventsView({ city }: { city: City }) {
   const { events, status } = useCityEvents(city)
   const [preferences, setPreferences] = useState(readPreferences)
   const [searchParams] = useSearchParams()
@@ -119,7 +141,7 @@ export default function HomePage({ city }: { city: City }) {
     ))
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', pb: 12 }}>
+    <Box>
       <Typography variant="h1" sx={{ position: 'absolute', left: -9999 }}>
         {t('home.heading', { city: city.name })}
       </Typography>
