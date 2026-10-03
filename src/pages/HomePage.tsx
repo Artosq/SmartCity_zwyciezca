@@ -43,8 +43,6 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
         variant="h2"
         sx={{
           px: 2,
-          textDecoration: 'underline',
-          textUnderlineOffset: 4,
           animation: 'fadeInUp 0.5s ease both',
         }}
       >
@@ -173,7 +171,7 @@ function EventsView({ city }: { city: City }) {
         <Box component="section" sx={{ mt: 2 }}>
           <Typography
             variant="h2"
-            sx={{ px: 2, textDecoration: 'underline', textUnderlineOffset: 4 }}
+            sx={{ px: 2 }}
           >
             {t('search.results', { query })}
           </Typography>

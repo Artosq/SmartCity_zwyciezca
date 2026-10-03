@@ -48,6 +48,36 @@ export const theme = createTheme({
         },
       },
     },
+    // Ikony-przyciski, przełączniki i pozycje list reagują na dotyk tak jak zwykłe przyciski.
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          transition: 'transform .15s ease, background-color .2s ease',
+          '&:hover': { transform: 'scale(1.08)' },
+          '&:active': { transform: 'scale(0.92)' },
+        },
+      },
+    },
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
+          transition: 'transform .15s ease, background-color .25s ease, color .25s ease, box-shadow .25s ease',
+          '&:active': { transform: 'scale(0.97)' },
+        },
+      },
+    },
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          transition: 'transform .15s ease, background-color .2s ease',
+          '&:hover': { transform: 'translateX(4px)' },
+          '&:active': { transform: 'scale(0.98)' },
+        },
+      },
+    },
+    MuiMenuItem: {
+      styleOverrides: { root: { transition: 'background-color .2s ease' } },
+    },
     MuiTextField: {
       defaultProps: { fullWidth: true },
     },

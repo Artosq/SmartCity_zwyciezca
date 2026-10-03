@@ -87,6 +87,15 @@ html {
     transform: none;
   }
 }
+/* Przejście między ekranami */
+@keyframes pageIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 @keyframes popIn {
   from {
     opacity: 0;

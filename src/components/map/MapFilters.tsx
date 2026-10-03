@@ -71,6 +71,9 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
         borderColor: active ? 'primary.main' : 'grey.300',
         bgcolor: active ? 'primary.main' : 'background.paper',
         color: active ? 'primary.contrastText' : 'text.primary',
+        transition: 'transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease',
+        '&:hover': { transform: 'translateY(-2px)', borderColor: 'primary.main' },
+        '&:active': { transform: 'scale(0.95)' },
       }}
     >
       {children}

@@ -58,6 +58,9 @@ export default function MeetupsView({ city }: { city: City }) {
           whiteSpace: 'nowrap',
           bgcolor: active ? 'secondary.main' : 'background.paper',
           boxShadow: '0 2px 10px rgba(17,17,17,0.18)',
+          transition: 'transform 0.15s ease, background-color 0.2s ease',
+          '&:hover': { transform: 'translateY(-2px)' },
+          '&:active': { transform: 'scale(0.95)' },
         }}
       >
         {label}
@@ -101,7 +104,7 @@ export default function MeetupsView({ city }: { city: City }) {
         {MEETUP_TYPES.map((item) => chip(item.slug, `${item.emoji} ${item.name}`))}
       </ScrollRow>
 
-      <Typography variant="h2" sx={{ px: 2, mt: 1, textDecoration: 'underline', textUnderlineOffset: 4 }}>
+      <Typography variant="h2" sx={{ px: 2, mt: 1 }}>
         Najbliżej centrum
       </Typography>
 

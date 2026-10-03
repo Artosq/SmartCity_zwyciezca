@@ -67,7 +67,15 @@ export default function MeetupCard({ meetup, distanceKm, badge, onOpen }: Props)
   return (
     <ButtonBase
       onClick={onOpen}
-      sx={{ display: 'block', width: '100%', textAlign: 'left', borderRadius: '32px' }}
+      sx={{
+        display: 'block',
+        width: '100%',
+        textAlign: 'left',
+        borderRadius: '32px',
+        transition: 'transform 0.2s ease',
+        '&:hover, &:focus-visible': { transform: 'translateY(-6px)' },
+        '&:active': { transform: 'scale(0.98)' },
+      }}
     >
       <Box
         sx={{
@@ -99,7 +107,7 @@ export default function MeetupCard({ meetup, distanceKm, badge, onOpen }: Props)
       </Box>
 
       <Stack spacing={1} sx={{ px: 0.5, pt: 1.5 }}>
-        <Typography variant="h3" sx={{ textDecoration: 'underline', fontSize: '1.15rem' }}>
+        <Typography variant="h3" sx={{ fontSize: '1.15rem' }}>
           {meetup.title}
         </Typography>
         <HostLine host={meetup.host} />

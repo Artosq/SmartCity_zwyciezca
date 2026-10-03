@@ -1,9 +1,6 @@
 import { useState, type MouseEvent } from 'react'
 import { Link as RouterLink, Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import BottomNavigation from '@mui/material/BottomNavigation'
-import BottomNavigationAction from '@mui/material/BottomNavigationAction'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import ButtonBase from '@mui/material/ButtonBase'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
@@ -76,6 +73,9 @@ export default function AppLayout() {
   const active = NAV.find((item) =>
     item.to === '/' ? pathname === '/' : pathname.startsWith(item.to),
   )?.to
+
+  const bottomNav = NAV.filter((item) => item.bottom)
+  const activeBottom = bottomNav.findIndex((item) => item.to === active)
 
   // Wyszukiwarka tylko na stronie głównej i tablicy ogłoszeń.
   const showSearch = pathname === '/' || pathname.startsWith('/ogloszenia')
@@ -151,9 +151,9 @@ export default function AppLayout() {
           gap: 1,
           px: 2,
           py: 1.25,
-          bgcolor: 'background.paper',
-          borderBottom: { md: '1px solid' },
-          borderColor: { md: 'divider' },
+          bgcolor: 'rgba(255,255,255,0.86)',
+          backdropFilter: 'blur(14px)',
+          boxShadow: { md: '0 1px 0 rgba(17,17,17,0.06), 0 6px 20px rgba(17,17,17,0.04)' },
         }}
       >
         {pathname !== '/' && (
@@ -221,21 +221,52 @@ export default function AppLayout() {
           aria-label="Główna"
           sx={{ display: { xs: 'none', md: 'flex' }, gap: 0.5, ml: 'auto' }}
         >
-          {NAV.map((item) => (
-            <Button
-              key={item.to}
-              component={RouterLink}
-              to={item.to}
-              startIcon={item.icon}
-              aria-current={item.to === active ? 'page' : undefined}
-              sx={{
-                color: item.to === active ? 'primary.main' : 'text.primary',
-                bgcolor: item.to === active ? 'rgba(75,59,240,0.1)' : 'transparent',
-              }}
-            >
-              {t(item.labelKey)}
-            </Button>
-          ))}
+          {NAV.map((item) => {
+            const selected = item.to === active
+            return (
+              <ButtonBase
+                key={item.to}
+                component={RouterLink}
+                to={item.to}
+                title={t(item.labelKey)}
+                aria-label={t(item.labelKey)}
+                aria-current={selected ? 'page' : undefined}
+                sx={{
+                  position: 'relative',
+                  gap: 1,
+                  px: 1.5,
+                  height: 46,
+                  borderRadius: '14px',
+                  fontWeight: 700,
+                  fontSize: '0.98rem',
+                  whiteSpace: 'nowrap',
+                  color: selected ? 'primary.main' : 'text.primary',
+                  transition: 'background-color .2s ease, color .2s ease, transform .15s ease',
+                  '&:hover': { bgcolor: 'rgba(75,59,240,0.08)', transform: 'translateY(-1px)' },
+                  '&:active': { transform: 'scale(0.96)' },
+                  '& svg': { transition: 'transform .25s ease', transform: selected ? 'scale(1.12)' : 'none' },
+                  // limonkowa kreska wysuwa się pod aktywną pozycją
+                  '&::after': {
+                    content: '""',
+                    position: 'absolute',
+                    left: 12,
+                    right: 12,
+                    bottom: 3,
+                    height: 4,
+                    borderRadius: 2,
+                    bgcolor: 'secondary.main',
+                    transform: selected ? 'scaleX(1)' : 'scaleX(0)',
+                    transition: 'transform .3s cubic-bezier(.2,.8,.2,1)',
+                  },
+                }}
+              >
+                {item.icon}
+                <Box component="span" sx={{ display: { md: 'none', lg: 'inline' } }}>
+                  {t(item.labelKey)}
+                </Box>
+              </ButtonBase>
+            )
+          })}
         </Box>
 
         <IconButton
@@ -264,9 +295,9 @@ export default function AppLayout() {
             display: { xs: 'block', md: 'none' },
             px: 2,
             pb: 1,
-            bgcolor: 'background.paper',
-            borderBottom: '1px solid',
-            borderColor: 'divider',
+            bgcolor: 'rgba(255,255,255,0.86)',
+            backdropFilter: 'blur(14px)',
+            boxShadow: '0 6px 16px rgba(17,17,17,0.05)',
           }}
         >
           {searchField}
@@ -323,7 +354,11 @@ export default function AppLayout() {
           bgcolor: 'transparent',
         }}
       >
-        <Outlet />
+        {/* key = ścieżka: przy zmianie ekranu zawartość pojawia się płynnie.
+            Sama przezroczystość, bez przesuwania — transform zepsułby pływające przyciski i mapę. */}
+        <Box key={pathname.replace(/\/$/, '')} sx={{ height: '100%', animation: 'pageIn 0.28s ease both' }}>
+          <Outlet />
+        </Box>
       </Box>
 
       <Paper
@@ -333,43 +368,88 @@ export default function AppLayout() {
         square
         sx={{
           display: { md: 'none' },
-          pb: 'env(safe-area-inset-bottom)',
+          position: 'relative',
           zIndex: 1100,
-          borderTop: '1px solid',
-          borderColor: 'divider',
+          pb: 'env(safe-area-inset-bottom)',
+          bgcolor: 'rgba(255,255,255,0.92)',
+          backdropFilter: 'blur(14px)',
+          boxShadow: '0 -6px 20px rgba(17,17,17,0.07)',
+          borderRadius: '22px 22px 0 0',
         }}
       >
-        <BottomNavigation showLabels value={active ?? false} sx={{ height: 68 }}>
-          {NAV.filter((item) => item.bottom).map((item) => (
-            <BottomNavigationAction
-              key={item.to}
-              component={RouterLink}
-              to={item.to}
-              value={item.to}
-              label={t(item.labelKey)}
-              icon={item.icon}
+        <Box
+          sx={{
+            position: 'relative',
+            display: 'grid',
+            gridTemplateColumns: `repeat(${bottomNav.length}, 1fr)`,
+            height: 66,
+          }}
+        >
+          {activeBottom >= 0 && (
+            <Box
+              aria-hidden
               sx={{
-                minWidth: 0,
-                px: 0.5,
-                color: 'primary.main',
-                opacity: 0.75,
-                '&.Mui-selected': { opacity: 1 },
-                // limonkowa kreska pod aktywną pozycją, jak na makiecie
-                '&.Mui-selected::after': {
-                  content: '""',
-                  position: 'absolute',
-                  bottom: 2,
-                  width: 36,
-                  height: 5,
-                  borderRadius: 3,
-                  bgcolor: 'secondary.main',
-                },
-                '& .MuiSvgIcon-root': { fontSize: item.to === '/dodaj' ? 40 : 30 },
-                '& .MuiBottomNavigationAction-label': { fontWeight: 700 },
+                position: 'absolute',
+                top: 8,
+                left: 0,
+                width: `${100 / bottomNav.length}%`,
+                display: 'flex',
+                justifyContent: 'center',
+                pointerEvents: 'none',
+                transform: `translateX(${activeBottom * 100}%)`,
+                transition: 'transform .38s cubic-bezier(.2,.8,.2,1)',
               }}
-            />
-          ))}
-        </BottomNavigation>
+            >
+              <Box sx={{ width: 58, height: 32, borderRadius: '999px', bgcolor: 'secondary.main' }} />
+            </Box>
+          )}
+          {bottomNav.map((item) => {
+            const selected = item.to === active
+            return (
+              <ButtonBase
+                key={item.to}
+                component={RouterLink}
+                to={item.to}
+                aria-current={selected ? 'page' : undefined}
+                sx={{
+                  position: 'relative',
+                  flexDirection: 'column',
+                  justifyContent: 'flex-start',
+                  pt: '11px',
+                  gap: '5px',
+                  minWidth: 0,
+                  color: selected ? BRAND.ink : 'primary.main',
+                  transition: 'color .25s ease',
+                  '& svg': {
+                    fontSize: 26,
+                    transition: 'transform .25s cubic-bezier(.2,.8,.2,1)',
+                    transform: selected ? 'scale(1.08)' : 'none',
+                  },
+                  '&:active svg': { transform: 'scale(0.85)' },
+                }}
+              >
+                {item.icon}
+                <Box
+                  component="span"
+                  sx={{
+                    maxWidth: '100%',
+                    px: 0.25,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    fontSize: '0.72rem',
+                    lineHeight: 1,
+                    fontWeight: selected ? 800 : 600,
+                    color: selected ? 'text.primary' : 'text.secondary',
+                    transition: 'color .25s ease',
+                  }}
+                >
+                  {t(item.labelKey)}
+                </Box>
+              </ButtonBase>
+            )
+          })}
+        </Box>
       </Paper>
     </Box>
   )

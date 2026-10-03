@@ -162,7 +162,7 @@ export default function EventSheet({
             sx={{ width: 64, height: 64, flexShrink: 0, objectFit: 'cover', borderRadius: '18px' }}
           />
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography variant="h3" noWrap={!expanded} sx={{ textDecoration: 'underline' }}>
+            <Typography variant="h3" noWrap={!expanded}>
               {event.title}
             </Typography>
             <Typography variant="body2" noWrap sx={{ fontWeight: 700, color: 'text.secondary' }}>

@@ -126,7 +126,7 @@ export default function EventCard({ event, distanceKm, size = 'medium' }: Props)
       </Box>
 
       <Box sx={{ px: 1.5, pt: 1.25 }}>
-        <Typography variant="h3" noWrap sx={{ textDecoration: 'underline' }}>
+        <Typography variant="h3" noWrap>
           {event.title}
         </Typography>
         <Typography variant="body2" noWrap sx={{ fontWeight: 700, color: 'text.secondary' }}>

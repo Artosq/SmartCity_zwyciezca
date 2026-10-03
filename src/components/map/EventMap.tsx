@@ -56,6 +56,20 @@ function FocusSelected({ lat, lng }: { lat: number; lng: number }) {
   return null
 }
 
+// Gdy zmieni się rozmiar okna albo układu strony, mapa dociąga kafelki do nowych wymiarów
+// (bez tego na brzegu zostaje szary pas).
+function KeepSize() {
+  const map = useMap()
+
+  useEffect(() => {
+    const observer = new ResizeObserver(() => map.invalidateSize())
+    observer.observe(map.getContainer())
+    return () => observer.disconnect()
+  }, [map])
+
+  return null
+}
+
 // Kliknięcie w pustą mapę zamyka kartę wydarzenia.
 function MapClick({ onClick }: { onClick: () => void }) {
   useMapEvents({ click: onClick })
@@ -86,6 +100,7 @@ export default function EventMap({
         maxZoom={18}
       />
       <CityBounds city={city} />
+      <KeepSize />
       {selected && <FocusSelected lat={selected.lat} lng={selected.lng} />}
       <MapClick onClick={() => onSelectEvent(null)} />
       {/* Pobliskie pinezki łączą się w grupę z liczbą; kliknięcie albo przybliżenie ją rozwija. */}

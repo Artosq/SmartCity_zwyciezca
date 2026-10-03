@@ -89,7 +89,9 @@ dane leżą w Postgresie Supabase. Dostęp do danych pilnuje **Row Level Securit
 ### Wymagania produktowe
 
 Mobile-first, interfejs po polsku, duże i czytelne elementy (korzystają też seniorzy),
-dobry kontrast, pełna obsługa klawiaturą.
+dobry kontrast, pełna obsługa klawiaturą. Nawigacja: dolny pasek na telefonie, górny na komputerze
+(same ikony na średnich ekranach). Płynne przejścia między ekranami i subtelne animacje przycisków,
+wyłączane przy systemowym ustawieniu ograniczenia ruchu.
 
 ### Model danych
 
