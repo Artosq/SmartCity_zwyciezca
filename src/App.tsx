@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import AppLayout from './components/AppLayout'
 import CityPicker from './components/CityPicker'
 import { useCity } from './context/CityContext'
@@ -8,9 +8,18 @@ import ChatPage from './pages/ChatPage'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import MapPage from './pages/MapPage'
+import PrywatnoscPage from './pages/PrywatnoscPage'
+import RegulaminPage from './pages/RegulaminPage'
+import UstawieniaPage from './pages/UstawieniaPage'
 
 export default function App() {
   const { city, selectCity } = useCity()
+  const { pathname, search, hash } = useLocation()
+
+  // Podstrony mają adres z ukośnikiem na końcu (/mapa/). Hosting statyczny serwuje wtedy
+  // skopiowany przy buildzie plik mapa/index.html (scripts/spa-fallback.mjs), więc odświeżenie
+  // strony działa bez reguł przekierowań po stronie serwera.
+  if (!pathname.endsWith('/')) return <Navigate to={`${pathname}/${search}${hash}`} replace />
 
   // Najpierw wybór miasta — dopiero potem reszta aplikacji.
   if (!city) return <CityPicker onSelect={selectCity} />
@@ -24,6 +33,9 @@ export default function App() {
         <Route path="/czat" element={<ChatPage />} />
         <Route path="/ogloszenia" element={<AnnouncementsPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/regulamin" element={<RegulaminPage />} />
+        <Route path="/prywatnosc" element={<PrywatnoscPage />} />
+        <Route path="/ustawienia" element={<UstawieniaPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

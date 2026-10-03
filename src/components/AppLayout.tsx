@@ -21,13 +21,16 @@ import AddCircleIcon from '@mui/icons-material/AddCircle'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ChatIcon from '@mui/icons-material/Chat'
 import CloseIcon from '@mui/icons-material/Close'
+import GavelIcon from '@mui/icons-material/Gavel'
 import HomeIcon from '@mui/icons-material/Home'
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import MailIcon from '@mui/icons-material/Mail'
 import MapIcon from '@mui/icons-material/Map'
 import MenuIcon from '@mui/icons-material/Menu'
 import PersonIcon from '@mui/icons-material/Person'
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined'
 import SearchIcon from '@mui/icons-material/Search'
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import { useCity } from '../context/CityContext'
 import { CITIES } from '../data/cities'
 import { BRAND } from '../theme'
@@ -40,6 +43,13 @@ const NAV = [
   { to: '/ogloszenia', label: 'Ogłoszenia', icon: <MailIcon />, bottom: true },
   { to: '/dodaj', label: 'Dodaj', icon: <AddCircleIcon />, bottom: true },
   { to: '/login', label: 'Konto', icon: <PersonIcon />, bottom: true },
+]
+
+// Menu dodatkowe (hamburger) — NIE powiela głównej nawigacji; linki pomocnicze.
+const MORE = [
+  { to: '/regulamin', label: 'Warunki korzystania', icon: <GavelIcon /> },
+  { to: '/prywatnosc', label: 'Prywatność', icon: <LockOutlinedIcon /> },
+  { to: '/ustawienia', label: 'Ustawienia', icon: <SettingsOutlinedIcon /> },
 ]
 
 // Wspólna rama stron: nagłówek (miasto + menu) i nawigacja
@@ -223,10 +233,9 @@ export default function AppLayout() {
 
         <IconButton
           onClick={() => setMenuOpen(true)}
-          aria-label="Menu"
+          aria-label="Więcej"
           sx={{
-            display: { md: 'none' },
-            ml: 'auto',
+            ml: { xs: 'auto', md: 0 },
             width: 52,
             height: 52,
             borderRadius: '18px',
@@ -258,23 +267,26 @@ export default function AppLayout() {
       )}
 
       <Drawer anchor="right" open={menuOpen} onClose={() => setMenuOpen(false)}>
-        <Box component="nav" aria-label="Menu" sx={{ width: 280, pt: 2 }}>
-          <Typography variant="h2" sx={{ px: 3, pb: 1 }}>
+        <Box component="nav" aria-label="Więcej" sx={{ width: 280, pt: 2 }}>
+          <Typography variant="h2" sx={{ px: 3, pb: 0.5 }}>
             Sąsiedzko
           </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ px: 3, pb: 1 }}>
+            Więcej
+          </Typography>
           <List>
-            {NAV.map((item) => (
+            {MORE.map((item) => (
               <ListItemButton
                 key={item.to}
                 component={RouterLink}
                 to={item.to}
-                selected={item.to === active}
+                selected={pathname.startsWith(item.to)}
                 onClick={() => setMenuOpen(false)}
                 sx={{ minHeight: 56, px: 3 }}
               >
                 <ListItemIcon sx={{ color: 'primary.main', minWidth: 44 }}>{item.icon}</ListItemIcon>
                 <ListItemText
-                  primary={item.to === '/dodaj' ? 'Dodaj wydarzenie' : item.label}
+                  primary={item.label}
                   slotProps={{ primary: { sx: { fontWeight: 700 } } }}
                 />
               </ListItemButton>

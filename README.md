@@ -19,7 +19,7 @@ w minutę, także z jednego zdania napisanego lub podyktowanego przez AI.
 🚧 Hackathon w toku (3–4.10.2026). Termin zgłoszenia: **niedziela 4.10, 11:00**.
 Wersja online jest wdrażana od pierwszej godziny pracy.
 
-🔗 Demo na żywo: _(link Vercel pojawi się tutaj po pierwszym deployu)_
+🔗 Demo na żywo: https://smartcity-zwyciezca.onrender.com
 
 ---
 
@@ -68,7 +68,7 @@ Prosty, możliwy do obrony stack — bez zbędnych warstw.
 | Frontend     | **React + Vite + TypeScript + MUI (Material UI)**     |
 | Mapa         | **Leaflet + OpenStreetMap**, grupowanie pinezek       |
 | Backend/dane | **Supabase** — Postgres, Auth (magic link), Realtime  |
-| Hosting      | **Vercel**                                            |
+| Hosting      | **Render** (Static Site); build kopiuje `index.html` do folderów podstron, żeby odświeżenie `/mapa/` działało bez reguł serwera |
 | PWA          | manifest + ikony (instalacja na telefonie); bez trybu offline |
 
 **Jak to działa:** aplikacja React (SPA budowana przez Vite) działa w przeglądarce,

@@ -66,12 +66,13 @@ export default function ChatPage() {
   // 1. Load user's events
   useEffect(() => {
     if (!user) return
+    const userId = user.id
 
     async function loadMyEvents() {
       const { data } = await supabase
         .from('rsvps')
         .select('event_id, events(id, title)')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
       
       if (data) {
         const formattedEvents = data.map((item: any) => item.events)

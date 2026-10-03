@@ -58,7 +58,7 @@ export default function EventSheet({
 
   const loadAttendees = useCallback(async () => {
     const { data, error } = await supabase.from('rsvps').select('user_id').eq('event_id', event.id)
-    if (error) setError('Failed to fetch the list of attendees.')
+    if (error) setError('Nie udało się pobrać listy zapisanych.')
     else setAttendees(data.map((row) => row.user_id as string))
   }, [event.id])
 
@@ -79,12 +79,12 @@ export default function EventSheet({
     if (joined) {
         // Leave the event
         const { error } = await supabase.from('rsvps').delete().eq('event_id', event.id).eq('user_id', user.id)
-        if (error) setError('Failed to leave the event.')
+        if (error) setError('Nie udało się wypisać.')
     } else {
         // Join the event
         const { error } = await supabase.from('rsvps').insert({ event_id: event.id, user_id: user.id })
         if (error) {
-            setError('Failed to join the event.')
+            setError('Nie udało się zapisać.')
         } else {
             // Successfully joined, navigate to the chat page
             navigate('/czat')
@@ -97,15 +97,17 @@ export default function EventSheet({
 
   const places =
     attendees === null
-      ? 'Checking places...'
+      ? 'Sprawdzanie miejsc…'
       : event.capacity === null
-        ? `Attendees: ${count} (no limit)`
-        : `Available places: ${Math.max(event.capacity - count, 0)} of ${event.capacity}`
+        ? `Brak limitu miejsc · zapisanych: ${count}`
+        : full
+          ? `Brak wolnych miejsc (limit ${event.capacity})`
+          : `Wolne miejsca: ${event.capacity - count} z ${event.capacity}`
 
   return (
     <Paper
       component="section"
-      aria-label={`Event: ${event.title}`}
+      aria-label={`Wydarzenie: ${event.title}`}
       elevation={12}
       sx={{
         position: 'absolute',
@@ -133,7 +135,7 @@ export default function EventSheet({
             fontSize: '0.9rem',
           }}
         >
-          Popular
+          Popularne
         </Box>
       )}
       <Stack direction="row" sx={{ alignItems: 'flex-start' }}>
@@ -170,7 +172,7 @@ export default function EventSheet({
           </Box>
           {expanded ? <ExpandMoreIcon /> : <ExpandLessIcon />}
         </ButtonBase>
-        <IconButton onClick={onClose} aria-label="Close" sx={{ mt: 1, mr: 1 }}>
+        <IconButton onClick={onClose} aria-label="Zamknij" sx={{ mt: 1, mr: 1 }}>
           <CloseIcon />
         </IconButton>
       </Stack>
@@ -204,9 +206,9 @@ export default function EventSheet({
 
           {event.source_url && (
             <Typography variant="body2" color="text.secondary">
-              Imported automatically.{' '}
+              Zaimportowane automatycznie.{' '}
               <Link href={event.source_url} target="_blank" rel="noopener noreferrer">
-                See original ({SOURCE_NAMES[event.source ?? ''] ?? event.source})
+                Zobacz oryginał ({SOURCE_NAMES[event.source ?? ''] ?? event.source})
               </Link>
             </Typography>
           )}
@@ -227,11 +229,11 @@ export default function EventSheet({
 
           {!user ? (
             <Button component={RouterLink} to="/login" variant="contained" size="large">
-              Log in to join
+              Zaloguj się, aby dołączyć
             </Button>
           ) : joined ? (
             <Button variant="outlined" size="large" disabled={busy} onClick={toggleRsvp}>
-              Leave
+              Wypisz się
             </Button>
           ) : (
             <Button
@@ -240,10 +242,10 @@ export default function EventSheet({
               disabled={busy || full || attendees === null}
               onClick={toggleRsvp}
             >
-              {full ? 'No available places' : 'Join'}
+              {full ? 'Brak wolnych miejsc' : 'Dołącz'}
             </Button>
           )}
-          {joined && <Alert severity="success">You are registered for this event.</Alert>}
+          {joined && <Alert severity="success">Jesteś zapisany(-a) na to wydarzenie.</Alert>}
         </Stack>
       </Collapse>
     </Paper>
