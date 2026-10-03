@@ -24,11 +24,12 @@ export default function ChatPage() {
   useEffect(() => {
     if (!user) return
 
+    const uid = user.id
     async function loadMyEvents() {
       const { data } = await supabase
         .from('rsvps')
         .select('event_id, events(id, title)')
-        .eq('user_id', user.id)
+        .eq('user_id', uid)
       
       if (data) {
         const formattedEvents = data.map((item: any) => item.events)
@@ -152,7 +153,7 @@ export default function ChatPage() {
                 <IconButton onClick={() => setActiveEvent(null)} sx={{ mr: 1 }}>
                   <ArrowBackIcon />
                 </IconButton>
-                <Typography variant="subtitle1" fontWeight="bold" noWrap>
+                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }} noWrap>
                   {activeEvent.title}
                 </Typography>
               </Box>
