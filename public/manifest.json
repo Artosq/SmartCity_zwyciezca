@@ -1,11 +1,11 @@
 {
   "name": "Sąsiedzko — mapa sąsiedzkich wydarzeń",
   "short_name": "Sąsiedzko",
-  "description": "Mapa Krakowa z wydarzeniami organizowanymi przez mieszkańców.",
+  "description": "Mapa miasta z wydarzeniami organizowanymi przez mieszkańców.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#16a34a",
+  "theme_color": "#4b3bf0",
   "lang": "pl",
   "icons": [
     {

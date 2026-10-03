@@ -1,0 +1,21 @@
+html,
+body,
+#root {
+  height: 100%;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Większy, czytelny fokus — ważne dla obsługi klawiaturą i seniorów */
+*:focus-visible {
+  outline: 3px solid #4b3bf0;
+  outline-offset: 2px;
+}
+
+/* Pinezki (L.divIcon) — bez domyślnego białego tła Leafleta */
+.event-marker {
+  background: transparent;
+  border: none;
+}

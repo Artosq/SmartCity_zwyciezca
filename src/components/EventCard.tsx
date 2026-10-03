@@ -1,0 +1,107 @@
+import { Link as RouterLink } from 'react-router-dom'
+import Box from '@mui/material/Box'
+import ButtonBase from '@mui/material/ButtonBase'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import GroupIcon from '@mui/icons-material/Group'
+import PlaceIcon from '@mui/icons-material/Place'
+import ScheduleIcon from '@mui/icons-material/Schedule'
+import type { ReactNode } from 'react'
+import { formatShortDate, getEventImage } from '../lib/eventDisplay'
+import type { EventWithStats } from '../lib/types'
+
+interface Props {
+  event: EventWithStats
+  distanceKm: number
+  size?: 'large' | 'medium'
+}
+
+function Meta({ icon, label, children }: { icon: ReactNode; label: string; children: ReactNode }) {
+  return (
+    <Stack
+      direction="row"
+      spacing={0.5}
+      aria-label={label}
+      sx={{ alignItems: 'center', fontSize: '0.85rem', fontWeight: 700, whiteSpace: 'nowrap' }}
+    >
+      {icon}
+      <span>{children}</span>
+    </Stack>
+  )
+}
+
+// Karta wydarzenia z karuzeli: zdjęcie jako tło przycisku, pod nim tytuł, kategoria i liczby.
+// Kliknięcie otwiera wydarzenie na mapie.
+export default function EventCard({ event, distanceKm, size = 'medium' }: Props) {
+  const large = size === 'large'
+
+  return (
+    <ButtonBase
+      component={RouterLink}
+      to={`/mapa?event=${event.id}`}
+      sx={{
+        display: 'block',
+        flexShrink: 0,
+        width: large ? { xs: '84vw', sm: 420 } : { xs: 210, sm: 250 },
+        maxWidth: large ? 420 : undefined,
+        textAlign: 'left',
+        scrollSnapAlign: 'start',
+        borderRadius: 6,
+        '&:hover img, &:focus-visible img': { transform: 'scale(1.04)' },
+      }}
+    >
+      <Box
+        sx={{
+          height: large ? 180 : 140,
+          overflow: 'hidden',
+          borderRadius: large ? '44px' : '36px',
+          bgcolor: 'grey.200',
+          boxShadow: '0 6px 16px rgba(17,17,17,0.16)',
+        }}
+      >
+        <Box
+          component="img"
+          src={getEventImage(event)}
+          alt=""
+          loading="lazy"
+          sx={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            display: 'block',
+            transition: 'transform 0.25s',
+          }}
+        />
+      </Box>
+
+      <Box sx={{ px: 1.5, pt: 1.25 }}>
+        <Typography variant="h3" noWrap sx={{ textDecoration: 'underline' }}>
+          {event.title}
+        </Typography>
+        <Typography variant="body2" noWrap sx={{ fontWeight: 700, color: 'text.secondary' }}>
+          {event.category?.name ?? 'Wydarzenie'}
+        </Typography>
+        <Stack direction="row" sx={{ mt: 0.75, columnGap: 1.5, rowGap: 0.25, flexWrap: 'wrap' }}>
+          <Meta
+            label={`Zapisanych osób: ${event.attendees}`}
+            icon={<GroupIcon sx={{ fontSize: 18, color: 'primary.main' }} />}
+          >
+            {event.attendees}
+          </Meta>
+          <Meta
+            label={`${distanceKm.toFixed(1)} km od centrum miasta`}
+            icon={<PlaceIcon sx={{ fontSize: 18, color: 'error.main' }} />}
+          >
+            {distanceKm.toFixed(1)} km
+          </Meta>
+          <Meta
+            label={`Termin: ${formatShortDate(event.starts_at)}`}
+            icon={<ScheduleIcon sx={{ fontSize: 18, color: 'text.secondary' }} />}
+          >
+            {formatShortDate(event.starts_at)}
+          </Meta>
+        </Stack>
+      </Box>
+    </ButtonBase>
+  )
+}

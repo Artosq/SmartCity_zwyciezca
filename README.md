@@ -1,6 +1,6 @@
 # Sąsiedzko 🗺️
 
-> Mapa Krakowa z wydarzeniami organizowanymi przez mieszkańców.
+> Mapa miasta z wydarzeniami organizowanymi przez mieszkańców.
 > Projekt na **HackYeah 2026**, kategoria otwarta **Smart City**.
 
 Sąsiedzko to instalowalna aplikacja webowa (PWA), w której mieszkańcy dodają
@@ -25,9 +25,13 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
 
 ## Produkt — co robi aplikacja
 
-- **Mapa miasta** z pinezkami wydarzeń, filtry: kategoria i data.
-- **Dodawanie wydarzenia**: tytuł, opis, kategoria, miejsce na mapie, termin,
-  limit miejsc, widoczność (publiczne / tylko z linkiem).
+- **Strona główna** z propozycjami wydarzeń w wybranym mieście: najbliższe terminy,
+  dopasowane do preferencji (grupy docelowe) i „lubiane przez innych" (najwięcej zapisanych).
+  Karty ze zdjęciem wydarzenia, liczbą zapisanych, odległością od centrum i terminem.
+- **Mapa miasta** (wybór z listy miast) z pinezkami wydarzeń i filtrem grup docelowych:
+  małe dzieci, starsze dzieci, młodzież, dorośli, seniorzy, niepełnosprawni — każda grupa ma swój kolor.
+- **Dodawanie wydarzenia**: tytuł, opis, kategoria, grupy docelowe, miejsce na mapie,
+  termin, limit miejsc, opcjonalny link do zdjęcia. Wszystkie wydarzenia są publiczne — każdy może dołączyć.
 - **Szczegóły i zapis** jednym kliknięciem, licznik wolnych miejsc.
 - **Logowanie bez haseł** (imię + e-mail / magic link).
 - **PWA** — instalacja na ekranie głównym telefonu.
@@ -54,15 +58,15 @@ Prosty, możliwy do obrony stack — bez zbędnych warstw.
 
 | Warstwa      | Technologia                                           |
 |--------------|-------------------------------------------------------|
-| Frontend     | **Next.js (App Router) + TypeScript + Tailwind CSS**  |
+| Frontend     | **React + Vite + TypeScript + MUI (Material UI)**     |
 | Mapa         | **Leaflet + OpenStreetMap**                           |
 | Backend/dane | **Supabase** — Postgres, Auth (magic link), Realtime  |
 | Hosting      | **Vercel**                                            |
-| PWA          | manifest + service worker (instalacja, offline shell) |
+| PWA          | manifest (service worker w planach)                   |
 
-**Jak to działa:** Next.js renderuje interfejs, dane leżą w Postgresie Supabase.
-Dostęp do danych pilnuje **Row Level Security** (RLS) — adres prywatny i wydarzenia
-„tylko z linkiem" nie wyciekają do nieuprawnionych. Czat korzysta z Supabase Realtime
+**Jak to działa:** aplikacja React (SPA budowana przez Vite) działa w przeglądarce,
+dane leżą w Postgresie Supabase. Dostęp do danych pilnuje **Row Level Security** (RLS)
+— adres prywatny nie wycieka do nieuprawnionych. Czat korzysta z Supabase Realtime
 (subskrypcja zmian w tabeli `messages`). Sekrety trzymamy wyłącznie w zmiennych
 środowiskowych.
 
@@ -77,8 +81,9 @@ dobry kontrast, pełna obsługa klawiaturą.
 profiles        — id (=auth.users.id), name, email, created_at
 categories      — id, slug, name, color, icon
 events          — id, organizer_id→profiles, title, description, category_id→categories,
-                  lat, lng, place_name, address_private, starts_at, capacity,
-                  visibility(public|link_only), involves_children, share_token, created_at
+                  city, lat, lng, place_name, starts_at, capacity, target_groups[],
+                  image_url, involves_children, created_at
+event_addresses — event_id→events, address_private
 rsvps           — id, event_id→events, user_id→profiles, created_at  [UNIQUE(event_id,user_id)]
 messages        — id, scope(category|event), scope_id, user_id→profiles, content,
                   created_at, is_hidden
@@ -95,21 +100,21 @@ Relacje: `profiles` 1—N `events`/`rsvps`/`messages`/`announcements`;
 
 | Trasa              | Ekran                                                        |
 |--------------------|-------------------------------------------------------------|
-| `/`                | Mapa Krakowa z pinezkami + filtry (kategoria, data)         |
-| `/w/[id]`          | Szczegóły wydarzenia, zapis, licznik miejsc, czat wydarzenia |
+| `/`                | Strona główna: chipy preferencji + karuzele wydarzeń (najbliższe, preferencje, lubiane przez innych) |
+| `/mapa`            | Mapa wybranego miasta z pinezkami, filtr grup docelowych, rozwijany pasek wydarzenia (szczegóły, zapis, licznik miejsc) |
 | `/dodaj`           | Dodawanie wydarzenia (wybór miejsca na mapie)               |
-| `/login`           | Logowanie bez hasła (imię + e-mail / magic link)            |
-| `/czat`, `/czat/[kanal]` | Lista kanałów + czat w czasie rzeczywistym            |
-| `/ogloszenia`      | Tablica ogłoszeń + dodawanie                                |
+| `/login`           | Logowanie bez hasła (imię + e-mail / magic link), konto     |
+| `/czat`            | Czat w czasie rzeczywistym _(w budowie)_                    |
+| `/ogloszenia`      | Tablica ogłoszeń _(w budowie)_                              |
 | `/miasto`          | _(wyróżnik)_ mapa aktywności dzielnic                        |
 
 ---
 
 ## Bezpieczeństwo i dane
 
-- **Brak prawdziwych danych osobowych.** ~25 wymyślonych wydarzeń demo osadzonych
-  w prawdziwych miejscach Krakowa.
-- Wydarzenia **z udziałem dzieci** domyślnie „tylko z linkiem".
+- **Brak prawdziwych danych osobowych.** Wymyślone wydarzenia demo (`supabase/seed.sql`)
+  osadzone w prawdziwych miejscach.
+- **Wszystkie wydarzenia są publiczne** — widoczne na mapie, każdy zalogowany może dołączyć.
 - **Dokładny adres prywatny** widoczny dopiero po zapisie (egzekwowane przez RLS).
 - **Czat**: zgłaszanie wiadomości + prosty filtr wulgaryzmów.
 - **Sekrety** wyłącznie w zmiennych środowiskowych, nigdy w repozytorium.
@@ -121,8 +126,8 @@ Relacje: `profiles` 1—N `events`/`rsvps`/`messages`/`announcements`;
 Każda osoba jest właścicielem osobnych folderów — minimalizujemy konflikty w gicie.
 
 - **A (lead / fundament)** — szkielet, deploy Vercel, schemat Supabase + migracje + RLS,
-  logowanie, PWA, wspólne typy i komponenty UI (`/lib`, `/db`, `/components/ui`).
-- **B (mapa)** — Leaflet, pinezki, filtry, `/` i `/w/[id]` (`/components/map`).
+  logowanie, PWA, wspólne typy i komponenty UI (`src/lib`, `supabase`, `src/components`).
+- **B (mapa)** — Leaflet, pinezki, filtry, `/` i pasek wydarzenia (`src/components/map`).
 - **C (wydarzenia)** — formularz `/dodaj`, zapisy (RSVP), licznik, widoczność/adres.
 - **D (społeczność)** — czat realtime `/czat`, ogłoszenia `/ogloszenia`, moderacja.
 
@@ -142,15 +147,18 @@ Każda osoba jest właścicielem osobnych folderów — minimalizujemy konflikty
 ```bash
 npm install
 cp .env.example .env.local   # uzupełnij klucze Supabase
-npm run dev                  # http://localhost:3000
+npm run dev                  # http://localhost:5173
 ```
+
+Baza: w Supabase → SQL Editor uruchom `supabase/schema.sql` (świeża baza) albo migracje
+z `supabase/migrations/` (baza ze starszego schematu), a potem `supabase/seed.sql`.
+Seed sam tworzy 12 kont demo, 25 wydarzeń i zapisy — nie wymaga wcześniejszego logowania.
 
 Zmienne środowiskowe (`.env.local`):
 
 ```
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=    # tylko po stronie serwera
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=       # klucz publishable (publiczny)
 ```
 
 ---
@@ -164,13 +172,14 @@ _(utrzymujemy tę listę na bieżąco — wymóg regulaminu: rozumiemy i bronimy
 - _(do uzupełnienia)_ model LLM do funkcji „wydarzenie z jednego zdania".
 
 **Główne biblioteki**
-- Next.js, React, TypeScript, Tailwind CSS
+- React, Vite, TypeScript, MUI (Material UI), React Router
 - Leaflet + react-leaflet
 - @supabase/supabase-js
 
 **Źródła danych**
 - OpenStreetMap — kafelki mapy.
-- Dane wydarzeń: wymyślone na potrzeby demo, osadzone w prawdziwych lokalizacjach Krakowa.
+- Dane wydarzeń: wymyślone na potrzeby demo, osadzone w prawdziwych lokalizacjach.
+- Ilustracje kategorii (`public/img/events/`): własne grafiki SVG, używane gdy wydarzenie nie ma zdjęcia.
 
 ---
 

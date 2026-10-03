@@ -35,11 +35,16 @@ create table if not exists events (
   place_name        text,                               -- nazwa publiczna, np. "Park Jordana"
   starts_at         timestamptz not null,
   capacity          int,                                -- null = bez limitu
-  visibility        text not null default 'public'
-                      check (visibility in ('public','link_only')),
+  -- grupy docelowe (filtr i kolory pinezek na mapie); slugi jak w src/data/targetGroups.ts
+  target_groups     text[] not null default '{}'
+                      constraint events_target_groups_valid check (
+                        target_groups <@ array['male-dzieci','starsze-dzieci','mlodziez',
+                                               'dorosli','seniorzy','niepelnosprawni']::text[]
+                      ),
+  city              text,                               -- slug miasta (src/data/cities.ts)
+  image_url         text,                               -- zdjęcie; null = ilustracja kategorii
   involves_children boolean not null default false,
-  share_token       uuid not null default gen_random_uuid(),
-  created_at        timestamptz not null default now()
+  created_at      timestamptz not null default now()
 );
 
 -- Dokładny adres prywatny — osobna tabela, widoczny dopiero po zapisie
@@ -137,8 +142,7 @@ create policy "profiles_update_self" on profiles for update using (auth.uid() = 
 -- CATEGORIES: słownik tylko do odczytu dla wszystkich
 create policy "categories_select_all" on categories for select using (true);
 
--- EVENTS: każdy może czytać (mapa filtruje po visibility='public';
---         wydarzenia link_only otwiera się po bezpośrednim linku).
+-- EVENTS: wszystkie wydarzenia są publiczne — każdy może czytać i dołączyć.
 --         Dodaje tylko zalogowany, jako własne. Edytuje/usuwa organizator.
 create policy "events_select_all" on events for select using (true);
 create policy "events_insert_own" on events for insert
