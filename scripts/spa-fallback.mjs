@@ -3,7 +3,16 @@
 // po odświeżeniu strony pod adresem /mapa/. Lista musi odpowiadać trasom w src/App.tsx.
 import { copyFileSync, mkdirSync } from 'node:fs'
 
-const ROUTES = ['mapa', 'dodaj', 'czat', 'ogloszenia', 'login']
+const ROUTES = [
+  'mapa',
+  'dodaj',
+  'czat',
+  'ogloszenia',
+  'login',
+  'regulamin',
+  'prywatnosc',
+  'ustawienia',
+]
 
 for (const route of ROUTES) {
   mkdirSync(`dist/${route}`, { recursive: true })

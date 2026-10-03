@@ -155,6 +155,7 @@ Każda osoba jest właścicielem osobnych folderów — minimalizujemy konflikty
 npm install
 cp .env.example .env.local   # uzupełnij klucze Supabase
 npm run dev                  # http://localhost:5173
+npm run typecheck            # sprawdzenie typów (build go nie uruchamia, żeby nie blokować wdrożeń)
 ```
 
 Baza: w Supabase → SQL Editor uruchom `supabase/schema.sql` (świeża baza) albo migracje
