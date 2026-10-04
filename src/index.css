@@ -157,52 +157,93 @@ html {
   }
 }
 
-/* „Pokaż się": osoba widoczna na żywo — kółko z pulsującą obwódką */
+/* „Pokaż się": osoba na żywo — czerwone kółko z inicjałami, dwie rozchodzące się fale
+   i etykieta LIVE. Wyraźnie inne niż limonkowe pinezki wydarzeń i fioletowe spotkań. */
 .live-marker {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  border: 3px solid #fff;
-  background: #ec4899;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45);
-  font-size: 22px;
+  border: 4px solid #fff;
+  background: #ef4444;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.6);
+  font: 800 17px system-ui, sans-serif;
   line-height: 1;
 }
 .live-marker.mine {
-  background: #4b3bf0;
+  background: #111;
+  box-shadow: 0 4px 14px rgba(17, 17, 17, 0.5);
 }
+.live-marker.joiner {
+  background: #16a34a;
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.6);
+  font-size: 24px;
+}
+.live-marker::before,
 .live-marker::after {
   content: '';
   position: absolute;
-  inset: -3px;
+  inset: -4px;
   border-radius: 50%;
-  border: 3px solid currentColor;
-  color: #ec4899;
-  animation: livePulse 1.8s ease-out infinite;
+  border: 3px solid #ef4444;
+  animation: livePulse 2s ease-out infinite;
+  pointer-events: none;
 }
-.live-marker.mine::after {
-  color: #4b3bf0;
+.live-marker::after {
+  animation-delay: 1s;
+}
+.live-marker.joiner::before,
+.live-marker.joiner::after {
+  border-color: #16a34a;
+}
+.live-tag {
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 2px solid #fff;
+  background: #ef4444;
+  color: #fff;
+  font: 800 10px system-ui, sans-serif;
+  letter-spacing: 0.06em;
 }
 @keyframes livePulse {
   from {
     transform: scale(1);
-    opacity: 0.8;
+    opacity: 0.85;
   }
   to {
-    transform: scale(1.9);
+    transform: scale(2.1);
     opacity: 0;
   }
 }
-.live-marker.joiner {
-  background: #16a34a;
+
+/* Czerwona kropka „na żywo" (przycisk, pasek) */
+@keyframes liveDot {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+  }
 }
-.live-marker.joiner::after {
-  color: #16a34a;
+/* Czerwona fala przepływająca przez przycisk, gdy jestem live */
+@keyframes liveSweep {
+  from {
+    transform: translateX(-120%);
+  }
+  to {
+    transform: translateX(220%);
+  }
 }
+
 /* dymek osoby na mapie */
 .leaflet-popup.live-popup .leaflet-popup-content-wrapper {
   border-radius: 20px;

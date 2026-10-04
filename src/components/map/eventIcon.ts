@@ -57,18 +57,20 @@ export function getMeetupIcon(emoji: string) {
   return icon
 }
 
-// „Pokaż się": osoba widoczna na żywo. Własna pinezka jest fioletowa, pozostałe różowe.
-export function getLiveIcon(mine: boolean) {
-  const key = `live:${mine}`
+// „Pokaż się": osoba widoczna na żywo — czerwone kółko z inicjałami, pulsująca fala
+// i etykieta LIVE. Własna pinezka ma napis „TY", żeby łatwo odnaleźć siebie na mapie.
+export function getLiveIcon(name: string, mine: boolean) {
+  const initials = mine ? 'TY' : name.trim().slice(0, 2).toUpperCase() || '?'
+  const key = `live:${initials}:${mine}`
   const cached = iconCache.get(key)
   if (cached) return cached
 
   const icon = L.divIcon({
     className: 'event-marker',
-    html: `<div class="live-marker${mine ? ' mine' : ''}" aria-hidden="true">🚶</div>`,
-    iconSize: [44, 44],
-    iconAnchor: [22, 22],
-    popupAnchor: [0, -24],
+    html: `<div class="live-marker${mine ? ' mine' : ''}" aria-hidden="true">${initials}<span class="live-tag">LIVE</span></div>`,
+    iconSize: [52, 52],
+    iconAnchor: [26, 26],
+    popupAnchor: [0, -30],
   })
 
   iconCache.set(key, icon)
@@ -84,9 +86,9 @@ export function getJoinerIcon() {
   const icon = L.divIcon({
     className: 'event-marker',
     html: '<div class="live-marker joiner" aria-hidden="true">🏃</div>',
-    iconSize: [44, 44],
-    iconAnchor: [22, 22],
-    popupAnchor: [0, -24],
+    iconSize: [52, 52],
+    iconAnchor: [26, 26],
+    popupAnchor: [0, -30],
   })
 
   iconCache.set(key, icon)

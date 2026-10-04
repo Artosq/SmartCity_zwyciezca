@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import Alert from '@mui/material/Alert'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
@@ -10,15 +11,14 @@ import Fab from '@mui/material/Fab'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import SensorsIcon from '@mui/icons-material/Sensors'
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { LIVE_MINUTES, LIVE_NOTE_MAX, useLive } from '../../context/LiveContext'
 
 const SUGGESTIONS = ['Biegam, dołącz!', 'Spacer z psem, zapraszam', 'Mam czas na kawę', 'Gram w kosza, brakuje jednej osoby']
 
-// Duży przycisk na dole mapy. „Pokaż się" otwiera okno z notką; gdy jestem widoczny — „Ukryj się".
+// Duży biały przycisk z czerwoną kropką na dole mapy. „Pokaż się" otwiera okno z notką;
+// gdy jestem live, przez przycisk przepływa czerwona fala i służy on do ukrycia się.
 export default function ShowUpButton() {
-  const { available, userId, mine, show, hide } = useLive()
+  const { available, userId, live, show, hide } = useLive()
   const [open, setOpen] = useState(false)
   const [note, setNote] = useState('')
 
@@ -34,22 +34,59 @@ export default function ShowUpButton() {
     <>
       <Fab
         variant="extended"
-        color={mine ? 'default' : 'secondary'}
-        onClick={() => (mine ? hide() : setOpen(true))}
+        onClick={() => (live ? hide() : setOpen(true))}
+        aria-label={live ? 'Jesteś live. Ukryj się' : 'Pokaż się'}
         sx={{
           position: 'absolute',
           zIndex: 1000,
           left: '50%',
           bottom: 20,
-          ml: '-96px',
-          width: 192,
+          ml: '-100px',
+          width: 200,
           height: 56,
+          gap: 1.25,
+          overflow: 'hidden',
+          bgcolor: '#ffffff',
+          color: '#111111',
+          border: '2px solid',
+          borderColor: live ? '#ef4444' : 'transparent',
+          boxShadow: live ? '0 6px 20px rgba(239,68,68,0.45)' : '0 6px 20px rgba(17,17,17,0.25)',
           animation: 'popIn 0.3s ease 0.2s backwards',
-          ...(mine && { bgcolor: '#111111', color: '#ffffff', '&:hover': { bgcolor: '#27272a' } }),
+          '&:hover': { bgcolor: '#ffffff' },
+          // gdy jestem live, przez przycisk przepływa czerwona fala
+          '&::after': live
+            ? {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                left: 0,
+                width: '45%',
+                background:
+                  'linear-gradient(90deg, transparent 0%, rgba(239,68,68,0.38) 50%, transparent 100%)',
+                animation: 'liveSweep 1.8s ease-in-out infinite',
+                pointerEvents: 'none',
+              }
+            : undefined,
         }}
       >
-        {mine ? <VisibilityOffIcon sx={{ mr: 1 }} /> : <SensorsIcon sx={{ mr: 1 }} />}
-        {mine ? 'Ukryj się' : 'Pokaż się'}
+        <Box
+          component="span"
+          aria-hidden
+          sx={{
+            position: 'relative',
+            zIndex: 1,
+            flexShrink: 0,
+            width: 14,
+            height: 14,
+            borderRadius: '50%',
+            bgcolor: '#ef4444',
+            animation: live ? 'liveDot 1.4s ease-in-out infinite' : 'none',
+          }}
+        />
+        <Box component="span" sx={{ position: 'relative', zIndex: 1 }}>
+          {live ? 'Ukryj się' : 'Pokaż się'}
+        </Box>
       </Fab>
 
       <Dialog

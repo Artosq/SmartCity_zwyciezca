@@ -22,6 +22,10 @@ interface LiveContextValue {
   people: LivePresence[]
   // moje własne „Pokaż się" (null = jestem ukryty)
   mine: LivePresence | null
+  // czy się pokazuję — prawda od razu po kliknięciu, zanim baza potwierdzi zapis
+  live: boolean
+  // moje bieżące położenie prosto z GPS (bez czekania na bazę), gdy jestem live albo do kogoś idę
+  myPosition: { lat: number; lng: number } | null
   // kto idzie do mnie — z położeniem widocznym tylko dla mnie
   incoming: LiveJoin[]
   // do kogo ja idę (identyfikator osoby) albo null
@@ -47,6 +51,8 @@ export function LiveProvider({ children }: { children: ReactNode }) {
   const [people, setPeople] = useState<LivePresence[]>([])
   const [joins, setJoins] = useState<LiveJoin[]>([])
   const [error, setError] = useState('')
+  const [live, setLive] = useState(false)
+  const [myPosition, setMyPosition] = useState<{ lat: number; lng: number } | null>(null)
 
   // stan potrzebny w wywołaniach zwrotnych GPS — w refach, żeby nie zakładać obserwatora od nowa
   const watchId = useRef<number | null>(null)
@@ -81,11 +87,13 @@ export function LiveProvider({ children }: { children: ReactNode }) {
     if (watchId.current !== null) navigator.geolocation.clearWatch(watchId.current)
     watchId.current = null
     lastSent.current = null
+    setMyPosition(null)
   }, [])
 
   const hide = useCallback(async () => {
     settled.current = true
     sharing.current = null
+    setLive(false)
     stopWatchIfIdle()
     if (userId) await supabase.from('live_presence').delete().eq('user_id', userId)
     await reload()
@@ -112,6 +120,8 @@ export function LiveProvider({ children }: { children: ReactNode }) {
 
     watchId.current = navigator.geolocation.watchPosition(
       async ({ coords }) => {
+        // własną pinezkę przesuwamy przy każdym odczycie; do bazy wysyłamy rzadziej (niżej)
+        setMyPosition({ lat: coords.latitude, lng: coords.longitude })
         const now = Date.now()
         const last = lastSent.current
         const movedMeters = last
@@ -167,6 +177,7 @@ export function LiveProvider({ children }: { children: ReactNode }) {
       settled.current = true
       setError('')
       sharing.current = { note, expiresAt: new Date(Date.now() + LIVE_MINUTES * 60000).toISOString() }
+      setLive(true)
       lastSent.current = null // pierwszy odczyt wysyłamy od razu
       ensureWatch()
     },
@@ -239,7 +250,10 @@ export function LiveProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (settled.current || (!mine && !myJoin)) return
     settled.current = true
-    if (mine) sharing.current = { note: mine.note, expiresAt: mine.expires_at }
+    if (mine) {
+      sharing.current = { note: mine.note, expiresAt: mine.expires_at }
+      setLive(true)
+    }
     if (myJoin) joinedTarget.current = myJoin.target_id
     ensureWatch()
   }, [mine, myJoin, ensureWatch])
@@ -257,6 +271,8 @@ export function LiveProvider({ children }: { children: ReactNode }) {
     userId,
     people,
     mine,
+    live: live || mine !== null,
+    myPosition,
     incoming: joins.filter((row) => row.target_id === userId),
     joinedTargetId: myJoin?.target_id ?? null,
     error,

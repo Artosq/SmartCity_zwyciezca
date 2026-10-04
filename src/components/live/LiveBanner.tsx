@@ -11,7 +11,7 @@ const dot = {
   height: 12,
   borderRadius: '50%',
   bgcolor: '#ffffff',
-  animation: 'livePulse 1.6s ease-out infinite alternate',
+  animation: 'liveDot 1.4s ease-in-out infinite',
 } as const
 
 // Pasek pod nagłówkiem, widoczny na każdym ekranie: przypomina, że położenie jest udostępniane,
@@ -35,11 +35,11 @@ export default function LiveBanner() {
           direction="row"
           spacing={1.5}
           role="status"
-          sx={{ alignItems: 'center', px: 2, py: 1, bgcolor: '#ec4899', color: '#ffffff', animation: 'fadeInUp 0.3s ease' }}
+          sx={{ alignItems: 'center', px: 2, py: 1, bgcolor: '#dc2626', color: '#ffffff', animation: 'fadeInUp 0.3s ease' }}
         >
           <Box aria-hidden sx={dot} />
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography sx={{ fontWeight: 800, lineHeight: 1.2 }}>Jesteś widoczny(-a) na mapie</Typography>
+            <Typography sx={{ fontWeight: 800, lineHeight: 1.2 }}>Jesteś live na mapie</Typography>
             <Typography variant="body2" noWrap sx={{ opacity: 0.95 }}>
               „{mine.note}"
             </Typography>

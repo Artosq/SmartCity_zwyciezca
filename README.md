@@ -36,7 +36,8 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
   Błoniach, dołącz!") i jej dokładne położenie staje się widoczne na mapie na żywo — do 60 minut
   albo do kliknięcia „Ukryj się". Kliknięcie osoby pokazuje notkę i przycisk „Dołączam": ta osoba
   dostaje komunikat i widzi położenie dołączającego, żeby mogli się odnaleźć. Tylko dla zalogowanych
-  dorosłych (pilnuje baza); pasek „Jesteś widoczny" jest na każdym ekranie.
+  dorosłych (pilnuje baza); pasek „Jesteś live" jest na każdym ekranie. Osoby live mają na mapie
+  czerwone, pulsujące pinezki z inicjałami i etykietą LIVE, a własna pinezka („TY") idzie za GPS.
 - **Oceny organizatorów**: po terminie wydarzenia każda zapisana osoba może ocenić organizatora
   (0,5–5 gwiazdek, co pół), a po spotkaniu we dwoje obie osoby oceniają się nawzajem. Średnia jest
   widoczna na kartach wydarzeń i spotkań oraz na stronie Konto; bez ocen — „Nowy organizator".
