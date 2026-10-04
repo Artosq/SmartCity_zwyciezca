@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import Button from '@mui/material/Button'
 import ReportButton from '../components/ReportButton'
+import ProfileAvatar from '../components/ProfileAvatar'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { useLang } from '../i18n/LanguageContext'
@@ -27,10 +28,8 @@ const getSenderName = (profile: any) => {
   return profile.first_name || profile.name || profile.full_name || profile.username || 'Uczestnik'
 }
 
-// Helper: Get initials
-const getInitials = (name: string) => {
-  return name.substring(0, 2).toUpperCase()
-}
+// Helper: Get chosen avatar code (emoji) from a profile, or null for initials
+const getAvatar = (profile: any): string | null => profile?.avatar ?? null
 
 // Helper: Consistent color for avatars
 const stringToColor = (string: string) => {
@@ -381,9 +380,13 @@ export default function ChatPage() {
                         const name = getSenderName(p)
                         return (
                           <Box key={p.id} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 60 }}>
-                            <Avatar sx={{ width: 48, height: 48, bgcolor: stringToColor(name), mb: 0.5, border: '2px solid white', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>
-                              {getInitials(name)}
-                            </Avatar>
+                            <ProfileAvatar
+                              avatar={getAvatar(p)}
+                              name={name}
+                              size={48}
+                              bgcolor={stringToColor(name)}
+                              sx={{ mb: 0.5, border: '2px solid white', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}
+                            />
                             <Typography variant="caption" sx={{ fontWeight: 700, fontSize: '0.65rem', textAlign: 'center' }} noWrap>
                               {name.split(' ')[0]}
                             </Typography>
@@ -429,9 +432,7 @@ export default function ChatPage() {
                         {!isMe && (
                           <Box sx={{ width: '40px', flexShrink: 0 }}>
                             {showAvatar && (
-                              <Avatar sx={{ width: 40, height: 40, bgcolor: stringToColor(senderName), fontSize: '1rem', fontWeight: 'bold' }}>
-                                {getInitials(senderName)}
-                              </Avatar>
+                              <ProfileAvatar avatar={getAvatar(msg.profiles)} name={senderName} size={40} bgcolor={stringToColor(senderName)} />
                             )}
                           </Box>
                         )}

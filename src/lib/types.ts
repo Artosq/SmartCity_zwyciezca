@@ -13,14 +13,16 @@ export interface Profile {
   id: string
   name: string | null
   email: string | null
+  // wybrane emoji (kod, np. 'cat'); publiczne, null = inicjały imienia
+  avatar: string | null
   // publiczna średnia ocen (0,5–5) i ich liczba; null = brak ocen
   rating_avg: number | null
   rating_count: number
   created_at: string
 }
 
-// Organizator pokazywany przy wydarzeniu albo spotkaniu: imię i ocena.
-export type Organizer = Pick<Profile, 'name'> & Partial<Pick<Profile, 'rating_avg' | 'rating_count'>>
+// Organizator pokazywany przy wydarzeniu albo spotkaniu: imię, awatar i ocena.
+export type Organizer = Pick<Profile, 'name'> & Partial<Pick<Profile, 'avatar' | 'rating_avg' | 'rating_count'>>
 
 export interface EventItem {
   id: string

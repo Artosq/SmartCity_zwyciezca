@@ -1,8 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import Alert from '@mui/material/Alert'
-import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import ButtonBase from '@mui/material/ButtonBase'
 import Container from '@mui/material/Container'
 import Paper from '@mui/material/Paper'
 import Rating from '@mui/material/Rating'
@@ -11,23 +11,27 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import CakeOutlinedIcon from '@mui/icons-material/CakeOutlined'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
+import EmojiEmotionsOutlinedIcon from '@mui/icons-material/EmojiEmotionsOutlined'
 import LogoutIcon from '@mui/icons-material/Logout'
 import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined'
 import VerifiedIcon from '@mui/icons-material/Verified'
+import { AVATARS } from '../data/avatars'
 import { useProfile } from '../hooks/useProfile'
 import { supabase } from '../lib/supabase'
 import { BRAND } from '../theme'
 import ActivityCalendar from './ActivityCalendar'
 import HiddenContentNotice from './HiddenContentNotice'
 import PendingRatings from './PendingRatings'
+import ProfileAvatar from './ProfileAvatar'
 import SectionCard from './SectionCard'
 
 // Panel zalogowanego: awatar i ocena na górze, niżej kalendarz aktywności, data urodzenia i lista „Do oceny".
 export default function AccountPanel() {
-  const { user, loading, birthDate, isAdult, rating, saveBirthDate } = useProfile()
+  const { user, loading, birthDate, avatar, isAdult, rating, saveBirthDate, saveAvatar } = useProfile()
   const [draft, setDraft] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
+  const [avatarError, setAvatarError] = useState('')
 
   if (!user || loading) {
     return (
@@ -52,6 +56,13 @@ export default function AccountPanel() {
       setSaved(true)
       setDraft(null)
     }
+  }
+
+  // Kliknięcie w awatar: ten sam zaznaczony = usunięcie (powrót do inicjałów).
+  async function pickAvatar(id: string) {
+    const next = avatar === id ? null : id
+    const message = await saveAvatar(next)
+    setAvatarError(message ?? '')
   }
 
   return (
@@ -80,23 +91,19 @@ export default function AccountPanel() {
               background: `linear-gradient(120deg, ${BRAND.violet} 0%, #8b5cf6 55%, #ec4899 100%)`,
             }}
           />
-          <Avatar
+          <ProfileAvatar
+            avatar={avatar}
+            name={name}
+            size={104}
             sx={{
               position: 'relative',
-              width: 104,
-              height: 104,
               mx: 'auto',
-              fontSize: '2.4rem',
-              fontWeight: 800,
               color: BRAND.ink,
-              bgcolor: 'secondary.main',
               border: '5px solid #ffffff',
               boxShadow: '0 8px 22px rgba(17,17,17,0.2)',
               animation: 'popIn 0.4s ease 0.1s backwards',
             }}
-          >
-            {name.slice(0, 2).toUpperCase()}
-          </Avatar>
+          />
 
           <Stack direction="row" spacing={0.75} sx={{ justifyContent: 'center', alignItems: 'center', mt: 1.5 }}>
             <Typography variant="h1">{name}</Typography>
@@ -143,6 +150,41 @@ export default function AccountPanel() {
         </Paper>
 
         <HiddenContentNotice userId={user.id} />
+
+        <SectionCard
+          icon={<EmojiEmotionsOutlinedIcon />}
+          title="Twój awatar"
+          hint="Wybierz zwierzaka — zobaczą go sąsiedzi na czacie i przy spotkaniach. Kliknij ponownie, by wrócić do inicjałów."
+        >
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.25 }}>
+            {AVATARS.map((a) => {
+              const selected = avatar === a.id
+              return (
+                <ButtonBase
+                  key={a.id}
+                  onClick={() => pickAvatar(a.id)}
+                  aria-label={a.label}
+                  aria-pressed={selected}
+                  sx={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: '16px',
+                    fontSize: '1.9rem',
+                    bgcolor: selected ? 'primary.main' : '#eef2ff',
+                    border: '2px solid',
+                    borderColor: selected ? 'primary.main' : 'transparent',
+                    boxShadow: selected ? '0 4px 14px rgba(17,17,17,0.18)' : 'none',
+                    transition: 'transform 0.12s ease, box-shadow 0.12s ease',
+                    '&:hover': { transform: 'translateY(-2px)' },
+                  }}
+                >
+                  {a.emoji}
+                </ButtonBase>
+              )
+            })}
+          </Box>
+          {avatarError && <Alert severity="error" sx={{ mt: 1.5 }}>{avatarError}</Alert>}
+        </SectionCard>
 
         <SectionCard
           icon={<CalendarMonthIcon />}

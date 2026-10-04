@@ -20,7 +20,7 @@ export function useMeetups(city: City) {
         .gte('starts_at', new Date().toISOString())
         .order('starts_at')
 
-    let { data, error } = await query('name, rating_avg, rating_count')
+    let { data, error } = await query('name, avatar, rating_avg, rating_count')
     // zapas dla bazy bez migracji 006 (brak kolumn z oceną)
     if (error) ({ data, error } = await query('name'))
     if (error) {

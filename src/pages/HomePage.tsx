@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react'
+import { useMemo, useState, useEffect, type ReactNode } from 'react'
 import { Link as RouterLink, useSearchParams } from 'react-router-dom'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
@@ -21,11 +21,12 @@ import { distanceKm } from '../lib/eventDisplay'
 import { isSupabaseConfigured } from '../lib/supabase'
 import type { EventWithStats } from '../lib/types'
 
+// Dodany import useProfile zeby zaciagac zainteresowania usera
+import { useProfile } from '../hooks/useProfile'
+
 const PREFERENCES_STORAGE_KEY = 'sasiedzko.preferences'
 const CAROUSEL_LIMIT = 10
 
-// Porównanie bez uwzględniania wielkości liter i polskich znaków (ł, ó, ś…),
-// żeby „lodz" znajdowało „Łódź".
 const normalize = (text: string) =>
   text.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
 
@@ -55,10 +56,8 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   )
 }
 
-// Strona główna: przełącznik między wydarzeniami a spotkaniami we dwoje (?widok=1na1).
 export default function HomePage({ city }: { city: City }) {
   const [searchParams, setSearchParams] = useSearchParams()
-  // wyszukiwarka z nagłówka dotyczy wydarzeń
   const mode: Mode =
     searchParams.get('widok') === '1na1' && !searchParams.get('q') ? '1na1' : 'wydarzenia'
 
@@ -77,7 +76,6 @@ export default function HomePage({ city }: { city: City }) {
   )
 }
 
-// Skąd liczymy odległości na kartach. Pytanie o lokalizację pada dopiero po kliknięciu.
 function DistanceHint() {
   const { position, status, request } = useUserLocation()
   if (status === 'unsupported') return null
@@ -105,25 +103,54 @@ function EventsView({ city }: { city: City }) {
   const { t } = useLang()
   const origin = useUserLocation().position ?? city.center
   const { events, status } = useCityEvents(city)
-  const [preferences, setPreferences] = useState(readPreferences)
+  
+  // Zaciagamy dane z profilu
+  const { interests: profileInterests, loading: profileLoading } = useProfile()
+  
+  const [preferences, setPreferences] = useState<string[]>([])
+  const [hasManuallyChanged, setHasManuallyChanged] = useState(false)
   const [searchParams] = useSearchParams()
   const query = (searchParams.get('q') ?? '').trim()
 
+  // Inicjalizacja preferencji: profil usera (jesli sa) -> localStorage -> []
+  useEffect(() => {
+    if (!profileLoading && !hasManuallyChanged) {
+      if (profileInterests && profileInterests.length > 0) {
+        setPreferences(profileInterests)
+      } else {
+        setPreferences(readPreferences())
+      }
+    }
+  }, [profileInterests, profileLoading, hasManuallyChanged])
+
   const savePreferences = (next: string[]) => {
     setPreferences(next)
+    setHasManuallyChanged(true)
     try {
       localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(next))
     } catch {
-      // brak dostępu do localStorage — preferencje działają tylko do odświeżenia strony
+      // ignore
     }
   }
 
-  // events są posortowane po terminie, więc „najbliższe" to po prostu początek listy.
   const upcoming = events.slice(0, CAROUSEL_LIMIT)
   const preferred = useMemo(
     () =>
       events
-        .filter((event) => event.target_groups.some((group) => preferences.includes(group)))
+        .filter((event) => {
+          // .some() гарантирует логику ИЛИ (достаточно совпадения хотя бы одного интереса)
+          return preferences.some((pref) => {
+            const prefLower = pref.toLowerCase()
+            
+            const inGroups = event.target_groups?.some(g => g.toLowerCase() === prefLower)
+            
+            const inCategory = 
+              event.category?.name?.toLowerCase() === prefLower || 
+              event.category?.slug?.toLowerCase() === prefLower
+              
+            return inGroups || inCategory
+          })
+        })
         .slice(0, CAROUSEL_LIMIT),
     [events, preferences],
   )
@@ -132,7 +159,6 @@ function EventsView({ city }: { city: City }) {
     [events],
   )
 
-  // Wyniki wyszukiwania: dopasowanie po tytule, opisie, miejscu i kategorii.
   const matches = useMemo(() => {
     if (!query) return []
     const q = normalize(query)

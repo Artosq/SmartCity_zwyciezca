@@ -11,6 +11,7 @@ create table if not exists profiles (
   id         uuid primary key references auth.users(id) on delete cascade,
   name       text,
   email      text,
+  avatar     text,   -- wybrane emoji (kod, np. 'cat'); publiczne, null = inicjały imienia
   created_at timestamptz not null default now()
 );
 
@@ -413,10 +414,10 @@ $$;
 alter table profiles add column if not exists rating_avg numeric(3,2);
 alter table profiles add column if not exists rating_count int not null default 0;
 
--- Użytkownik może zmieniać w swoim profilu tylko imię — nie własną średnią ocen.
+-- Użytkownik może zmieniać w swoim profilu imię i awatar — nie własną średnią ocen.
 revoke insert, update on profiles from authenticated;
 grant insert (id, name, email) on profiles to authenticated;
-grant update (name) on profiles to authenticated;
+grant update (name, avatar) on profiles to authenticated;
 
 -- Pojedyncza ocena: od 0,5 do 5 gwiazdek, co pół.
 --   scope = 'event'  → uczestnik ocenia organizatora wydarzenia
