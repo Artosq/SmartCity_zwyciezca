@@ -10,14 +10,15 @@ kliknięciem i rozmawiają na tematycznych czatach.
 
 **Dlaczego Smart City:** pokazujemy, gdzie w mieście tętni życie sąsiedzkie, a gdzie
 go brakuje, i obniżamy barierę wejścia dla oddolnych inicjatyw — wydarzenie powstaje
-w minutę. W planach: tworzenie wydarzenia z jednego zdania przez AI (opis niżej, jeszcze niewdrożone).
+w minutę, a dzięki AI („wydarzenie z jednego zdania") nawet szybciej: wystarczy napisać
+lub podyktować jedno zdanie, a formularz wypełnia się sam.
 
 ---
 
 ## Status
 
-🚧 Hackathon w toku (3–4.10.2026). Termin zgłoszenia: **niedziela 4.10, 11:00**.
-Wersja online jest wdrażana od pierwszej godziny pracy.
+✅ Wersja zgłoszeniowa (HackYeah 2026, 3–4.10.2026). Wszystkie funkcje poniżej działają
+pod publicznym linkiem; wyróżnik „wydarzenie z jednego zdania" (AI) jest wdrożony.
 
 🔗 Demo na żywo: https://smartcity-zwyciezca.onrender.com
 
@@ -50,8 +51,12 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
   rekreacyjne, integracyjne, celebracyjne, inne; cel nie powiela grup docelowych) oraz
   spotkania we dwoje z podziałem na rodzaje. Spotkania we dwoje widzą na mapie tylko
   zalogowani dorośli.
-- **Dodawanie wydarzenia**: tytuł, opis, kategoria, grupy docelowe, miejsce na mapie,
+- **Dodawanie wydarzenia**: tytuł, opis, cel (kategoria), grupy docelowe, miejsce na mapie,
   termin, limit miejsc, opcjonalne zdjęcie przesyłane z pliku (Supabase Storage, do 5 MB). Wszystkie wydarzenia są publiczne — każdy może dołączyć.
+- **Wydarzenie z jednego zdania (AI)**: na górze formularza dodawania wpisujesz albo dyktujesz głosem
+  (rozpoznawanie mowy w przeglądarce) jedno zdanie — np. „urodziny babci w sobotę o 15 w parku Jordana,
+  do 10 osób, dla seniorów" — a Claude (Anthropic) wypełnia tytuł, opis, cel, grupy docelowe, termin,
+  miejsce i limit miejsc. Klucz API trzyma się w sekretach funkcji brzegowej Supabase (nigdy we froncie).
 - **Szczegóły i zapis** jednym kliknięciem, licznik wolnych miejsc.
 - **Bot importujący wydarzenia** (`npm run bot`): raz dziennie losuje kilka wydarzeń z Karnetu
   (miejski kalendarz Krakowa) zaczynających się w ciągu 3 dni, dobiera kategorię i grupy docelowe
@@ -73,6 +78,9 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
 - **Filtr wulgaryzmów**: wydarzenia, spotkania i notki „Pokaż się" z wulgaryzmami są odrzucane
   w formularzu i dodatkowo przez bazę, więc filtra nie da się obejść.
 - **Zgłaszanie**: przycisk „Zgłoś" przy wiadomościach, wydarzeniach, spotkaniach i osobach na mapie.
+- **Profil (Konto)**: kalendarz aktywności, data urodzenia (prywatna), średnia ocen oraz **awatar do wyboru**
+  — zestaw emoji-zwierzaków (kotek, piesek, lisek…), widoczny publicznie na czacie i przy spotkaniach we dwoje;
+  bez wyboru pokazujemy inicjały imienia. Opcjonalnie telefon, krótkie „o mnie" i zainteresowania.
 - **Konto demo** (tymczasowe, na prezentację): przycisk na ekranie logowania tworzy anonimowe konto
   bez e-maila, od razu pełnoletnie — do sprawdzania wszystkich funkcji. Wymaga włączenia
   anonimowych logowań w Supabase; przed prawdziwym uruchomieniem do usunięcia.
@@ -80,17 +88,17 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
 - **PWA** — instalacja na ekranie głównym telefonu.
 - **Czat w czasie rzeczywistym** — kanał dla każdej kategorii i każdego wydarzenia.
 
-### Wyróżniki (zaplanowane — jeszcze niewdrożone)
+### Wyróżniki
 
-1. **Wydarzenie z jednego zdania** — „urodziny babci w sobotę o 15 w parku Jordana,
-   do 10 osób" → AI wypełnia formularz.
-2. **Podpowiedź miejsca** — lista bezpłatnych przestrzeni miejskich (biblioteki,
+1. **Wydarzenie z jednego zdania (AI)** — ✅ **wdrożone**. „urodziny babci w sobotę o 15 w parku
+   Jordana, do 10 osób" → Claude wypełnia formularz; można też podyktować zdanie głosem.
+2. **Podpowiedź miejsca** — _(zaplanowane)_ lista bezpłatnych przestrzeni miejskich (biblioteki,
    domy kultury, kluby seniora) pasujących do wydarzenia.
-3. **Widok dla miasta** — mapa aktywności dzielnic.
+3. **Widok dla miasta** — _(zaplanowane)_ mapa aktywności dzielnic.
 
 ### Poza zakresem (świadomie)
 
-Płatności, powiadomienia push, aplikacje natywne, rozbudowane profile.
+Płatności, powiadomienia push, aplikacje natywne.
 
 ---
 
@@ -102,15 +110,17 @@ Prosty, możliwy do obrony stack — bez zbędnych warstw.
 |--------------|-------------------------------------------------------|
 | Frontend     | **React + Vite + TypeScript + MUI (Material UI)**     |
 | Mapa         | **Leaflet + OpenStreetMap**, grupowanie pinezek       |
-| Backend/dane | **Supabase** — Postgres, Auth (magic link), Realtime  |
+| Backend/dane | **Supabase** — Postgres, Auth (magic link), Realtime, Storage |
+| AI           | **Supabase Edge Function (Deno)** `parse-event` woła **Claude (Anthropic)** — „wydarzenie z jednego zdania"; klucz API tylko w sekretach funkcji |
 | Hosting      | **Render** (Static Site); build kopiuje `index.html` do folderów podstron, żeby odświeżenie `/mapa/` działało bez reguł serwera |
 | PWA          | manifest + ikony (instalacja na telefonie); bez trybu offline |
 
 **Jak to działa:** aplikacja React (SPA budowana przez Vite) działa w przeglądarce,
 dane leżą w Postgresie Supabase. Dostęp do danych pilnuje **Row Level Security** (RLS)
 — adres prywatny nie wycieka do nieuprawnionych. Czat korzysta z Supabase Realtime
-(subskrypcja zmian w tabeli `messages`). Sekrety trzymamy wyłącznie w zmiennych
-środowiskowych.
+(subskrypcja zmian w tabeli `messages`). Funkcja AI „wydarzenie z jednego zdania" nie dotyka
+klucza Anthropic we froncie — zdanie trafia do funkcji brzegowej (Deno) `parse-event`, a ta woła
+Claude z kluczem trzymanym w sekretach funkcji. Sekrety trzymamy wyłącznie w zmiennych środowiskowych.
 
 ### Wymagania produktowe
 
@@ -130,7 +140,7 @@ wyłączane przy systemowym ustawieniu ograniczenia ruchu.
 ### Model danych
 
 ```
-profiles        — id (=auth.users.id), name, rating_avg, rating_count, created_at (publiczny; e-mail zostaje tylko w auth.users)
+profiles        — id (=auth.users.id), name, avatar (emoji), rating_avg, rating_count, phone, bio, interests[], created_at (publiczny; e-mail zostaje tylko w auth.users)
 profile_private — id→profiles, birth_date (widoczna tylko dla właściciela)
 live_presence   — user_id→profiles (PK), note, lat, lng, updated_at, expires_at
 live_joins      — target_id→live_presence, joiner_id→profiles, lat, lng, updated_at  [PK(target, joiner)]
@@ -142,7 +152,7 @@ reports         — id, reporter_id, target_type(message|event|meetup|user|meetu
 admin_log       — id, admin_id, action, target_type, target_id, details, created_at
 ratings         — id, rater_id→profiles, ratee_id→profiles, scope(event|meetup), scope_id, stars,
                   created_at  [UNIQUE(rater_id, scope, scope_id)]
-categories      — id, slug, name, color, icon
+categories      — id, slug, name, color, icon (cele wydarzenia: edukacyjne, sportowe, kulturalne, rekreacyjne, integracyjne, celebracyjne, inne)
 events          — id, organizer_id→profiles, title, description, category_id→categories,
                   city, lat, lng, place_name, starts_at, capacity, target_groups[],
                   image_url, involves_children, source, source_url, external_id, created_at
@@ -167,8 +177,8 @@ Relacje: `profiles` 1—N `events`/`rsvps`/`messages`/`announcements`;
 |--------------------|-------------------------------------------------------------|
 | `/`                | Strona główna z przełącznikiem: wydarzenia (chipy preferencji + karuzele) albo „We dwoje" (`?widok=1na1`) |
 | `/mapa`            | Mapa miasta z grupowanymi pinezkami wydarzeń i spotkań we dwoje (18+), menu filtrów, rozwijana karta wydarzenia |
-| `/dodaj`           | Dodawanie wydarzenia albo propozycji spotkania we dwoje (wybór miejsca na mapie) |
-| `/login`           | Logowanie bez hasła (imię + e-mail / magic link); Konto: kalendarz miesiąca z aktywnościami (zapisy, własne wydarzenia, spotkania we dwoje), data urodzenia, własna ocena, lista „Do oceny" |
+| `/dodaj`           | Dodawanie wydarzenia (z opcją „wydarzenie z jednego zdania" — AI + dyktowanie głosem) albo propozycji spotkania we dwoje (wybór miejsca na mapie) |
+| `/login`           | Logowanie bez hasła (imię + e-mail / magic link); Konto: wybór awatara (emoji), kalendarz miesiąca z aktywnościami (zapisy, własne wydarzenia, spotkania we dwoje), data urodzenia, własna ocena, lista „Do oceny" |
 | `/czat`            | Czat w czasie rzeczywistym: kanał dla każdego wydarzenia, lista uczestników, nieprzeczytane wiadomości, separatory dni, zgłaszanie |
 | `/admin`           | Panel administratora: zgłoszenia, flagi, czaty, treści, użytkownicy, Pomoc, dziennik (tylko dla kont z tabeli `admins`) |
 | `/pomoc`           | Pomoc: wyszukiwarka i FAQ z rozwijanymi odpowiedziami, „Napisz do nas", „Zgłoś błąd", linki do regulaminu i polityki prywatności |
@@ -230,6 +240,13 @@ Codzienne uruchamianie: dodaj sekrety `VITE_SUPABASE_URL` i `SUPABASE_SERVICE_RO
 w GitHub → Settings → Secrets and variables → Actions.
 Seed sam tworzy 12 kont demo, 25 wydarzeń i zapisy — nie wymaga wcześniejszego logowania.
 
+AI („wydarzenie z jednego zdania") — funkcja brzegowa Supabase:
+
+```bash
+supabase secrets set ANTHROPIC_API_KEY=sk-ant-...   # klucz tylko w sekretach funkcji
+supabase functions deploy parse-event
+```
+
 Zmienne środowiskowe (`.env.local`):
 
 ```
@@ -249,9 +266,12 @@ _(utrzymujemy tę listę na bieżąco — wymóg regulaminu: rozumiemy i bronimy
 **Narzędzia AI**
 - Claude Code (Anthropic) — asystent przy pisaniu kodu; większość implementacji powstała we współpracy z nim
   (każdą decyzję rozumiemy i potrafimy obronić).
-- **W samej aplikacji nie używamy jeszcze modelu LLM.** Klasyfikację wydarzeń importowanych przez bota
-  (kategoria + grupy docelowe) robią reguły słów kluczowych, nie AI — świadomie, bo jest przewidywalna i darmowa.
-- Planowana funkcja „wydarzenie z jednego zdania" (LLM wypełniający formularz) nie została jeszcze wdrożona.
+- **LLM w aplikacji — „wydarzenie z jednego zdania".** Claude (Anthropic) przez funkcję brzegową Supabase
+  (`supabase/functions/parse-event`) zamienia jedno zdanie na pola formularza. Używamy wywołania narzędzia
+  (tool use) ze ścisłym schematem — kategoria i grupy docelowe są ograniczone do listy z bazy, więc model
+  nie wymyśla wartości spoza enumów. Klucz `ANTHROPIC_API_KEY` trzyma się wyłącznie w sekretach funkcji.
+- **Klasyfikacja wydarzeń bota to nie AI.** Kategorię i grupy docelowe wydarzeń importowanych z Karnetu
+  dobierają reguły słów kluczowych — świadomie, bo są przewidywalne, darmowe i nie wymagają wywołań sieci.
 
 **Główne biblioteki**
 - React, Vite, TypeScript, MUI (Material UI), React Router
