@@ -10,7 +10,7 @@ kliknięciem i rozmawiają na tematycznych czatach.
 
 **Dlaczego Smart City:** pokazujemy, gdzie w mieście tętni życie sąsiedzkie, a gdzie
 go brakuje, i obniżamy barierę wejścia dla oddolnych inicjatyw — wydarzenie powstaje
-w minutę, także z jednego zdania napisanego lub podyktowanego przez AI.
+w minutę. W planach: tworzenie wydarzenia z jednego zdania przez AI (opis niżej, jeszcze niewdrożone).
 
 ---
 
@@ -79,7 +79,7 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
 - **PWA** — instalacja na ekranie głównym telefonu.
 - **Czat w czasie rzeczywistym** — kanał dla każdej kategorii i każdego wydarzenia.
 
-### Wyróżniki (robimy po domknięciu podstaw 1–5)
+### Wyróżniki (zaplanowane — jeszcze niewdrożone)
 
 1. **Wydarzenie z jednego zdania** — „urodziny babci w sobotę o 15 w parku Jordana,
    do 10 osób" → AI wypełnia formularz.
@@ -89,7 +89,7 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
 
 ### Poza zakresem (świadomie)
 
-Płatności, powiadomienia push, aplikacje natywne, rozbudowane profile, panel admina.
+Płatności, powiadomienia push, aplikacje natywne, rozbudowane profile.
 
 ---
 
@@ -168,11 +168,11 @@ Relacje: `profiles` 1—N `events`/`rsvps`/`messages`/`announcements`;
 | `/mapa`            | Mapa miasta z grupowanymi pinezkami wydarzeń i spotkań we dwoje (18+), menu filtrów, rozwijana karta wydarzenia |
 | `/dodaj`           | Dodawanie wydarzenia albo propozycji spotkania we dwoje (wybór miejsca na mapie) |
 | `/login`           | Logowanie bez hasła (imię + e-mail / magic link); Konto: kalendarz miesiąca z aktywnościami (zapisy, własne wydarzenia, spotkania we dwoje), data urodzenia, własna ocena, lista „Do oceny" |
-| `/czat`            | Czat w czasie rzeczywistym _(w budowie)_                    |
+| `/czat`            | Czat w czasie rzeczywistym: kanał dla każdego wydarzenia, lista uczestników, nieprzeczytane wiadomości, separatory dni, zgłaszanie |
 | `/admin`           | Panel administratora: zgłoszenia, flagi, czaty, treści, użytkownicy, Pomoc, dziennik (tylko dla kont z tabeli `admins`) |
 | `/pomoc`           | Pomoc: wyszukiwarka i FAQ z rozwijanymi odpowiedziami, „Napisz do nas", „Zgłoś błąd", linki do regulaminu i polityki prywatności |
 | `/bezpieczna-siec` | Bezpieczna sieć: porady, lekcje i quiz o bezpieczeństwie w internecie dla seniorów oraz dzieci i młodzieży |
-| `/miasto`          | _(wyróżnik)_ mapa aktywności dzielnic                        |
+| `/miasto`          | _(wyróżnik — zaplanowany, jeszcze niewdrożony)_ mapa aktywności dzielnic |
 
 ---
 
@@ -195,7 +195,7 @@ Relacje: `profiles` 1—N `events`/`rsvps`/`messages`/`announcements`;
 
 Każda osoba jest właścicielem osobnych folderów — minimalizujemy konflikty w gicie.
 
-- **A (lead / fundament)** — szkielet, deploy Vercel, schemat Supabase + migracje + RLS,
+- **A (lead / fundament)** — szkielet, deploy Render, schemat Supabase + migracje + RLS,
   logowanie, PWA, wspólne typy i komponenty UI (`src/lib`, `supabase`, `src/components`).
 - **B (mapa)** — Leaflet, pinezki, filtry, `/` i pasek wydarzenia (`src/components/map`).
 - **C (wydarzenia)** — formularz `/dodaj`, zapisy (RSVP), licznik, widoczność/adres.
@@ -246,13 +246,17 @@ FACEBOOK_ACCESS_TOKEN=        # opcjonalnie: token do Graph API
 _(utrzymujemy tę listę na bieżąco — wymóg regulaminu: rozumiemy i bronimy każdej decyzji)_
 
 **Narzędzia AI**
-- Claude Code (Anthropic) — wsparcie przy pisaniu kodu.
-- _(do uzupełnienia)_ model LLM do funkcji „wydarzenie z jednego zdania".
+- Claude Code (Anthropic) — asystent przy pisaniu kodu; większość implementacji powstała we współpracy z nim
+  (każdą decyzję rozumiemy i potrafimy obronić).
+- **W samej aplikacji nie używamy jeszcze modelu LLM.** Klasyfikację wydarzeń importowanych przez bota
+  (kategoria + grupy docelowe) robią reguły słów kluczowych, nie AI — świadomie, bo jest przewidywalna i darmowa.
+- Planowana funkcja „wydarzenie z jednego zdania" (LLM wypełniający formularz) nie została jeszcze wdrożona.
 
 **Główne biblioteki**
 - React, Vite, TypeScript, MUI (Material UI), React Router
 - Leaflet + react-leaflet, react-leaflet-cluster (grupowanie pinezek)
-- @supabase/supabase-js
+- @supabase/supabase-js (Postgres, Auth, Realtime, Storage na zdjęcia)
+- Wielojęzyczność (PL/EN) i animacje: własne, bez dodatkowych zależności (lekki kontekst + CSS).
 
 **Źródła danych**
 - OpenStreetMap — kafelki mapy.
