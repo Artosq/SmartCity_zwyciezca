@@ -49,7 +49,7 @@ export default function ShowUpButton() {
           bgcolor: '#ffffff',
           color: '#111111',
           border: '2px solid',
-          borderColor: live ? '#ef4444' : 'transparent',
+          borderColor: live ? '#dc2626' : 'transparent',
           boxShadow: live ? '0 6px 20px rgba(239,68,68,0.45)' : '0 6px 20px rgba(17,17,17,0.25)',
           animation: 'popIn 0.3s ease 0.2s backwards',
           '&:hover': { bgcolor: '#ffffff' },
@@ -80,7 +80,7 @@ export default function ShowUpButton() {
             width: 14,
             height: 14,
             borderRadius: '50%',
-            bgcolor: '#ef4444',
+            bgcolor: '#dc2626',
             animation: live ? 'liveDot 1.4s ease-in-out infinite' : 'none',
           }}
         />

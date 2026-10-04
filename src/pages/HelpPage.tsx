@@ -134,7 +134,7 @@ function SupportDialog({ kind, onClose }: { kind: Kind; onClose: () => void }) {
                 type="email"
                 value={contact}
                 onChange={(e) => setContact(e.target.value)}
-                helperText="Opcjonalnie — podaj, jeśli chcesz dostać odpowiedź."
+                helperText="Opcjonalnie. Podaj, jeśli chcesz dostać odpowiedź."
               />
               {status === 'error' && (
                 <Alert severity="error">
@@ -211,7 +211,7 @@ export default function HelpPage() {
           </Typography>
           {visible.length === 0 ? (
             <Typography color="text.secondary">
-              Nie znaleźliśmy odpowiedzi na „{query.trim()}". Napisz do nas — pomożemy.
+              Nie znaleźliśmy odpowiedzi na „{query.trim()}". Napisz do nas, pomożemy.
             </Typography>
           ) : (
             <Stack spacing={1.25}>

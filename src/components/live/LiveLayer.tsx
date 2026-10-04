@@ -41,7 +41,7 @@ export default function LiveLayer() {
       {me && (
         <Marker position={[me.lat, me.lng]} icon={getLiveIcon('', true)} zIndexOffset={1100}>
           <Popup className="live-popup" closeButton={false}>
-            <Typography sx={{ fontWeight: 800, fontSize: '1.05rem' }}>To Ty — jesteś live</Typography>
+            <Typography sx={{ fontWeight: 800, fontSize: '1.05rem' }}>To Ty, jesteś live</Typography>
             {mine && <Typography sx={{ fontSize: '1rem' }}>„{mine.note}"</Typography>}
             <Typography variant="body2" color="text.secondary">
               Tak widzą Cię inni dorośli na mapie.

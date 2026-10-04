@@ -45,7 +45,7 @@ export default function MeetupDialog({ meetup, user, isAdult, onClose, onChanged
     const { data: joined, error } = await supabase.rpc('join_meetup', { p_meetup_id: meetup.id })
     setBusy(false)
     if (error || !joined) {
-      setError(error ? 'Nie udało się dołączyć.' : 'Ktoś był szybszy — to spotkanie jest już zajęte.')
+      setError(error ? 'Nie udało się dołączyć.' : 'Ktoś był szybszy. To spotkanie jest już zajęte.')
       onChanged()
       return
     }

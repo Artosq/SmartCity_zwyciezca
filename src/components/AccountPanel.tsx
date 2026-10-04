@@ -128,7 +128,7 @@ export default function AccountPanel() {
               precision={0.5}
               value={hasRatings ? average : 0}
               getLabelText={(stars) => `${stars} na 5 gwiazdek`}
-              sx={{ fontSize: '2.4rem', color: '#f59e0b' }}
+              sx={{ fontSize: '2.4rem', color: '#d97706' }}
             />
             <Typography sx={{ fontWeight: 800, mt: 0.25 }}>
               {hasRatings

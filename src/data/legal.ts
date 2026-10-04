@@ -41,12 +41,12 @@ export const TERMS: LegalSection[] = [
     title: '2. Definicje',
     blocks: [
       [
-        'Konto — zbiór danych i ustawień Użytkownika w Serwisie, tworzony przy pierwszym logowaniu.',
-        'Wydarzenie — spotkanie dla wielu osób opublikowane w Serwisie przez Użytkownika albo zaimportowane z publicznego źródła.',
-        'Spotkanie „We dwoje" — propozycja spotkania z jedną osobą w miejscu publicznym.',
-        '„Pokaż się" — funkcja udostępniania własnego położenia na żywo wraz z krótką notką.',
-        'Organizator — Użytkownik, który opublikował Wydarzenie albo zaproponował Spotkanie „We dwoje".',
-        'Treści — wszystko, co Użytkownik zamieszcza w Serwisie: opisy, zdjęcia, notki, wiadomości na czacie, oceny.',
+        'Konto - zbiór danych i ustawień Użytkownika w Serwisie, tworzony przy pierwszym logowaniu.',
+        'Wydarzenie - spotkanie dla wielu osób opublikowane w Serwisie przez Użytkownika albo zaimportowane z publicznego źródła.',
+        'Spotkanie „We dwoje" - propozycja spotkania z jedną osobą w miejscu publicznym.',
+        '„Pokaż się" - funkcja udostępniania własnego położenia na żywo wraz z krótką notką.',
+        'Organizator - Użytkownik, który opublikował Wydarzenie albo zaproponował Spotkanie „We dwoje".',
+        'Treści - wszystko, co Użytkownik zamieszcza w Serwisie: opisy, zdjęcia, notki, wiadomości na czacie, oceny.',
       ],
     ],
   },
@@ -55,11 +55,11 @@ export const TERMS: LegalSection[] = [
     blocks: [
       'Usługodawca świadczy drogą elektroniczną następujące usługi:',
       [
-        'przeglądanie Wydarzeń na stronie głównej i na mapie — dostępne bez Konta;',
+        'przeglądanie Wydarzeń na stronie głównej i na mapie - dostępne bez Konta;',
         'prowadzenie Konta, w tym kalendarza aktywności i listy ocen;',
         'publikowanie Wydarzeń i zapisywanie się na nie;',
-        'proponowanie Spotkań „We dwoje" i dołączanie do nich — wyłącznie dla zalogowanych osób pełnoletnich;',
-        'funkcja „Pokaż się" — wyłącznie dla zalogowanych osób pełnoletnich;',
+        'proponowanie Spotkań „We dwoje" i dołączanie do nich - wyłącznie dla zalogowanych osób pełnoletnich;',
+        'funkcja „Pokaż się" - wyłącznie dla zalogowanych osób pełnoletnich;',
         'czat uczestników Wydarzeń i prywatny czat Spotkań „We dwoje";',
         'ocenianie Organizatorów;',
         'kontakt z Usługodawcą przez formularze na stronie Pomoc.',
@@ -71,7 +71,7 @@ export const TERMS: LegalSection[] = [
   {
     title: '4. Wymagania techniczne',
     blocks: [
-      'Do korzystania z Serwisu potrzebne są: urządzenie z dostępem do Internetu, aktualna przeglądarka internetowa z włączoną obsługą JavaScript i pamięci lokalnej przeglądarki oraz — do logowania — aktywny adres e-mail.',
+      'Do korzystania z Serwisu potrzebne są: urządzenie z dostępem do Internetu, aktualna przeglądarka internetowa z włączoną obsługą JavaScript i pamięci lokalnej przeglądarki oraz, do logowania, aktywny adres e-mail.',
       'Funkcje oparte na położeniu („Pokaż się", odległość liczona od Użytkownika) wymagają dodatkowo udzielenia w przeglądarce zgody na dostęp do lokalizacji. Zgodę można w każdej chwili cofnąć w ustawieniach przeglądarki.',
       'Usługodawca nie gwarantuje nieprzerwanej dostępności Serwisu. Serwis może być czasowo niedostępny z powodu prac technicznych, awarii lub przyczyn leżących po stronie dostawców infrastruktury.',
     ],
@@ -79,7 +79,7 @@ export const TERMS: LegalSection[] = [
   {
     title: '5. Konto i zawarcie umowy',
     blocks: [
-      'Umowa o świadczenie usług drogą elektroniczną zostaje zawarta z chwilą rozpoczęcia korzystania z Serwisu, a w zakresie usług wymagających Konta — z chwilą pierwszego zalogowania. Umowa jest zawierana na czas nieokreślony.',
+      'Umowa o świadczenie usług drogą elektroniczną zostaje zawarta z chwilą rozpoczęcia korzystania z Serwisu, a w zakresie usług wymagających Konta z chwilą pierwszego zalogowania. Umowa jest zawierana na czas nieokreślony.',
       'Logowanie odbywa się bez hasła: Użytkownik podaje imię i adres e-mail, a następnie potwierdza logowanie, klikając odnośnik wysłany na ten adres. Użytkownik odpowiada za zachowanie dostępu do swojej skrzynki e-mail.',
       'Konto może założyć osoba, która ukończyła 16 lat. Osoby młodsze mogą korzystać z Serwisu wyłącznie za zgodą i pod nadzorem rodzica lub opiekuna prawnego.',
       'Spotkania „We dwoje" oraz funkcja „Pokaż się" są dostępne wyłącznie dla osób, które ukończyły 18 lat. Dostęp do nich wymaga podania w Koncie daty urodzenia. Podanie nieprawdziwej daty urodzenia jest naruszeniem Regulaminu.',
@@ -151,8 +151,8 @@ export const TERMS: LegalSection[] = [
   {
     title: '12. Zgłaszanie naruszeń i moderacja',
     blocks: [
-      `Każdy może zgłosić Treść, którą uważa za niezgodną z prawem lub Regulaminem, a także niewłaściwe zachowanie innego Użytkownika — ${contact}. Zgłoszenie powinno wskazywać, czego dotyczy (np. nazwę Wydarzenia, imię osoby) oraz powód.`,
-      'Usługodawca rozpatruje zgłoszenia bez zbędnej zwłoki. W razie stwierdzenia naruszenia może: usunąć lub ukryć Treść, odwołać Wydarzenie lub Spotkanie, ograniczyć dostęp do wybranych funkcji, a przy poważnych lub powtarzających się naruszeniach — zawiesić lub usunąć Konto.',
+      `Każdy może zgłosić Treść, którą uważa za niezgodną z prawem lub Regulaminem, a także niewłaściwe zachowanie innego Użytkownika. Można to zrobić ${contact}. Zgłoszenie powinno wskazywać, czego dotyczy (np. nazwę Wydarzenia, imię osoby) oraz powód.`,
+      'Usługodawca rozpatruje zgłoszenia bez zbędnej zwłoki. W razie stwierdzenia naruszenia może: usunąć lub ukryć Treść, odwołać Wydarzenie lub Spotkanie, ograniczyć dostęp do wybranych funkcji, a przy poważnych lub powtarzających się naruszeniach zawiesić lub usunąć Konto.',
       'O podjętej decyzji i jej powodach Usługodawca informuje Użytkownika, którego decyzja dotyczy, o ile dysponuje jego danymi kontaktowymi. Użytkownik może się od decyzji odwołać, kontaktując się z Usługodawcą w terminie 14 dni; odwołanie zostanie rozpatrzone w ciągu 14 dni.',
       'Usługodawca nie ma obowiązku uprzedniego sprawdzania Treści zamieszczanych przez Użytkowników.',
     ],
@@ -212,16 +212,16 @@ export const PRIVACY: LegalSection[] = [
       'Przetwarzamy wyłącznie dane potrzebne do działania Serwisu:',
       [
         'dane Konta: imię podane przy logowaniu, adres e-mail oraz techniczny identyfikator Konta;',
-        'data urodzenia — tylko jeśli podasz ją w Koncie, aby korzystać z funkcji dostępnych od 18 lat;',
-        'Wydarzenia, które publikujesz: tytuł, opis, kategoria, grupy docelowe, miejsce i jego współrzędne, termin, limit miejsc, zdjęcie oraz — opcjonalnie — dokładny adres prywatny;',
+        'data urodzenia - tylko jeśli podasz ją w Koncie, aby korzystać z funkcji dostępnych od 18 lat;',
+        'Wydarzenia, które publikujesz: tytuł, opis, kategoria, grupy docelowe, miejsce i jego współrzędne, termin, limit miejsc, zdjęcie oraz, opcjonalnie, dokładny adres prywatny;',
         'Spotkania „We dwoje", które proponujesz lub do których dołączasz: rodzaj, tytuł, opis, miejsce, termin, tagi;',
         'zapisy na Wydarzenia i udział w Spotkaniach;',
         'wiadomości na czacie;',
         'oceny, które wystawiasz i otrzymujesz;',
-        'położenie na żywo oraz notka — wyłącznie wtedy, gdy włączysz funkcję „Pokaż się" albo wybierzesz „Dołączam";',
-        'położenie urządzenia do liczenia odległości — wyłącznie w Twojej przeglądarce, po udzieleniu przez Ciebie zgody; tego położenia nie zapisujemy na serwerze;',
+        'położenie na żywo oraz notka - wyłącznie wtedy, gdy włączysz funkcję „Pokaż się" albo wybierzesz „Dołączam";',
+        'położenie urządzenia do liczenia odległości - wyłącznie w Twojej przeglądarce, po udzieleniu przez Ciebie zgody; tego położenia nie zapisujemy na serwerze;',
         'wiadomości wysłane przez formularze „Napisz do nas" i „Zgłoś błąd", wraz z podanym opcjonalnie adresem e-mail;',
-        'dane techniczne: adres IP, rodzaj przeglądarki i urządzenia, daty i godziny żądań — rejestrowane automatycznie przez dostawców infrastruktury.',
+        'dane techniczne: adres IP, rodzaj przeglądarki i urządzenia, daty i godziny żądań - rejestrowane automatycznie przez dostawców infrastruktury.',
       ],
       'Nie zbieramy danych o Twojej aktywności poza Serwisem, nie tworzymy profili reklamowych i nie przetwarzamy szczególnych kategorii danych (np. o zdrowiu). Prosimy, aby nie zamieszczać takich danych w opisach ani na czacie.',
     ],
@@ -230,15 +230,15 @@ export const PRIVACY: LegalSection[] = [
     title: '3. W jakim celu i na jakiej podstawie',
     blocks: [
       [
-        'świadczenie usług Serwisu: prowadzenie Konta, publikowanie Wydarzeń i Spotkań, zapisy, czat, oceny — na podstawie umowy, której jesteś stroną (art. 6 ust. 1 lit. b RODO);',
-        'funkcja „Pokaż się", „Dołączam" oraz liczenie odległości od Twojego położenia — na podstawie Twojej zgody, wyrażonej przez włączenie funkcji i udzielenie zgody w przeglądarce (art. 6 ust. 1 lit. a RODO); zgodę możesz cofnąć w każdej chwili;',
-        'sprawdzenie pełnoletności przy funkcjach dostępnych od 18 lat — na podstawie umowy oraz naszego prawnie uzasadnionego interesu, jakim jest ochrona osób niepełnoletnich (art. 6 ust. 1 lit. b i f RODO);',
-        'obsługa zgłoszeń, reklamacji i wiadomości — nasz prawnie uzasadniony interes polegający na udzieleniu odpowiedzi i poprawie Serwisu (art. 6 ust. 1 lit. f RODO);',
-        'bezpieczeństwo Serwisu, zapobieganie nadużyciom i moderacja Treści — nasz prawnie uzasadniony interes (art. 6 ust. 1 lit. f RODO);',
-        'ustalenie, dochodzenie lub obrona roszczeń — nasz prawnie uzasadniony interes (art. 6 ust. 1 lit. f RODO);',
+        'świadczenie usług Serwisu: prowadzenie Konta, publikowanie Wydarzeń i Spotkań, zapisy, czat, oceny - na podstawie umowy, której jesteś stroną (art. 6 ust. 1 lit. b RODO);',
+        'funkcja „Pokaż się", „Dołączam" oraz liczenie odległości od Twojego położenia - na podstawie Twojej zgody, wyrażonej przez włączenie funkcji i udzielenie zgody w przeglądarce (art. 6 ust. 1 lit. a RODO); zgodę możesz cofnąć w każdej chwili;',
+        'sprawdzenie pełnoletności przy funkcjach dostępnych od 18 lat - na podstawie umowy oraz naszego prawnie uzasadnionego interesu, jakim jest ochrona osób niepełnoletnich (art. 6 ust. 1 lit. b i f RODO);',
+        'obsługa zgłoszeń, reklamacji i wiadomości - nasz prawnie uzasadniony interes polegający na udzieleniu odpowiedzi i poprawie Serwisu (art. 6 ust. 1 lit. f RODO);',
+        'bezpieczeństwo Serwisu, zapobieganie nadużyciom i moderacja Treści - nasz prawnie uzasadniony interes (art. 6 ust. 1 lit. f RODO);',
+        'ustalenie, dochodzenie lub obrona roszczeń - nasz prawnie uzasadniony interes (art. 6 ust. 1 lit. f RODO);',
         'wykonanie obowiązków wynikających z przepisów prawa, np. odpowiedź na żądanie uprawnionego organu (art. 6 ust. 1 lit. c RODO).',
       ],
-      'Podanie danych jest dobrowolne, ale imię i adres e-mail są niezbędne do założenia Konta, a data urodzenia — do korzystania z funkcji dostępnych od 18 lat.',
+      'Podanie danych jest dobrowolne, ale imię i adres e-mail są niezbędne do założenia Konta, a data urodzenia do korzystania z funkcji dostępnych od 18 lat.',
     ],
   },
   {
@@ -247,7 +247,7 @@ export const PRIVACY: LegalSection[] = [
       'Serwis służy do spotykania się z sąsiadami, dlatego część danych jest z założenia widoczna dla innych:',
       [
         'publicznie, także dla osób niezalogowanych: Twoje imię jako Organizatora, średnia Twoich ocen i ich liczba, opublikowane przez Ciebie Wydarzenia wraz ze zdjęciem i miejscem, liczba osób zapisanych na Wydarzenie oraz sam fakt Twojego zapisu (bez adresu e-mail);',
-        'dla zalogowanych osób pełnoletnich: Twoje Spotkania „We dwoje" oraz — gdy włączysz „Pokaż się" — Twoje imię, notka i dokładne położenie na żywo;',
+        'dla zalogowanych osób pełnoletnich: Twoje Spotkania „We dwoje" oraz, gdy włączysz „Pokaż się", Twoje imię, notka i dokładne położenie na żywo;',
         'dla osób zapisanych na Twoje Wydarzenie: dokładny adres prywatny, jeśli go podałeś(-aś);',
         'dla uczestników czatu Wydarzenia: Twoje imię i wiadomości; czat Wydarzenia nie jest kanałem poufnym, więc nie zamieszczaj w nim danych wrażliwych;',
         'dla drugiej osoby ze Spotkania „We dwoje": Twoje imię i wiadomości w prywatnym czacie tego Spotkania;',
@@ -261,9 +261,9 @@ export const PRIVACY: LegalSection[] = [
     blocks: [
       'Nie sprzedajemy danych i nie udostępniamy ich w celach reklamowych. Korzystamy z dostawców, bez których Serwis nie mógłby działać:',
       [
-        'Supabase — baza danych, logowanie, przechowywanie zdjęć i wysyłka wiadomości z odnośnikiem do logowania;',
-        'Render — serwer, z którego pobierana jest aplikacja;',
-        'OpenStreetMap — obrazy mapy; przy ich pobieraniu Twoja przeglądarka łączy się z serwerami OpenStreetMap i przekazuje im swój adres IP.',
+        'Supabase - baza danych, logowanie, przechowywanie zdjęć i wysyłka wiadomości z odnośnikiem do logowania;',
+        'Render - serwer, z którego pobierana jest aplikacja;',
+        'OpenStreetMap - obrazy mapy; przy ich pobieraniu Twoja przeglądarka łączy się z serwerami OpenStreetMap i przekazuje im swój adres IP.',
       ],
       'Dostawcy przetwarzają dane wyłącznie w zakresie niezbędnym do świadczenia swoich usług. Część z nich ma siedzibę lub serwery poza Europejskim Obszarem Gospodarczym; w takim wypadku przekazanie danych odbywa się na podstawie mechanizmów przewidzianych w RODO, w szczególności standardowych klauzul umownych zatwierdzonych przez Komisję Europejską lub decyzji stwierdzającej odpowiedni stopień ochrony.',
       'Dane możemy udostępnić uprawnionym organom publicznym, jeżeli wymagają tego przepisy prawa.',
@@ -273,11 +273,11 @@ export const PRIVACY: LegalSection[] = [
     title: '6. Jak długo przechowujemy dane',
     blocks: [
       [
-        'dane Konta, Wydarzenia, Spotkania, zapisy, wiadomości i oceny — do czasu usunięcia Konta albo usunięcia danej Treści;',
-        'położenie na żywo („Pokaż się") — przestaje być udostępniane po wyłączeniu funkcji albo po 60 minutach; zapis jest usuwany przy wyłączeniu funkcji lub zastępowany przy jej kolejnym użyciu;',
-        'położenie przekazywane przy „Dołączam" — do rezygnacji albo do ukrycia się osoby, do której dołączasz;',
-        'wiadomości z formularzy na stronie Pomoc — do 12 miesięcy od załatwienia sprawy;',
-        'dane techniczne u dostawców infrastruktury — przez okres wynikający z ich zasad, zwykle do kilkudziesięciu dni.',
+        'dane Konta, Wydarzenia, Spotkania, zapisy, wiadomości i oceny - do czasu usunięcia Konta albo usunięcia danej Treści;',
+        'położenie na żywo („Pokaż się") - przestaje być udostępniane po wyłączeniu funkcji albo po 60 minutach; zapis jest usuwany przy wyłączeniu funkcji lub zastępowany przy jej kolejnym użyciu;',
+        'położenie przekazywane przy „Dołączam" - do rezygnacji albo do ukrycia się osoby, do której dołączasz;',
+        'wiadomości z formularzy na stronie Pomoc - do 12 miesięcy od załatwienia sprawy;',
+        'dane techniczne u dostawców infrastruktury - przez okres wynikający z ich zasad, zwykle do kilkudziesięciu dni.',
       ],
       'Po usunięciu Konta dane możemy przechowywać dłużej wyłącznie w zakresie niezbędnym do obrony przed roszczeniami lub wykonania obowiązku prawnego, nie dłużej niż przez okres przedawnienia roszczeń.',
       'Tymczasowe konta demonstracyjne i dane przykładowe mogą zostać usunięte w dowolnym momencie.',
@@ -294,7 +294,7 @@ export const PRIVACY: LegalSection[] = [
         'ograniczenia przetwarzania;',
         'przenoszenia danych przetwarzanych na podstawie umowy lub zgody;',
         'sprzeciwu wobec przetwarzania opartego na prawnie uzasadnionym interesie;',
-        'cofnięcia zgody w dowolnym momencie — bez wpływu na zgodność z prawem przetwarzania przed jej cofnięciem.',
+        'cofnięcia zgody w dowolnym momencie - bez wpływu na zgodność z prawem przetwarzania przed jej cofnięciem.',
       ],
       `Aby skorzystać z tych praw, skontaktuj się z nami ${contact}. Odpowiemy bez zbędnej zwłoki, nie później niż w ciągu miesiąca.`,
       'Część danych możesz zmienić lub usunąć samodzielnie: wypisać się z Wydarzenia, usunąć swoją propozycję Spotkania, zmienić datę urodzenia w Koncie, wyłączyć „Pokaż się", cofnąć zgodę na lokalizację w ustawieniach przeglądarki.',
@@ -304,7 +304,7 @@ export const PRIVACY: LegalSection[] = [
   {
     title: '8. Położenie',
     blocks: [
-      'Dane o położeniu traktujemy ze szczególną ostrożnością. O dostęp do lokalizacji prosimy wyłącznie po Twoim działaniu — kliknięciu „Pokaż odległość ode mnie", „Pokaż się" albo „Dołączam".',
+      'Dane o położeniu traktujemy ze szczególną ostrożnością. O dostęp do lokalizacji prosimy wyłącznie po Twoim działaniu, czyli po kliknięciu „Pokaż odległość ode mnie", „Pokaż się" albo „Dołączam".',
       'Położenie używane do liczenia odległości na kartach pozostaje w Twojej przeglądarce i nie jest wysyłane na serwer.',
       'Położenie udostępniane w funkcji „Pokaż się" jest dokładne i widoczne dla wszystkich zalogowanych pełnoletnich Użytkowników. Jest wysyłane tylko wtedy, gdy Serwis jest otwarty na Twoim urządzeniu. Pasek „Jesteś live" przypomina o włączonej funkcji na każdym ekranie i pozwala ją wyłączyć jednym kliknięciem.',
     ],
@@ -321,13 +321,13 @@ export const PRIVACY: LegalSection[] = [
     title: '10. Pamięć przeglądarki i pliki cookies',
     blocks: [
       'Serwis nie używa plików cookies do celów reklamowych ani analitycznych i nie korzysta z zewnętrznych narzędzi śledzących.',
-      'W pamięci lokalnej Twojej przeglądarki zapisujemy wyłącznie dane niezbędne do działania Serwisu: informację o zalogowaniu, wybrane miasto, język oraz Twoje preferencje dotyczące grup docelowych. Dane te pozostają na Twoim urządzeniu; możesz je usunąć, czyszcząc dane witryny w ustawieniach przeglądarki — spowoduje to wylogowanie.',
+      'W pamięci lokalnej Twojej przeglądarki zapisujemy wyłącznie dane niezbędne do działania Serwisu: informację o zalogowaniu, wybrane miasto, język oraz Twoje preferencje dotyczące grup docelowych. Dane te pozostają na Twoim urządzeniu; możesz je usunąć, czyszcząc dane witryny w ustawieniach przeglądarki. Spowoduje to wylogowanie.',
     ],
   },
   {
     title: '11. Bezpieczeństwo',
     blocks: [
-      'Połączenie z Serwisem jest szyfrowane. Dostęp do danych w bazie ograniczają reguły bezpieczeństwa na poziomie pojedynczych rekordów: każdy Użytkownik może zmieniać wyłącznie własne dane, a dane niepubliczne — takie jak data urodzenia, adres prywatny Wydarzenia czy prywatny czat — są dostępne tylko dla uprawnionych osób.',
+      'Połączenie z Serwisem jest szyfrowane. Dostęp do danych w bazie ograniczają reguły bezpieczeństwa na poziomie pojedynczych rekordów: każdy Użytkownik może zmieniać wyłącznie własne dane, a dane niepubliczne (takie jak data urodzenia, adres prywatny Wydarzenia czy prywatny czat) są dostępne tylko dla uprawnionych osób.',
       'Logowanie odbywa się bez hasła, przez jednorazowy odnośnik wysyłany na adres e-mail, dzięki czemu nie przechowujemy haseł.',
       'Żaden system nie daje pełnej gwarancji bezpieczeństwa. Jeśli zauważysz coś niepokojącego, zgłoś to przez formularz „Zgłoś błąd" na stronie Pomoc.',
     ],

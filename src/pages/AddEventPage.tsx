@@ -136,7 +136,7 @@ export default function AddEventPage({ city }: { city: City }) {
         <Stack spacing={2} className="stagger">
           <Typography variant="h1">Wydarzenie dodane! 🎉</Typography>
           <Typography color="text.secondary">
-            Jest już widoczne na stronie głównej i na mapie — sąsiedzi mogą do niego dołączyć.
+            Jest już widoczne na stronie głównej i na mapie. Sąsiedzi mogą do niego dołączyć.
           </Typography>
           <Button component={RouterLink} to="/mapa" variant="contained" size="large">
             Zobacz na mapie

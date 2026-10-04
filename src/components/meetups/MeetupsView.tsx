@@ -116,7 +116,7 @@ export default function MeetupsView({ city }: { city: City }) {
         <Alert severity="error" sx={{ m: 2 }}>
           {isSupabaseConfigured
             ? 'Nie udało się pobrać spotkań. Jeśli to świeża baza, uruchom migracje 005 i 006.'
-            : 'Brak połączenia z bazą — uzupełnij klucze Supabase w pliku .env.local.'}
+            : 'Brak połączenia z bazą. Uzupełnij klucze Supabase w pliku .env.local.'}
         </Alert>
       )}
       {status === 'ready' && visible.length === 0 && (

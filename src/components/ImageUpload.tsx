@@ -35,7 +35,7 @@ export default function ImageUpload({ userId, value, onChange }: Props) {
 
     setError('')
     if (!ACCEPTED.includes(file.type)) return setError('Wybierz zdjęcie w formacie JPG, PNG, WebP albo GIF.')
-    if (file.size > MAX_BYTES) return setError('Zdjęcie jest za duże — maksymalnie 5 MB.')
+    if (file.size > MAX_BYTES) return setError('Zdjęcie jest za duże. Maksymalny rozmiar to 5 MB.')
 
     setUploading(true)
     const extension = file.name.split('.').pop()?.toLowerCase() ?? 'jpg'

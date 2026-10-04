@@ -87,7 +87,7 @@ export default function LoginPage() {
       <Stack spacing={2} className="stagger">
         <Typography variant="h1">Zaloguj się</Typography>
         <Typography color="text.secondary">
-          Bez hasła. Podaj imię i e-mail — wyślemy Ci link do logowania.
+          Bez hasła. Podaj imię i e-mail, a wyślemy Ci link do logowania.
         </Typography>
 
         {status === 'sent' ? (

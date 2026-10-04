@@ -35,7 +35,7 @@ export default function LiveBanner() {
           direction="row"
           spacing={1.5}
           role="status"
-          sx={{ alignItems: 'center', px: 2, py: 1, bgcolor: '#dc2626', color: '#ffffff', animation: 'fadeInUp 0.3s ease' }}
+          sx={{ alignItems: 'center', px: 2, py: 1, bgcolor: 'error.dark', color: '#ffffff', animation: 'fadeInUp 0.3s ease' }}
         >
           <Box aria-hidden sx={dot} />
           <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -61,7 +61,7 @@ export default function LiveBanner() {
           direction="row"
           spacing={1.5}
           role="status"
-          sx={{ alignItems: 'center', px: 2, py: 0.75, bgcolor: '#16a34a', color: '#ffffff', animation: 'fadeInUp 0.3s ease' }}
+          sx={{ alignItems: 'center', px: 2, py: 0.75, bgcolor: 'success.dark', color: '#ffffff', animation: 'fadeInUp 0.3s ease' }}
         >
           <Typography sx={{ flex: 1, fontWeight: 700 }}>
             🏃 {row.joiner?.name ?? 'Ktoś'} do Ciebie idzie

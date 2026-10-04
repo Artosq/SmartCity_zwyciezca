@@ -168,9 +168,9 @@ html {
   height: 52px;
   border-radius: 50%;
   border: 4px solid #fff;
-  background: #ef4444;
+  background: #dc2626;
   color: #fff;
-  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.6);
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.6);
   font: 800 17px system-ui, sans-serif;
   line-height: 1;
 }
@@ -179,8 +179,8 @@ html {
   box-shadow: 0 4px 14px rgba(17, 17, 17, 0.5);
 }
 .live-marker.joiner {
-  background: #16a34a;
-  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.6);
+  background: #15803d;
+  box-shadow: 0 4px 14px rgba(21, 128, 61, 0.6);
   font-size: 24px;
 }
 .live-marker::before,
@@ -189,7 +189,7 @@ html {
   position: absolute;
   inset: -4px;
   border-radius: 50%;
-  border: 3px solid #ef4444;
+  border: 3px solid #dc2626;
   animation: livePulse 2s ease-out infinite;
   pointer-events: none;
 }
@@ -198,7 +198,7 @@ html {
 }
 .live-marker.joiner::before,
 .live-marker.joiner::after {
-  border-color: #16a34a;
+  border-color: #15803d;
 }
 .live-tag {
   position: absolute;
@@ -208,7 +208,7 @@ html {
   padding: 2px 7px;
   border-radius: 999px;
   border: 2px solid #fff;
-  background: #ef4444;
+  background: #dc2626;
   color: #fff;
   font: 800 10px system-ui, sans-serif;
   letter-spacing: 0.06em;
@@ -228,10 +228,10 @@ html {
 @keyframes liveDot {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6);
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6);
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+    box-shadow: 0 0 0 8px rgba(220, 38, 38, 0);
   }
 }
 /* Czerwona fala przepływająca przez przycisk, gdy jestem live */
@@ -252,4 +252,104 @@ html {
 .leaflet-popup.live-popup .leaflet-popup-content {
   margin: 14px 16px;
   min-width: 200px;
+}
+
+/* Łącze „Przejdź do treści": niewidoczne, dopóki nie dostanie fokusu z klawiatury (WCAG 2.4.1) */
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: -80px;
+  z-index: 2000;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #111;
+  color: #fff;
+  font-weight: 700;
+}
+.skip-link:focus {
+  top: 8px;
+}
+
+/* ============================================================
+   TRYB DLA SENIORÓW (Ustawienia → Dostępność), zgodny z WCAG 2.1:
+   większy tekst i ikony, kontrast AAA, większe odstępy, podkreślone linki, bez animacji.
+   Kolory motywu zmienia theme.ts; tutaj to, czego motyw nie obejmuje.
+   ============================================================ */
+
+/* 125%: zwykły tekst ma ok. 21 px. Rozmiary w rem rosną razem z tym ustawieniem. */
+html[data-senior='on'] {
+  font-size: 125%;
+}
+
+/* ikony o rozmiarze podanym w pikselach powiększamy wizualnie */
+html[data-senior='on'] .MuiSvgIcon-root {
+  transform: scale(1.18);
+}
+
+/* bez ruchu: żadnych animacji ani płynnych przejść */
+html[data-senior='on'] *,
+html[data-senior='on'] *::before,
+html[data-senior='on'] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* jednolite białe tło zamiast kolorowych poświat i półprzezroczystości */
+html[data-senior='on'] .ambient-bg {
+  display: none;
+}
+html[data-senior='on'] #root > div {
+  background-color: #fff;
+}
+html[data-senior='on'] .app-bar {
+  background-color: #fff;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+html[data-senior='on'] header.app-bar {
+  border-bottom: 2px solid #000;
+}
+html[data-senior='on'] nav.app-bar {
+  border-top: 2px solid #000;
+}
+
+/* linki rozpoznawalne nie tylko po kolorze */
+html[data-senior='on'] a:not(.MuiButtonBase-root) {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* wyraźniejszy fokus klawiatury */
+html[data-senior='on'] *:focus-visible {
+  outline: 4px solid #000;
+  outline-offset: 3px;
+}
+
+/* większe odstępy między akapitami i punktami list (WCAG 1.4.12) */
+html[data-senior='on'] p + p,
+html[data-senior='on'] li + li {
+  margin-top: 0.5em;
+}
+
+/* kontrast AAA dla białego tekstu na kolorowym tle */
+html[data-senior='on'] .tile-label {
+  padding: 2px 10px;
+  border-radius: 10px;
+  background: #000;
+}
+html[data-senior='on'] .live-marker,
+html[data-senior='on'] .live-tag {
+  background: #7f1d1d;
+}
+html[data-senior='on'] .live-marker.mine {
+  background: #000;
+}
+html[data-senior='on'] .live-marker.joiner {
+  background: #14532d;
+}
+html[data-senior='on'] .event-tooltip-body span {
+  color: #27272a;
 }

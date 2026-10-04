@@ -1,6 +1,6 @@
 {
   "id": "/",
-  "name": "Sąsiedzko — sąsiedzkie wydarzenia w Krakowie",
+  "name": "Sąsiedzko: sąsiedzkie wydarzenia w Krakowie",
   "short_name": "Sąsiedzko",
   "description": "Wydarzenia organizowane przez mieszkańców Krakowa: znajdź coś w okolicy, dołącz jednym kliknięciem albo dodaj własne.",
   "lang": "pl",
@@ -8,7 +8,7 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
   "background_color": "#ffffff",
   "theme_color": "#4b3bf0",
   "categories": ["social", "lifestyle", "events"],

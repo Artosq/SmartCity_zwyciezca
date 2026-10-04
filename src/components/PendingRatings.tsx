@@ -127,7 +127,7 @@ export default function PendingRatings({ userId, onRated }: Props) {
               value={stars[item.scopeId] ?? null}
               onChange={(_, value) => setStars((prev) => ({ ...prev, [item.scopeId]: value ?? 0 }))}
               getLabelText={(value) => `${value} na 5 gwiazdek`}
-              sx={{ fontSize: '2.2rem', color: '#f59e0b' }}
+              sx={{ fontSize: '2.2rem', color: '#d97706' }}
             />
             <Button variant="contained" disabled={!stars[item.scopeId]} onClick={() => submit(item)}>
               Oceń

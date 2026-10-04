@@ -100,7 +100,7 @@ export default function MapPage({ city }: { city: City }) {
   return (
     <Box sx={{ position: 'relative', height: '100%' }}>
       <Typography variant="h1" sx={{ position: 'absolute', left: -9999 }}>
-        Mapa wydarzeń — {city.name}
+        Mapa wydarzeń: {city.name}
       </Typography>
 
       <EventMap
@@ -160,7 +160,7 @@ export default function MapPage({ city }: { city: City }) {
           <Alert severity="error" elevation={4} sx={{ pointerEvents: 'auto' }}>
             {isSupabaseConfigured
               ? 'Nie udało się pobrać wydarzeń. Spróbuj ponownie za chwilę.'
-              : 'Brak połączenia z bazą — uzupełnij klucze Supabase w pliku .env.local.'}
+              : 'Brak połączenia z bazą. Uzupełnij klucze Supabase w pliku .env.local.'}
           </Alert>
         )}
         {status === 'ready' && resultCount === 0 && (

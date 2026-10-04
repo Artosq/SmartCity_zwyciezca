@@ -1,4 +1,4 @@
-import { useState, type MouseEvent } from 'react'
+import { useEffect, useState, type MouseEvent } from 'react'
 import { Link as RouterLink, Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
@@ -28,12 +28,14 @@ import PersonIcon from '@mui/icons-material/Person'
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined'
 import SearchIcon from '@mui/icons-material/Search'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
+import { useAccessibility } from '../context/AccessibilityContext'
 import { useCity } from '../context/CityContext'
 import { CITIES } from '../data/cities'
 import { useLang } from '../i18n/LanguageContext'
 import { BRAND } from '../theme'
 import LanguageSwitcher from './LanguageSwitcher'
 import LiveBanner from './live/LiveBanner'
+import SeniorModeSwitch from './SeniorModeSwitch'
 
 // `bottom: false` = pozycja tylko w menu i w nagłówku na desktopie (na telefonie mapa ma swój przycisk).
 const NAV = [
@@ -60,6 +62,10 @@ export default function AppLayout() {
   const [searchParams] = useSearchParams()
   const { t } = useLang()
   const { city, selectCity } = useCity()
+  const { senior } = useAccessibility()
+  // W trybie dla seniorów nawigacja ma podpisy i jest szersza, więc wyszukiwarka mieści się
+  // w nagłówku dopiero na dużych ekranach; na średnich schodzi do osobnego wiersza.
+  const wide = senior ? 'lg' : 'md'
   const [cityAnchor, setCityAnchor] = useState<HTMLElement | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const [query, setQuery] = useState(searchParams.get('q') ?? '')
@@ -77,6 +83,12 @@ export default function AppLayout() {
 
   const bottomNav = NAV.filter((item) => item.bottom)
   const activeBottom = bottomNav.findIndex((item) => item.to === active)
+
+  // Tytuł karty przeglądarki mówi, na którym ekranie jest użytkownik (WCAG 2.4.2).
+  const screen = [...NAV, ...MORE].find((item) => (item.to === '/' ? pathname === '/' : pathname.startsWith(item.to)))
+  useEffect(() => {
+    document.title = screen && screen.to !== '/' ? `${t(screen.labelKey)} · Sąsiedzko` : 'Sąsiedzko: mapa sąsiedzkich wydarzeń'
+  }, [screen, t])
 
   // Wyszukiwarka wydarzeń tylko na stronie głównej (Pomoc ma własną).
   const showSearch = pathname === '/'
@@ -126,9 +138,13 @@ export default function AppLayout() {
         bgcolor: '#faf9ff',
       }}
     >
+      <a href="#tresc" className="skip-link">
+        {t('a11y.skip')}
+      </a>
       {/* Ożywione, markowe tło: miękkie poświaty (fiolet + limonka + róż), które delikatnie „oddychają". */}
       <Box
         aria-hidden
+        className="ambient-bg"
         sx={{
           position: 'fixed',
           inset: 0,
@@ -144,6 +160,7 @@ export default function AppLayout() {
       />
       <Box
         component="header"
+        className="app-bar"
         sx={{
           position: 'relative',
           zIndex: 1,
@@ -186,7 +203,7 @@ export default function AppLayout() {
             sx={{
               fontSize: '1.15rem',
               fontWeight: 800,
-              color: BRAND.limeText,
+              color: senior ? BRAND.limeTextStrong : BRAND.limeText,
               textDecoration: 'underline',
               textDecorationColor: BRAND.lime,
               textDecorationThickness: 3,
@@ -212,7 +229,7 @@ export default function AppLayout() {
         </Menu>
 
         {showSearch && (
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, flex: 1, maxWidth: 520, mx: 2 }}>
+          <Box sx={{ display: { xs: 'none', [wide]: 'flex' }, flex: 1, maxWidth: 520, mx: 2 }}>
             {searchField}
           </Box>
         )}
@@ -262,7 +279,7 @@ export default function AppLayout() {
                 }}
               >
                 {item.icon}
-                <Box component="span" sx={{ display: { md: 'none', lg: 'inline' } }}>
+                <Box component="span" sx={{ display: senior ? 'inline' : { md: 'none', lg: 'inline' } }}>
                   {t(item.labelKey)}
                 </Box>
               </ButtonBase>
@@ -293,7 +310,7 @@ export default function AppLayout() {
           sx={{
             position: 'relative',
             zIndex: 1,
-            display: { xs: 'block', md: 'none' },
+            display: { xs: 'block', [wide]: 'none' },
             px: 2,
             pb: 1,
             bgcolor: 'rgba(255,255,255,0.86)',
@@ -324,6 +341,10 @@ export default function AppLayout() {
             <LanguageSwitcher />
           </Box>
 
+          <Box sx={{ px: 3, pb: 1.5 }}>
+            <SeniorModeSwitch />
+          </Box>
+
           <List>
             {MORE.map((item) => (
               <ListItemButton
@@ -347,6 +368,8 @@ export default function AppLayout() {
 
       <Box
         component="main"
+        id="tresc"
+        tabIndex={-1}
         sx={{
           position: 'relative',
           zIndex: 1,
@@ -367,6 +390,7 @@ export default function AppLayout() {
       <Paper
         component="nav"
         aria-label="Główna"
+        className="app-bar"
         elevation={0}
         square
         sx={{

@@ -25,7 +25,7 @@ export default function RatingBadge({ avg, count }: Props) {
       aria-label={`Ocena organizatora: ${value} na 5, liczba ocen: ${count}`}
       sx={{ alignItems: 'center', fontSize: '0.9rem', fontWeight: 800, whiteSpace: 'nowrap' }}
     >
-      <StarIcon sx={{ fontSize: 18, color: '#f59e0b' }} />
+      <StarIcon sx={{ fontSize: 18, color: '#d97706' }} />
       <span>{value}</span>
       <span style={{ fontWeight: 600, opacity: 0.7 }}>({count})</span>
     </Stack>

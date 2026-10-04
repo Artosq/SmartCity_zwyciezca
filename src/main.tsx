@@ -1,20 +1,17 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import CssBaseline from '@mui/material/CssBaseline'
-import { ThemeProvider } from '@mui/material/styles'
 import 'leaflet/dist/leaflet.css'
 import './index.css'
 import App from './App'
+import { AccessibilityProvider } from './context/AccessibilityContext'
 import { CityProvider } from './context/CityContext'
 import { LocationProvider } from './context/LocationContext'
 import { LanguageProvider } from './i18n/LanguageContext'
-import { theme } from './theme'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <AccessibilityProvider>
       <BrowserRouter>
         <LanguageProvider>
           <CityProvider>
@@ -24,6 +21,6 @@ createRoot(document.getElementById('root')!).render(
           </CityProvider>
         </LanguageProvider>
       </BrowserRouter>
-    </ThemeProvider>
+    </AccessibilityProvider>
   </StrictMode>,
 )

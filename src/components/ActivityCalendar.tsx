@@ -23,7 +23,7 @@ interface Activity {
 
 const KINDS: Record<Kind, { label: string; color: string }> = {
   joined: { label: 'Zapisany(-a)', color: '#4b3bf0' },
-  organized: { label: 'Organizujesz', color: '#f59e0b' },
+  organized: { label: 'Organizujesz', color: '#d97706' },
   meetup: { label: 'We dwoje', color: '#ec4899' },
 }
 
@@ -164,7 +164,7 @@ export default function ActivityCalendar({ userId }: { userId: string }) {
                 flexDirection: 'column',
                 gap: '3px',
                 aspectRatio: '1',
-                minHeight: 40,
+                minHeight: 44,
                 borderRadius: '14px',
                 fontWeight: items.length ? 800 : 600,
                 fontSize: '0.95rem',

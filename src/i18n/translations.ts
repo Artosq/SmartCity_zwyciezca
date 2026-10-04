@@ -33,7 +33,7 @@ const pl: Dict = {
   'search.empty': 'Brak wydarzeń pasujących do „{query}”. Spróbuj innego hasła.',
   'search.searching': 'Wyszukiwanie',
   // Strona główna
-  'home.heading': 'Wydarzenia — {city}',
+  'home.heading': 'Wydarzenia: {city}',
   'home.prefsChips': 'Twoje preferencje: dla kogo szukasz wydarzeń',
   'home.upcoming': 'Najbliższe wydarzenia',
   'home.prefsSection': 'Preferencje',
@@ -43,7 +43,7 @@ const pl: Dict = {
   'home.prefsEmptyNone': 'Zaznacz powyżej, dla kogo szukasz wydarzeń, a dopasujemy propozycje.',
   'home.prefsEmptySelected': 'Brak nadchodzących wydarzeń dla wybranych grup.',
   'home.errorFetch': 'Nie udało się pobrać wydarzeń. Spróbuj ponownie za chwilę.',
-  'home.errorNoDb': 'Brak połączenia z bazą — uzupełnij klucze Supabase w pliku .env.local.',
+  'home.errorNoDb': 'Brak połączenia z bazą. Uzupełnij klucze Supabase w pliku .env.local.',
   'home.cityEmpty': 'W tym mieście nie ma jeszcze nadchodzących wydarzeń. Dodaj pierwsze!',
   'home.add': 'Dodaj',
   'home.fabMap': 'Mapa',
@@ -55,7 +55,7 @@ const pl: Dict = {
   'terms.title': 'Warunki korzystania 📄',
   'terms.body':
     'Pełna treść regulaminu pojawi się wkrótce. Sąsiedzko to aplikacja do organizowania i ' +
-    'znajdowania sąsiedzkich wydarzeń — korzystając z niej, zgadzasz się na kulturalne i zgodne z ' +
+    'znajdowania sąsiedzkich wydarzeń. Korzystając z niej, zgadzasz się na kulturalne i zgodne z ' +
     'prawem zachowanie wobec innych mieszkańców.',
   'privacy.title': 'Prywatność 🔒',
   'privacy.body':
@@ -64,6 +64,11 @@ const pl: Dict = {
     'pojawi się wkrótce.',
   'settings.title': 'Ustawienia ⚙️',
   'settings.language': 'Język aplikacji',
+  'settings.seniorTitle': 'Dostępność',
+  'settings.senior': 'Tryb dla seniorów',
+  'settings.seniorHint':
+    'Większy tekst i ikony, mocniejszy kontrast, podkreślone linki, większe odstępy i brak animacji. Zgodnie z wytycznymi WCAG 2.1.',
+  'a11y.skip': 'Przejdź do treści',
 }
 
 const en: Dict = {
@@ -88,7 +93,7 @@ const en: Dict = {
   'search.results': 'Results: “{query}”',
   'search.empty': 'No events match “{query}”. Try another term.',
   'search.searching': 'Searching',
-  'home.heading': 'Events — {city}',
+  'home.heading': 'Events: {city}',
   'home.prefsChips': 'Your preferences: who are you looking for events for',
   'home.upcoming': 'Upcoming events',
   'home.prefsSection': 'Preferences',
@@ -98,7 +103,7 @@ const en: Dict = {
   'home.prefsEmptyNone': 'Select above who you are looking for events for, and we will match suggestions.',
   'home.prefsEmptySelected': 'No upcoming events for the selected groups.',
   'home.errorFetch': 'Could not load events. Please try again in a moment.',
-  'home.errorNoDb': 'No database connection — fill in your Supabase keys in the .env.local file.',
+  'home.errorNoDb': 'No database connection. Fill in your Supabase keys in the .env.local file.',
   'home.cityEmpty': 'There are no upcoming events in this city yet. Add the first one!',
   'home.add': 'Add',
   'home.fabMap': 'Map',
@@ -108,7 +113,7 @@ const en: Dict = {
   'terms.title': 'Terms of use 📄',
   'terms.body':
     'The full terms will appear soon. Sąsiedzko is an app for organising and finding ' +
-    'neighbourhood events — by using it, you agree to behave politely and lawfully towards other ' +
+    'neighbourhood events. By using it, you agree to behave politely and lawfully towards other ' +
     'residents.',
   'privacy.title': 'Privacy 🔒',
   'privacy.body':
@@ -116,6 +121,11 @@ const en: Dict = {
     'data is protected by the database security rules. The full privacy policy will appear soon.',
   'settings.title': 'Settings ⚙️',
   'settings.language': 'App language',
+  'settings.seniorTitle': 'Accessibility',
+  'settings.senior': 'Senior mode',
+  'settings.seniorHint':
+    'Larger text and icons, stronger contrast, underlined links, more spacing and no animations. Following WCAG 2.1 guidelines.',
+  'a11y.skip': 'Skip to content',
 }
 
 export const translations: Record<Lang, Dict> = { pl, en }

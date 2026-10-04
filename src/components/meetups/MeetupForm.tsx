@@ -172,7 +172,7 @@ export default function MeetupForm({ city }: { city: City }) {
                 <Box component="span" aria-hidden sx={{ fontSize: 34, lineHeight: 1 }}>
                   {item.emoji}
                 </Box>
-                <span>{item.name}</span>
+                <span className="tile-label">{item.name}</span>
               </ButtonBase>
             )
           })}
@@ -198,7 +198,7 @@ export default function MeetupForm({ city }: { city: City }) {
           />
           <TextField
             label="Tagi"
-            helperText={`Opcjonalnie, do ${MAX_TAGS}, oddzielone przecinkami — np. Z psem, Bezpłatnie`}
+            helperText={`Opcjonalnie, do ${MAX_TAGS}, oddzielone przecinkami, np. Z psem, Bezpłatnie`}
             value={tags}
             onChange={(e) => setTags(e.target.value)}
           />
@@ -228,7 +228,7 @@ export default function MeetupForm({ city }: { city: City }) {
       <SectionCard
         icon={<PlaceOutlinedIcon />}
         title="Gdzie? *"
-        hint="Tylko miejsce publiczne — park, kawiarnia, boisko, targ."
+        hint="Tylko miejsce publiczne: park, kawiarnia, boisko, targ."
       >
         <Stack spacing={2}>
           <div>
