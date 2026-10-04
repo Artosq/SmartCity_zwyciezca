@@ -9,6 +9,7 @@ import ScheduleIcon from '@mui/icons-material/Schedule'
 import type { ReactNode } from 'react'
 import { formatShortDate, getEventImage } from '../lib/eventDisplay'
 import { useUserLocation } from '../context/LocationContext'
+import { useLang } from '../i18n/LanguageContext'
 import type { EventWithStats } from '../lib/types'
 import RatingBadge from './RatingBadge'
 
@@ -35,6 +36,7 @@ function Meta({ icon, label, children }: { icon: ReactNode; label: string; child
 // Wiersz liczb pod tytułem: zapisani, odległość, termin.
 // Odległość liczy się od użytkownika, gdy znamy jego położenie; inaczej od centrum miasta — z dopiskiem.
 export function EventMeta({ event, distanceKm }: { event: EventWithStats; distanceKm: number }) {
+  const { t } = useLang()
   const fromUser = useUserLocation().position !== null
   return (
     <Stack direction="row" sx={{ mt: 0.75, columnGap: 1.5, rowGap: 0.25, flexWrap: 'wrap' }}>
@@ -46,14 +48,14 @@ export function EventMeta({ event, distanceKm }: { event: EventWithStats; distan
       >
         {/* brak limitu (np. wydarzenia z bota) pokazujemy wprost, żeby nie wyglądał jak „0 miejsc" */}
         {event.capacity === null
-          ? `${event.attendees} · bez limitu`
+          ? `${event.attendees} · ${t('card.noLimit')}`
           : `${event.attendees}/${event.capacity}`}
       </Meta>
       <Meta
-        label={`${distanceKm.toFixed(1)} km ${fromUser ? 'od Ciebie' : 'od centrum miasta'}`}
+        label={`${distanceKm.toFixed(1)} km ${fromUser ? t('card.fromYouAria') : t('card.fromCenterAria')}`}
         icon={<PlaceIcon sx={{ fontSize: 18, color: 'error.main' }} />}
       >
-        {distanceKm.toFixed(1)} km{fromUser ? '' : ' od centrum'}
+        {distanceKm.toFixed(1)} km{fromUser ? '' : t('card.fromCenter')}
       </Meta>
       <Meta
         label={`Termin: ${formatShortDate(event.starts_at)}`}
@@ -67,11 +69,12 @@ export function EventMeta({ event, distanceKm }: { event: EventWithStats; distan
 
 // Kto organizuje i jak jest oceniany. Wydarzenia z bota nie mają organizatora-osoby.
 export function OrganizerLine({ event }: { event: EventWithStats }) {
+  const { t } = useLang()
   if (event.source || !event.organizer) return null
   return (
     <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mt: 0.5, minWidth: 0 }}>
       <Typography variant="body2" noWrap sx={{ fontWeight: 700 }}>
-        {event.organizer.name ?? 'Organizator'}
+        {event.organizer.name ?? t('event.organizer')}
       </Typography>
       <RatingBadge avg={event.organizer.rating_avg} count={event.organizer.rating_count} />
     </Stack>
@@ -81,6 +84,7 @@ export function OrganizerLine({ event }: { event: EventWithStats }) {
 // Karta wydarzenia z karuzeli: zdjęcie jako tło przycisku, pod nim tytuł, kategoria i liczby.
 // Kliknięcie otwiera wydarzenie na mapie.
 export default function EventCard({ event, distanceKm, size = 'medium' }: Props) {
+  const { t, td } = useLang()
   const large = size === 'large'
 
   return (
@@ -132,7 +136,7 @@ export default function EventCard({ event, distanceKm, size = 'medium' }: Props)
           {event.title}
         </Typography>
         <Typography variant="body2" noWrap sx={{ fontWeight: 700, color: 'text.secondary' }}>
-          {event.category?.name ?? 'Wydarzenie'}
+          {event.category ? td('cat', event.category.slug, event.category.name) : t('event.fallbackCategory')}
         </Typography>
         <OrganizerLine event={event} />
         <EventMeta event={event} distanceKm={distanceKm} />

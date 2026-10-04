@@ -7,7 +7,6 @@ import Typography from '@mui/material/Typography'
 import PlaceIcon from '@mui/icons-material/Place'
 import { useLang } from '../i18n/LanguageContext'
 import CitySelect from './CitySelect'
-import LanguageSwitcher from './LanguageSwitcher'
 
 // Ekran startowy: wybór miasta przed pokazaniem mapy.
 export default function CityPicker({ onSelect }: { onSelect: (slug: string) => void }) {
@@ -33,9 +32,6 @@ export default function CityPicker({ onSelect }: { onSelect: (slug: string) => v
     >
       <Paper component="form" onSubmit={submit} elevation={8} sx={{ width: '100%', maxWidth: 420, p: 4 }}>
         <Stack spacing={3}>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <LanguageSwitcher />
-          </Box>
           <Box>
             <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
               <PlaceIcon color="primary" sx={{ fontSize: 36 }} />

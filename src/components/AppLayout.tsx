@@ -36,7 +36,6 @@ import { CITIES } from '../data/cities'
 import { useLang } from '../i18n/LanguageContext'
 import { BRAND } from '../theme'
 import BanBanner from './BanBanner'
-import LanguageSwitcher from './LanguageSwitcher'
 import LiveBanner from './live/LiveBanner'
 import SeniorModeSwitch from './SeniorModeSwitch'
 
@@ -338,15 +337,7 @@ export default function AppLayout() {
             {t('menu.more')}
           </Typography>
 
-          {/* Przełącznik języka */}
-          <Box sx={{ px: 3, pt: 1, pb: 2 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.75, fontWeight: 700 }}>
-              {t('menu.language')}
-            </Typography>
-            <LanguageSwitcher />
-          </Box>
-
-          <Box sx={{ px: 3, pb: 1.5 }}>
+          <Box sx={{ px: 3, pt: 1, pb: 1.5 }}>
             <SeniorModeSwitch />
           </Box>
 

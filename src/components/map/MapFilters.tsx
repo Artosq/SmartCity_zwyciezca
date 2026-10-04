@@ -13,6 +13,7 @@ import { useTheme } from '@mui/material/styles'
 import CloseIcon from '@mui/icons-material/Close'
 import { MEETUP_TYPES } from '../../data/meetupTypes'
 import { TARGET_GROUPS } from '../../data/targetGroups'
+import { useLang } from '../../i18n/LanguageContext'
 import GroupChip from '../GroupChip'
 
 // „niepelnosprawni" to nie wiek, tylko dostępność — w menu ma osobną sekcję.
@@ -109,6 +110,7 @@ export default function MapFilters({
   adult,
   resultCount,
 }: Props) {
+  const { t, td } = useLang()
   const desktop = useMediaQuery(useTheme().breakpoints.up('md'))
   const set = (patch: Partial<MapFilterValues>) => onChange({ ...values, ...patch })
 
@@ -129,15 +131,15 @@ export default function MapFilters({
     >
       <Stack direction="row" sx={{ alignItems: 'center', px: 3, pt: 2 }}>
         <Typography variant="h2" sx={{ flex: 1 }}>
-          Filtry
+          {t('filters.title')}
         </Typography>
-        <IconButton onClick={onClose} aria-label="Zamknij filtry">
+        <IconButton onClick={onClose} aria-label={t('filters.close')}>
           <CloseIcon />
         </IconButton>
       </Stack>
 
       <Stack spacing={3} sx={{ px: 3, py: 2, overflowY: 'auto' }}>
-        <Section title="Wiek" hint="Dla kogo jest wydarzenie.">
+        <Section title={t('filters.age')} hint={t('filters.ageHint')}>
           {AGE_GROUPS.map((group) => (
             <GroupChip
               key={group.slug}
@@ -148,32 +150,34 @@ export default function MapFilters({
           ))}
         </Section>
 
-        <Section title="Dostępność">
+        <Section title={t('filters.accessibility')}>
           <GroupChip
             group={ACCESSIBLE}
-            label="Dla osób z niepełnosprawnościami"
+            label={t('filters.accessibleLabel')}
             active={values.groups.includes(ACCESSIBLE_GROUP)}
             onClick={() => set({ groups: toggle(values.groups, ACCESSIBLE_GROUP) })}
           />
         </Section>
 
-        <Section title="Cel wydarzenia">
-          {categories.length === 0 && <Typography color="text.secondary">Brak kategorii.</Typography>}
+        <Section title={t('filters.purpose')}>
+          {categories.length === 0 && (
+            <Typography color="text.secondary">{t('filters.noCategories')}</Typography>
+          )}
           {categories.map((category) => (
             <Chip
               key={category.slug}
               active={values.categories.includes(category.slug)}
               onClick={() => set({ categories: toggle(values.categories, category.slug) })}
             >
-              {category.name}
+              {td('cat', category.slug, category.name)}
             </Chip>
           ))}
         </Section>
 
         <Box component="section">
-          <Typography variant="h3">We dwoje · 18+</Typography>
+          <Typography variant="h3">{t('filters.meetups')}</Typography>
           <Typography variant="body2" color="text.secondary">
-            Spotkania z jedną osobą. Widoczne na mapie tylko dla osób pełnoletnich.
+            {t('filters.meetupsHint')}
           </Typography>
           {adult ? (
             <>
@@ -185,7 +189,7 @@ export default function MapFilters({
                     onChange={(e) => set({ showMeetups: e.target.checked })}
                   />
                 }
-                label="Pokaż spotkania we dwoje na mapie"
+                label={t('filters.showMeetups')}
               />
               {values.showMeetups && (
                 <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1, mt: 1 }}>
@@ -196,7 +200,7 @@ export default function MapFilters({
                       onClick={() => set({ meetupTypes: toggle(values.meetupTypes, type.slug) })}
                     >
                       <span aria-hidden>{type.emoji}</span>
-                      {type.name}
+                      {td('mtype', type.slug, type.name)}
                     </Chip>
                   ))}
                 </Stack>
@@ -204,7 +208,7 @@ export default function MapFilters({
             </>
           ) : (
             <Typography sx={{ mt: 1, fontWeight: 600 }}>
-              Zaloguj się i uzupełnij datę urodzenia na stronie Konto, żeby je zobaczyć.
+              {t('filters.meetupsLocked')}
             </Typography>
           )}
         </Box>
@@ -220,10 +224,10 @@ export default function MapFilters({
           fullWidth
           onClick={() => onChange({ ...values, groups: [], categories: [], meetupTypes: [] })}
         >
-          Wyczyść
+          {t('filters.clear')}
         </Button>
         <Button variant="contained" fullWidth onClick={onClose}>
-          Pokaż ({resultCount})
+          {t('filters.show', { count: resultCount })}
         </Button>
       </Stack>
     </Drawer>

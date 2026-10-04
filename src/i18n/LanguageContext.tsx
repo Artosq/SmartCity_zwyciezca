@@ -16,6 +16,8 @@ interface LanguageContextValue {
   setLang: (lang: Lang) => void
   // Tłumaczy klucz; opcjonalne pola podstawia w miejsce {nazwa}.
   t: (key: string, vars?: Record<string, string | number>) => string
+  // Nazwy danych (grupy/kategorie/rodzaje) po „prefix.slug"; bez tłumaczenia zwraca fallback (polski).
+  td: (prefix: string, slug: string, fallback: string) => string
 }
 
 const LanguageContext = createContext<LanguageContextValue | null>(null)
@@ -43,7 +45,14 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     return text
   }
 
-  return <LanguageContext.Provider value={{ lang, setLang, t }}>{children}</LanguageContext.Provider>
+  const td = (prefix: string, slug: string, fallback: string) => {
+    const key = `${prefix}.${slug}`
+    return translations[lang][key] ?? translations.pl[key] ?? fallback
+  }
+
+  return (
+    <LanguageContext.Provider value={{ lang, setLang, t, td }}>{children}</LanguageContext.Provider>
+  )
 }
 
 export function useLang() {

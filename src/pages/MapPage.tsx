@@ -19,6 +19,7 @@ import MapFilters, {
 import MeetupDialog from '../components/meetups/MeetupDialog'
 import { useUserLocation } from '../context/LocationContext'
 import type { City } from '../data/cities'
+import { useLang } from '../i18n/LanguageContext'
 import { useCityEvents } from '../hooks/useCityEvents'
 import { useMeetups } from '../hooks/useMeetups'
 import { useProfile } from '../hooks/useProfile'
@@ -29,6 +30,7 @@ import { isSupabaseConfigured } from '../lib/supabase'
 const POPULAR_COUNT = 3
 
 export default function MapPage({ city }: { city: City }) {
+  const { t } = useLang()
   // pełnoletność z profilu: bez niej baza nie zwraca spotkań we dwoje i nie ma ich na mapie
   const { user, isAdult: adult } = useProfile()
   const { events, status } = useCityEvents(city)
@@ -100,7 +102,7 @@ export default function MapPage({ city }: { city: City }) {
   return (
     <Box sx={{ position: 'relative', height: '100%' }}>
       <Typography variant="h1" sx={{ position: 'absolute', left: -9999 }}>
-        Mapa wydarzeń: {city.name}
+        {t('map.heading', { city: city.name })}
       </Typography>
 
       <EventMap
@@ -120,10 +122,10 @@ export default function MapPage({ city }: { city: City }) {
             variant="extended"
             color="secondary"
             onClick={() => setFiltersOpen(true)}
-            aria-label={`Filtry, włączonych: ${activeFilters}`}
+            aria-label={t('map.filtersAria', { count: activeFilters })}
           >
             <TuneIcon sx={{ mr: 1 }} />
-            Filtry
+            {t('filters.title')}
           </Fab>
         </Badge>
       </Box>
@@ -153,21 +155,17 @@ export default function MapPage({ city }: { city: City }) {
         {status === 'loading' && (
           <Paper elevation={4} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, px: 2, py: 1 }}>
             <CircularProgress size={20} />
-            <Typography>Ładowanie wydarzeń…</Typography>
+            <Typography>{t('map.loading')}</Typography>
           </Paper>
         )}
         {status === 'error' && (
           <Alert severity="error" elevation={4} sx={{ pointerEvents: 'auto' }}>
-            {isSupabaseConfigured
-              ? 'Nie udało się pobrać wydarzeń. Spróbuj ponownie za chwilę.'
-              : 'Brak połączenia z bazą. Uzupełnij klucze Supabase w pliku .env.local.'}
+            {isSupabaseConfigured ? t('home.errorFetch') : t('home.errorNoDb')}
           </Alert>
         )}
         {status === 'ready' && resultCount === 0 && (
           <Alert severity="info" elevation={4} sx={{ pointerEvents: 'auto' }}>
-            {events.length === 0
-              ? 'W tym mieście nie ma jeszcze nadchodzących wydarzeń. Dodaj pierwsze!'
-              : 'Nic nie pasuje do wybranych filtrów.'}
+            {events.length === 0 ? t('home.cityEmpty') : t('map.noMatch')}
           </Alert>
         )}
       </Box>

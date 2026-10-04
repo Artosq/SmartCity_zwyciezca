@@ -4,6 +4,7 @@ import Button from '@mui/material/Button'
 import ReportButton from '../components/ReportButton'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
+import { useLang } from '../i18n/LanguageContext'
 import Avatar from '@mui/material/Avatar'
 import Badge from '@mui/material/Badge'
 import Box from '@mui/material/Box'
@@ -63,7 +64,8 @@ const getDateLabel = (dateString: string) => {
 }
 
 export default function ChatPage() {
-  const { user } = useAuth() 
+  const { user } = useAuth()
+  const { t } = useLang()
   const [myEvents, setMyEvents] = useState<any[]>([])
   const [activeEvent, setActiveEvent] = useState<any | null>(null)
   const [messages, setMessages] = useState<any[]>([])
@@ -230,7 +232,7 @@ export default function ChatPage() {
   if (!user) {
     return (
       <Container maxWidth="sm" className="stagger" sx={{ py: 6, textAlign: 'center' }}>
-        <Typography variant="h5">Zaloguj się, aby korzystać z czatu.</Typography>
+        <Typography variant="h5">{t('chat.loginNeeded')}</Typography>
         <Typography color="text.secondary" sx={{ mt: 1, mb: 3 }}>
           Rozmowy pojawiają się tu po zapisaniu się na wydarzenie albo dołączeniu do spotkania we dwoje.
         </Typography>
@@ -261,7 +263,7 @@ export default function ChatPage() {
           }}
         >
           <Typography variant="h4" sx={{ mb: 2, px: 2, pt: 2, fontWeight: 900, display: 'flex', alignItems: 'center', gap: 1 }}>
-            Czaty 
+            {t('chat.title')}
             <Badge color="error" variant="dot" invisible={totalUnread === 0}>
               <ChatBubbleIcon />
             </Badge>
@@ -270,7 +272,7 @@ export default function ChatPage() {
           <List className="stagger" sx={{ overflowY: 'auto', px: 2 }}>
             {myEvents.length === 0 && (
               <Typography sx={{ p: 2, color: 'text.secondary' }}>
-                Nie jesteś zapisany(-a) na żadne wydarzenia.
+                {t('chat.noEvents')}
               </Typography>
             )}
             {myEvents.map((ev) => {
@@ -355,7 +357,7 @@ export default function ChatPage() {
                     {activeEvent.title}
                   </Typography>
                   <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 700 }}>
-                    ● Czat uczestników
+                    ● {t('chat.participants')}
                   </Typography>
                 </Box>
                 {activeEvent.scope === 'meetup' && (
@@ -394,7 +396,7 @@ export default function ChatPage() {
 
                 {messages.length === 0 && (
                   <Box sx={{ m: 'auto', textAlign: 'center', p: 3, bgcolor: 'primary.50', borderRadius: '24px' }}>
-                    <Typography color="primary.main" sx={{ fontWeight: 'bold' }}>Nikt tu jeszcze nikogo nie zna, więc zacznij od „cześć”!</Typography>
+                    <Typography color="primary.main" sx={{ fontWeight: 'bold' }}>{t('chat.empty')}</Typography>
                   </Box>
                 )}
                 
@@ -477,7 +479,7 @@ export default function ChatPage() {
                 <TextField 
                   fullWidth 
                   size="small" 
-                  placeholder="Napisz coś do wszystkich..." 
+                  placeholder={t('chat.placeholder')} 
                   value={newMessage} 
                   onChange={(e) => setNewMessage(e.target.value)} 
                   sx={{ 

@@ -19,6 +19,7 @@ import GroupIcon from '@mui/icons-material/Group'
 import PlaceIcon from '@mui/icons-material/Place'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import { getGroups } from '../../data/targetGroups'
+import { useLang } from '../../i18n/LanguageContext'
 import { supabase } from '../../lib/supabase'
 import { formatLongDate, getEventImage } from '../../lib/eventDisplay'
 import type { EventWithStats } from '../../lib/types'
@@ -51,6 +52,7 @@ export default function EventSheet({
   defaultExpanded = false,
   onClose,
 }: Props) {
+  const { t, td } = useLang()
   const [expanded, setExpanded] = useState(defaultExpanded)
   const [attendees, setAttendees] = useState<string[] | null>(null)
   const [busy, setBusy] = useState(false)
@@ -59,9 +61,9 @@ export default function EventSheet({
 
   const loadAttendees = useCallback(async () => {
     const { data, error } = await supabase.from('rsvps').select('user_id').eq('event_id', event.id)
-    if (error) setError('Nie udało się pobrać listy zapisanych.')
+    if (error) setError(t('event.loadErr'))
     else setAttendees(data.map((row) => row.user_id as string))
-  }, [event.id])
+  }, [event.id, t])
 
   useEffect(() => {
     loadAttendees()
@@ -80,12 +82,12 @@ export default function EventSheet({
     if (joined) {
         // Leave the event
         const { error } = await supabase.from('rsvps').delete().eq('event_id', event.id).eq('user_id', user.id)
-        if (error) setError('Nie udało się wypisać.')
+        if (error) setError(t('event.leaveErr'))
     } else {
         // Join the event
         const { error } = await supabase.from('rsvps').insert({ event_id: event.id, user_id: user.id })
         if (error) {
-            setError('Nie udało się zapisać.')
+            setError(t('event.joinErr'))
         } else {
             // Successfully joined, navigate to the chat page
             navigate('/czat')
@@ -98,17 +100,17 @@ export default function EventSheet({
 
   const places =
     attendees === null
-      ? 'Sprawdzanie miejsc…'
+      ? t('event.checking')
       : event.capacity === null
-        ? `Brak limitu miejsc · zapisanych: ${count}`
+        ? t('event.noLimit', { count })
         : full
-          ? `Brak wolnych miejsc (limit ${event.capacity})`
-          : `Wolne miejsca: ${event.capacity - count} z ${event.capacity}`
+          ? t('event.full', { cap: event.capacity })
+          : t('event.free', { count: event.capacity - count, cap: event.capacity })
 
   return (
     <Paper
       component="section"
-      aria-label={`Wydarzenie: ${event.title}`}
+      aria-label={t('event.ariaLabel', { title: event.title })}
       elevation={12}
       sx={{
         position: 'absolute',
@@ -137,7 +139,7 @@ export default function EventSheet({
             fontSize: '0.9rem',
           }}
         >
-          Popularne
+          {t('event.popular')}
         </Box>
       )}
       <Stack direction="row" sx={{ alignItems: 'flex-start' }}>
@@ -168,13 +170,13 @@ export default function EventSheet({
               {event.title}
             </Typography>
             <Typography variant="body2" noWrap sx={{ fontWeight: 700, color: 'text.secondary' }}>
-              {event.category?.name ?? 'Event'}
+              {event.category ? td('cat', event.category.slug, event.category.name) : t('event.fallbackCategory')}
             </Typography>
             <EventMeta event={event} distanceKm={distanceKm} />
           </Box>
           {expanded ? <ExpandMoreIcon /> : <ExpandLessIcon />}
         </ButtonBase>
-        <IconButton onClick={onClose} aria-label="Zamknij" sx={{ mt: 1, mr: 1 }}>
+        <IconButton onClick={onClose} aria-label={t('event.close')} sx={{ mt: 1, mr: 1 }}>
           <CloseIcon />
         </IconButton>
       </Stack>
@@ -209,9 +211,9 @@ export default function EventSheet({
 
           {event.source_url && (
             <Typography variant="body2" color="text.secondary">
-              Zaimportowane automatycznie.{' '}
+              {t('event.imported')}{' '}
               <Link href={event.source_url} target="_blank" rel="noopener noreferrer">
-                Zobacz oryginał ({SOURCE_NAMES[event.source ?? ''] ?? event.source})
+                {t('event.seeOriginal', { source: SOURCE_NAMES[event.source ?? ''] ?? event.source ?? '' })}
               </Link>
             </Typography>
           )}
@@ -222,7 +224,7 @@ export default function EventSheet({
                 key={group.slug}
                 variant="outlined"
                 icon={<GroupDot color={group.color} />}
-                label={group.name}
+                label={td('group', group.slug, group.name)}
                 sx={{ pl: 0.5 }}
               />
             ))}
@@ -232,11 +234,11 @@ export default function EventSheet({
 
           {!user ? (
             <Button component={RouterLink} to="/login" variant="contained" size="large">
-              Zaloguj się, aby dołączyć
+              {t('event.loginToJoin')}
             </Button>
           ) : joined ? (
             <Button variant="outlined" size="large" disabled={busy} onClick={toggleRsvp}>
-              Wypisz się
+              {t('event.leave')}
             </Button>
           ) : (
             <Button
@@ -245,13 +247,13 @@ export default function EventSheet({
               disabled={busy || full || attendees === null}
               onClick={toggleRsvp}
             >
-              {full ? 'Brak wolnych miejsc' : 'Dołącz'}
+              {full ? t('event.noSpots') : t('event.join')}
             </Button>
           )}
-          {joined && <Alert severity="success">Jesteś zapisany(-a) na to wydarzenie.</Alert>}
+          {joined && <Alert severity="success">{t('event.joined')}</Alert>}
           {/* własnego wydarzenia ani wydarzenia z miejskiego kalendarza się nie zgłasza */}
           {!event.source && event.organizer_id !== user?.id && (
-            <ReportButton targetType="event" targetId={event.id} reportedUserId={event.organizer_id} label="Zgłoś wydarzenie" />
+            <ReportButton targetType="event" targetId={event.id} reportedUserId={event.organizer_id} label={t('event.report')} />
           )}
         </Stack>
       </Collapse>

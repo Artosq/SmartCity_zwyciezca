@@ -8,6 +8,7 @@ import ElderlyIcon from '@mui/icons-material/Elderly'
 import HeadphonesIcon from '@mui/icons-material/Headphones'
 import PersonIcon from '@mui/icons-material/Person'
 import type { TargetGroup } from '../data/targetGroups'
+import { useLang } from '../i18n/LanguageContext'
 
 // Ikona każdej grupy docelowej — rozróżnia grupy nie tylko kolorem.
 const ICONS: Record<string, ReactNode> = {
@@ -29,6 +30,7 @@ interface Props {
 
 // Chip grupy docelowej: ikona w kółku w kolorze grupy; zaznaczony wypełnia się jej kolorem.
 export default function GroupChip({ group, active, onClick, label }: Props) {
+  const { td } = useLang()
   return (
     <ButtonBase
       onClick={onClick}
@@ -74,7 +76,7 @@ export default function GroupChip({ group, active, onClick, label }: Props) {
       >
         {ICONS[group.slug]}
       </Box>
-      {label ?? group.name}
+      {label ?? td('group', group.slug, group.name)}
     </ButtonBase>
   )
 }
