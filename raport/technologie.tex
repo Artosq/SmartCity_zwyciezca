@@ -1,0 +1,176 @@
+% !TEX program = pdflatex
+% Raport technologiczny projektu „Sąsiedzko" (HackYeah 2026, kategoria Smart City).
+% Samodzielny plik — wklej w całości do Overleaf (silnik: pdfLaTeX).
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{titlesec}
+
+\definecolor{akcent}{HTML}{6D28D9}
+\titleformat{\section}{\Large\bfseries\color{akcent}}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection.}{0.5em}{}
+\setlist{itemsep=2pt,topsep=3pt}
+
+\title{\textbf{Sąsiedzko} \\[0.3em] \large Raport technologiczny}
+\author{Zespół HackYeah 2026 --- kategoria otwarta Smart City}
+\date{Październik 2026}
+
+\begin{document}
+\maketitle
+
+\section{Wprowadzenie}
+
+\textbf{Sąsiedzko} to instalowalna aplikacja webowa (PWA), w której mieszkańcy dodają
+sąsiedzkie wydarzenia na mapie miasta, zapisują się na nie jednym kliknięciem i rozmawiają
+na czatach w czasie rzeczywistym. Niniejszy raport opisuje technologie użyte do budowy
+projektu oraz --- zgodnie z wymogami regulaminu --- uzasadnienie każdej decyzji.
+
+Przyjęliśmy zasadę \emph{prostego, możliwego do obrony stosu}: minimum warstw, przewidywalne
+narzędzia i jak najmniej własnej infrastruktury, aby w czasie hackathonu skupić się na funkcjach,
+a nie na konfiguracji serwerów.
+
+\section{Przegląd stosu technologicznego}
+
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Warstwa} & \textbf{Technologia} \\
+\midrule
+Frontend        & React 19 + Vite 8 + TypeScript + MUI (Material UI) 9 \\
+Mapa            & Leaflet + OpenStreetMap, grupowanie pinezek (react-leaflet-cluster) \\
+Backend / dane  & Supabase --- PostgreSQL, Auth (magic link), Realtime, Storage \\
+AI              & Supabase Edge Function (Deno) $\rightarrow$ Claude (Anthropic) \\
+Automatyzacja   & Bot w Node.js uruchamiany przez GitHub Actions \\
+Hosting         & Render (Static Site) \\
+PWA             & Manifest + ikony (instalacja na telefonie) \\
+Jakość kodu     & TypeScript (tsc), oxlint \\
+\bottomrule
+\end{tabularx}
+\caption{Warstwy aplikacji i użyte technologie.}
+\end{table}
+
+\section{Frontend}
+
+\begin{itemize}
+  \item \textbf{React 19} --- biblioteka do budowy interfejsu w architekturze komponentowej.
+        Wybrana ze względu na dojrzałość, ogromny ekosystem i znajomość w zespole.
+  \item \textbf{Vite 8} --- bundler i serwer deweloperski. Błyskawiczny start, natychmiastowy
+        hot reload i prosta konfiguracja --- kluczowe przy pracy pod presją czasu.
+  \item \textbf{TypeScript} --- statyczne typowanie. Wspólne typy danych (\texttt{src/lib/types.ts})
+        odpowiadają tabelom w bazie, co ogranicza błędy na styku frontend--backend.
+  \item \textbf{MUI (Material UI) 9} --- gotowe, dostępne komponenty z systemem motywów.
+        Pozwolił szybko zbudować spójny, mobilny interfejs zgodny z WCAG.
+  \item \textbf{Emotion} --- silnik stylów (CSS-in-JS) używany przez MUI.
+  \item \textbf{React Router 7} --- routing po stronie klienta (mapa, dodawanie, czat, konto, panel administratora).
+  \item \textbf{Web Speech API} --- wbudowane w przeglądarkę rozpoznawanie mowy; służy do
+        dyktowania zdania w funkcji „wydarzenie z jednego zdania" (bez zewnętrznej biblioteki).
+  \item \textbf{Wielojęzyczność (PL/EN)} i animacje --- rozwiązania własne, oparte na lekkim
+        kontekście React i CSS, bez dodatkowych zależności.
+\end{itemize}
+
+\section{Mapa}
+
+\begin{itemize}
+  \item \textbf{Leaflet} wraz z \textbf{react-leaflet} --- lekka, otwarta biblioteka map.
+        W przeciwieństwie do rozwiązań komercyjnych nie wymaga klucza API ani opłat.
+  \item \textbf{OpenStreetMap} --- otwarte źródło kafelków mapy (dane tworzone społecznościowo).
+  \item \textbf{react-leaflet-cluster} --- grupowanie pinezek: wiele bliskich wydarzeń łączy się
+        w jeden znacznik z licznikiem i rozwija po przybliżeniu, co utrzymuje czytelność mapy.
+\end{itemize}
+
+\section{Backend i dane --- Supabase}
+
+Zamiast pisać własny serwer wykorzystaliśmy \textbf{Supabase} --- platformę typu
+\emph{Backend-as-a-Service} opartą na PostgreSQL.
+
+\begin{itemize}
+  \item \textbf{PostgreSQL} --- relacyjna baza danych; schemat i migracje trzymamy w repozytorium
+        (\texttt{supabase/schema.sql}, \texttt{supabase/migrations/}).
+  \item \textbf{Row Level Security (RLS)} --- bezpieczeństwo danych egzekwowane na poziomie bazy.
+        Np. dokładny adres wydarzenia jest widoczny dopiero po zapisie, a spotkania „we dwoje"
+        baza zwraca wyłącznie zalogowanym osobom pełnoletnim. Reguł nie da się obejść z frontu.
+  \item \textbf{Auth (magic link)} --- logowanie bez haseł (imię + e-mail). Mniej danych do ochrony
+        i niższa bariera wejścia dla użytkownika.
+  \item \textbf{Realtime} --- subskrypcja zmian w tabeli \texttt{messages} zasila czat na żywo
+        bez odpytywania serwera.
+  \item \textbf{Storage} --- przechowywanie zdjęć wydarzeń (do 5 MB na plik).
+\end{itemize}
+
+\section{Sztuczna inteligencja (AI)}
+
+\subsection{Wydarzenie z jednego zdania}
+Główny wyróżnik produktu. Użytkownik pisze lub dyktuje jedno zdanie (np. \emph{„urodziny babci
+w sobotę o 15 w parku Jordana, do 10 osób, dla seniorów"}), a formularz wypełnia się sam.
+
+\begin{itemize}
+  \item \textbf{Claude (Anthropic)} --- model językowy (LLM) zamieniający zdanie na pola wydarzenia.
+  \item \textbf{Supabase Edge Function (Deno)} --- funkcja brzegowa \texttt{parse-event} pośredniczy
+        między aplikacją a modelem. Dzięki temu \textbf{klucz API nigdy nie trafia do przeglądarki}
+        --- trzyma się wyłącznie w sekretach funkcji.
+  \item \textbf{Tool use ze ścisłym schematem} --- model wywołuje narzędzie o zdefiniowanym schemacie,
+        w którym kategoria i grupy docelowe są ograniczone do listy z bazy (\texttt{enum}). Dzięki temu
+        model nie wymyśla wartości spoza dozwolonego zbioru, a wynik jest przewidywalny.
+\end{itemize}
+
+\subsection{Świadome granice użycia AI}
+Klasyfikację wydarzeń importowanych przez bota (kategoria + grupy docelowe) wykonują
+\textbf{reguły słów kluczowych}, a nie model AI --- celowo, ponieważ są przewidywalne, darmowe
+i nie wymagają wywołań sieciowych. AI stosujemy tam, gdzie realnie podnosi jakość (język naturalny),
+a nie wszędzie „na siłę".
+
+\subsection{AI we wsparciu programisty}
+Do pisania kodu korzystaliśmy z asystenta \textbf{Claude Code} (Anthropic). Każdą decyzję
+architektoniczną rozumiemy i potrafimy obronić.
+
+\section{Automatyzacja --- bot importujący wydarzenia}
+
+\begin{itemize}
+  \item \textbf{Node.js} --- skrypt bota (\texttt{npm run bot}) raz dziennie losuje kilka wydarzeń
+        z miejskiego kalendarza \textbf{Karnet} (karnet.krakowculture.pl), dobiera im kategorię
+        i grupy docelowe regułami, a następnie dodaje do bazy bez duplikatów i z linkiem do oryginału.
+  \item \textbf{GitHub Actions} --- harmonogram (cron) uruchamiający bota; sekrety przechowywane
+        w ustawieniach repozytorium, nigdy w kodzie.
+\end{itemize}
+
+\section{PWA, hosting i jakość kodu}
+
+\begin{itemize}
+  \item \textbf{PWA} --- manifest i zestaw ikon umożliwiają instalację aplikacji na ekranie głównym
+        telefonu (bez trybu offline).
+  \item \textbf{Render (Static Site)} --- hosting zbudowanej aplikacji. Krok budowania kopiuje
+        \texttt{index.html} do folderów podstron, aby odświeżenie adresu typu \texttt{/mapa/}
+        działało bez dodatkowych reguł serwera.
+  \item \textbf{Dostępność (WCAG 2.1)} --- domyślny wygląd spełnia poziom AA (kontrast, widoczny fokus,
+        obsługa klawiaturą), a tryb „Duży i wyraźny widok" podnosi kontrast do AAA i powiększa elementy.
+  \item \textbf{tsc} (sprawdzanie typów) i \textbf{oxlint} (szybki linter) --- utrzymanie jakości kodu.
+\end{itemize}
+
+\section{Źródła danych}
+
+\begin{itemize}
+  \item \textbf{OpenStreetMap} --- kafelki mapy.
+  \item \textbf{Karnet} (Krakowskie Biuro Festiwalowe) --- publiczna lista wydarzeń importowanych przez bota.
+  \item \textbf{Dane demonstracyjne} --- wydarzenia wymyślone na potrzeby prezentacji, osadzone
+        w prawdziwych lokalizacjach; brak prawdziwych danych osobowych.
+\end{itemize}
+
+\section{Podsumowanie}
+
+Stos projektu „Sąsiedzko" dobraliśmy pod trzy cele: \textbf{szybkość wytwarzania} (React + Vite + MUI,
+Supabase zamiast własnego backendu), \textbf{bezpieczeństwo danych} (RLS w bazie, klucz AI w sekretach
+funkcji brzegowej) oraz \textbf{brak kosztów i zależności komercyjnych} (OpenStreetMap, Leaflet,
+logowanie bez haseł). AI stosujemy punktowo --- tam, gdzie przetwarzanie języka naturalnego realnie
+skraca drogę użytkownika do dodania wydarzenia.
+
+\end{document}
