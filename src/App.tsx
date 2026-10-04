@@ -1,4 +1,5 @@
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import AppLayout from './components/AppLayout'
 import CityPicker from './components/CityPicker'
 import { useCity } from './context/CityContext'
@@ -15,11 +16,16 @@ import UstawieniaPage from './pages/UstawieniaPage'
 export default function App() {
   const { city, selectCity } = useCity()
   const { pathname, search, hash } = useLocation()
+  const navigate = useNavigate()
 
   // Podstrony mają adres z ukośnikiem na końcu (/mapa/). Hosting statyczny serwuje wtedy
   // skopiowany przy buildzie plik mapa/index.html (scripts/spa-fallback.mjs), więc odświeżenie
   // strony działa bez reguł przekierowań po stronie serwera.
-  if (!pathname.endsWith('/')) return <Navigate to={`${pathname}/${search}${hash}`} replace />
+  // Ukośnik dopisujemy w efekcie, nie zamiast renderowania — inaczej cała rama aplikacji
+  // (nagłówek, nawigacja) znikałaby na moment i jej animacje zaczynały się od nowa.
+  useEffect(() => {
+    if (!pathname.endsWith('/')) navigate(`${pathname}/${search}${hash}`, { replace: true })
+  }, [pathname, search, hash, navigate])
 
   // Najpierw wybór miasta — dopiero potem reszta aplikacji.
   if (!city) return <CityPicker onSelect={selectCity} />
