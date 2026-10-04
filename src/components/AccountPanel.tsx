@@ -10,16 +10,18 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import CakeOutlinedIcon from '@mui/icons-material/CakeOutlined'
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 import LogoutIcon from '@mui/icons-material/Logout'
 import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined'
 import VerifiedIcon from '@mui/icons-material/Verified'
 import { useProfile } from '../hooks/useProfile'
 import { supabase } from '../lib/supabase'
 import { BRAND } from '../theme'
+import ActivityCalendar from './ActivityCalendar'
 import PendingRatings from './PendingRatings'
 import SectionCard from './SectionCard'
 
-// Panel zalogowanego: awatar i ocena na górze, niżej data urodzenia i lista „Do oceny".
+// Panel zalogowanego: awatar i ocena na górze, niżej kalendarz aktywności, data urodzenia i lista „Do oceny".
 export default function AccountPanel() {
   const { user, loading, birthDate, isAdult, rating, saveBirthDate } = useProfile()
   const [draft, setDraft] = useState<string | null>(null)
@@ -105,7 +107,7 @@ export default function AccountPanel() {
             )}
           </Stack>
           <Typography color="text.secondary" sx={{ wordBreak: 'break-all' }}>
-            {user.email}
+            {user.email ?? 'Konto demo (tymczasowe)'}
           </Typography>
 
           <Box
@@ -138,6 +140,14 @@ export default function AccountPanel() {
             </Typography>
           </Box>
         </Paper>
+
+        <SectionCard
+          icon={<CalendarMonthIcon />}
+          title="Twój kalendarz"
+          hint="Wydarzenia, na które idziesz lub które organizujesz, i spotkania we dwoje."
+        >
+          <ActivityCalendar userId={user.id} />
+        </SectionCard>
 
         <SectionCard icon={<CakeOutlinedIcon />} title="Data urodzenia">
           <Stack component="form" onSubmit={handleSave} spacing={1.5}>

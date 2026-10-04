@@ -56,6 +56,9 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
   regułami słów kluczowych i dodaje je do bazy bez duplikatów, z linkiem do oryginału.
   Harmonogram: GitHub Actions (`.github/workflows/bot.yml`).
   Facebook — tylko przez oficjalne API, dla stron, które dadzą dostęp.
+- **Konto demo** (tymczasowe, na prezentację): przycisk na ekranie logowania tworzy anonimowe konto
+  bez e-maila, od razu pełnoletnie — do sprawdzania wszystkich funkcji. Wymaga włączenia
+  anonimowych logowań w Supabase; przed prawdziwym uruchomieniem do usunięcia.
 - **Logowanie bez haseł** (imię + e-mail / magic link).
 - **PWA** — instalacja na ekranie głównym telefonu.
 - **Czat w czasie rzeczywistym** — kanał dla każdej kategorii i każdego wydarzenia.
@@ -137,7 +140,7 @@ Relacje: `profiles` 1—N `events`/`rsvps`/`messages`/`announcements`;
 | `/`                | Strona główna z przełącznikiem: wydarzenia (chipy preferencji + karuzele) albo „We dwoje" (`?widok=1na1`) |
 | `/mapa`            | Mapa miasta z grupowanymi pinezkami wydarzeń i spotkań we dwoje (18+), menu filtrów, rozwijana karta wydarzenia |
 | `/dodaj`           | Dodawanie wydarzenia albo propozycji spotkania we dwoje (wybór miejsca na mapie) |
-| `/login`           | Logowanie bez hasła (imię + e-mail / magic link); Konto: data urodzenia, własna ocena, lista „Do oceny" |
+| `/login`           | Logowanie bez hasła (imię + e-mail / magic link); Konto: kalendarz miesiąca z aktywnościami (zapisy, własne wydarzenia, spotkania we dwoje), data urodzenia, własna ocena, lista „Do oceny" |
 | `/czat`            | Czat w czasie rzeczywistym _(w budowie)_                    |
 | `/ogloszenia`      | Tablica ogłoszeń _(w budowie)_                              |
 | `/miasto`          | _(wyróżnik)_ mapa aktywności dzielnic                        |

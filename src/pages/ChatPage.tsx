@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link as RouterLink } from 'react-router-dom'
+import Button from '@mui/material/Button'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import Avatar from '@mui/material/Avatar'
@@ -226,8 +228,14 @@ export default function ChatPage() {
 
   if (!user) {
     return (
-      <Container sx={{ py: 6, textAlign: 'center' }}>
+      <Container maxWidth="sm" className="stagger" sx={{ py: 6, textAlign: 'center' }}>
         <Typography variant="h5">Zaloguj się, aby korzystać z czatu.</Typography>
+        <Typography color="text.secondary" sx={{ mt: 1, mb: 3 }}>
+          Rozmowy pojawiają się tu po zapisaniu się na wydarzenie albo dołączeniu do spotkania we dwoje.
+        </Typography>
+        <Button component={RouterLink} to="/login/" variant="contained" size="large">
+          Zaloguj się
+        </Button>
       </Container>
     )
   }
