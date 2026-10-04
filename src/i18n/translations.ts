@@ -66,7 +66,7 @@ const pl: Dict = {
   'settings.title': 'Ustawienia ⚙️',
   'settings.language': 'Język aplikacji',
   'settings.seniorTitle': 'Dostępność',
-  'settings.senior': 'Tryb dla seniorów',
+  'settings.senior': 'Duży i wyraźny widok',
   'settings.seniorHint':
     'Większy tekst i ikony, mocniejszy kontrast, podkreślone linki, większe odstępy i brak animacji. Zgodnie z wytycznymi WCAG 2.1.',
   'a11y.skip': 'Przejdź do treści',
@@ -176,7 +176,7 @@ const en: Dict = {
   'settings.title': 'Settings ⚙️',
   'settings.language': 'App language',
   'settings.seniorTitle': 'Accessibility',
-  'settings.senior': 'Senior mode',
+  'settings.senior': 'Large and clear view',
   'settings.seniorHint':
     'Larger text and icons, stronger contrast, underlined links, more spacing and no animations. Following WCAG 2.1 guidelines.',
   'a11y.skip': 'Skip to content',

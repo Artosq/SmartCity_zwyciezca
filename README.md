@@ -115,7 +115,7 @@ dane leżą w Postgresie Supabase. Dostęp do danych pilnuje **Row Level Securit
 
 **Dostępność (WCAG 2.1).** Zwykły wygląd spełnia poziom AA: kontrast tekstu co najmniej 4,5:1, ikon
 i obramowań pól 3:1, widoczny fokus, łącze „Przejdź do treści", tytuł karty zależny od ekranu, brak
-wymuszonej orientacji. **Tryb dla seniorów** (Ustawienia albo menu „Więcej") dodaje: tekst i ikony
+wymuszonej orientacji. **Duży i wyraźny widok** (dawniej tryb dla seniorów; Ustawienia albo menu „Więcej") dodaje: tekst i ikony
 większe o 25%, kontrast na poziomie AAA (7:1), podkreślone linki, większe odstępy, brak animacji
 i podpisy przy ikonach nawigacji.
 
