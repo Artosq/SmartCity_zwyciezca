@@ -99,3 +99,25 @@ export interface Meetup {
 export interface MeetupWithHost extends Meetup {
   host: Organizer | null
 }
+
+// „Pokaż się": położenie osoby na żywo z krótką notką (tylko dla zalogowanych dorosłych).
+export interface LivePresence {
+  user_id: string
+  note: string
+  lat: number
+  lng: number
+  updated_at: string
+  expires_at: string
+  profile: Organizer | null
+}
+
+// „Dołączam": ktoś idzie do osoby widocznej na mapie i pokazuje swoje położenie tylko jej.
+export interface LiveJoin {
+  target_id: string
+  joiner_id: string
+  lat: number | null
+  lng: number | null
+  updated_at: string
+  created_at: string
+  joiner: Pick<Profile, 'name'> | null
+}

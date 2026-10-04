@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-
 import AppLayout from './components/AppLayout'
 import CityPicker from './components/CityPicker'
 import { useCity } from './context/CityContext'
+import { LiveProvider } from './context/LiveContext'
 import AddPage from './pages/AddPage'
 import AnnouncementsPage from './pages/AnnouncementsPage'
 import ChatPage from './pages/ChatPage'
@@ -31,19 +32,21 @@ export default function App() {
   if (!city) return <CityPicker onSelect={selectCity} />
 
   return (
-    <Routes>
-      <Route element={<AppLayout />}>
-        <Route path="/" element={<HomePage city={city} />} />
-        <Route path="/mapa" element={<MapPage city={city} />} />
-        <Route path="/dodaj" element={<AddPage city={city} />} />
-        <Route path="/czat" element={<ChatPage />} />
-        <Route path="/ogloszenia" element={<AnnouncementsPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/regulamin" element={<RegulaminPage />} />
-        <Route path="/prywatnosc" element={<PrywatnoscPage />} />
-        <Route path="/ustawienia" element={<UstawieniaPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Route>
-    </Routes>
+    <LiveProvider>
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<HomePage city={city} />} />
+          <Route path="/mapa" element={<MapPage city={city} />} />
+          <Route path="/dodaj" element={<AddPage city={city} />} />
+          <Route path="/czat" element={<ChatPage />} />
+          <Route path="/ogloszenia" element={<AnnouncementsPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/regulamin" element={<RegulaminPage />} />
+          <Route path="/prywatnosc" element={<PrywatnoscPage />} />
+          <Route path="/ustawienia" element={<UstawieniaPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
+      </Routes>
+    </LiveProvider>
   )
 }

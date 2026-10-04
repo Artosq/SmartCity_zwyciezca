@@ -33,6 +33,7 @@ import { CITIES } from '../data/cities'
 import { useLang } from '../i18n/LanguageContext'
 import { BRAND } from '../theme'
 import LanguageSwitcher from './LanguageSwitcher'
+import LiveBanner from './live/LiveBanner'
 
 // `bottom: false` = pozycja tylko w menu i w nagłówku na desktopie (na telefonie mapa ma swój przycisk).
 const NAV = [
@@ -303,6 +304,8 @@ export default function AppLayout() {
           {searchField}
         </Box>
       )}
+
+      <LiveBanner />
 
       <Drawer anchor="right" open={menuOpen} onClose={() => setMenuOpen(false)}>
         <Box component="nav" aria-label={t('menu.more')} sx={{ width: 280, pt: 2 }}>

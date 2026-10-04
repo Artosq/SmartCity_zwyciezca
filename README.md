@@ -32,6 +32,11 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
   w miejscu publicznym. Ktoś proponuje, pierwsza chętna osoba klika „Idę" i obie dostają prywatny
   czat. Tylko dla zalogowanych dorosłych: wiek wynika z daty urodzenia w profilu, a baza nie
   zwraca spotkań osobom niepełnoletnim ani niezalogowanym.
+- **„Pokaż się"** (przycisk na mapie): osoba wpisuje krótką notkę (do 80 znaków, np. „Biegam po
+  Błoniach, dołącz!") i jej dokładne położenie staje się widoczne na mapie na żywo — do 60 minut
+  albo do kliknięcia „Ukryj się". Kliknięcie osoby pokazuje notkę i przycisk „Dołączam": ta osoba
+  dostaje komunikat i widzi położenie dołączającego, żeby mogli się odnaleźć. Tylko dla zalogowanych
+  dorosłych (pilnuje baza); pasek „Jesteś widoczny" jest na każdym ekranie.
 - **Oceny organizatorów**: po terminie wydarzenia każda zapisana osoba może ocenić organizatora
   (0,5–5 gwiazdek, co pół), a po spotkaniu we dwoje obie osoby oceniają się nawzajem. Średnia jest
   widoczna na kartach wydarzeń i spotkań oraz na stronie Konto; bez ocen — „Nowy organizator".
@@ -100,6 +105,8 @@ wyłączane przy systemowym ustawieniu ograniczenia ruchu.
 ```
 profiles        — id (=auth.users.id), name, email, rating_avg, rating_count, created_at
 profile_private — id→profiles, birth_date (widoczna tylko dla właściciela)
+live_presence   — user_id→profiles (PK), note, lat, lng, updated_at, expires_at
+live_joins      — target_id→live_presence, joiner_id→profiles, lat, lng, updated_at  [PK(target, joiner)]
 ratings         — id, rater_id→profiles, ratee_id→profiles, scope(event|meetup), scope_id, stars,
                   created_at  [UNIQUE(rater_id, scope, scope_id)]
 categories      — id, slug, name, color, icon

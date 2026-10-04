@@ -8,6 +8,7 @@ import { getMeetupType } from '../../data/meetupTypes'
 import { getGroups } from '../../data/targetGroups'
 import { formatRelativeDate, formatShortDate, getEventImage } from '../../lib/eventDisplay'
 import type { EventWithStats, MeetupWithHost } from '../../lib/types'
+import LiveLayer from '../live/LiveLayer'
 import { getClusterIcon, getEventIcon, getMeetupIcon } from './eventIcon'
 
 // Od tego przybliżenia pinezki nie łączą się już w grupy.
@@ -162,6 +163,8 @@ export default function EventMap({
           )
         })}
       </MarkerClusterGroup>
+      {/* „Pokaż się": osoby na żywo — poza grupowaniem, zawsze na wierzchu */}
+      <LiveLayer />
     </MapContainer>
   )
 }

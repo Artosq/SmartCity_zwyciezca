@@ -156,3 +156,59 @@ html {
     scroll-behavior: auto !important;
   }
 }
+
+/* „Pokaż się": osoba widoczna na żywo — kółko z pulsującą obwódką */
+.live-marker {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  background: #ec4899;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45);
+  font-size: 22px;
+  line-height: 1;
+}
+.live-marker.mine {
+  background: #4b3bf0;
+}
+.live-marker::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 3px solid currentColor;
+  color: #ec4899;
+  animation: livePulse 1.8s ease-out infinite;
+}
+.live-marker.mine::after {
+  color: #4b3bf0;
+}
+@keyframes livePulse {
+  from {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+.live-marker.joiner {
+  background: #16a34a;
+}
+.live-marker.joiner::after {
+  color: #16a34a;
+}
+/* dymek osoby na mapie */
+.leaflet-popup.live-popup .leaflet-popup-content-wrapper {
+  border-radius: 20px;
+  box-shadow: 0 10px 28px rgba(17, 17, 17, 0.28);
+}
+.leaflet-popup.live-popup .leaflet-popup-content {
+  margin: 14px 16px;
+  min-width: 200px;
+}

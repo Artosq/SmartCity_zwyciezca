@@ -56,3 +56,39 @@ export function getMeetupIcon(emoji: string) {
   iconCache.set(key, icon)
   return icon
 }
+
+// „Pokaż się": osoba widoczna na żywo. Własna pinezka jest fioletowa, pozostałe różowe.
+export function getLiveIcon(mine: boolean) {
+  const key = `live:${mine}`
+  const cached = iconCache.get(key)
+  if (cached) return cached
+
+  const icon = L.divIcon({
+    className: 'event-marker',
+    html: `<div class="live-marker${mine ? ' mine' : ''}" aria-hidden="true">🚶</div>`,
+    iconSize: [44, 44],
+    iconAnchor: [22, 22],
+    popupAnchor: [0, -24],
+  })
+
+  iconCache.set(key, icon)
+  return icon
+}
+
+// Osoba, która kliknęła „Dołączam" i idzie do mnie — zielona, widoczna tylko dla mnie.
+export function getJoinerIcon() {
+  const key = 'live:joiner'
+  const cached = iconCache.get(key)
+  if (cached) return cached
+
+  const icon = L.divIcon({
+    className: 'event-marker',
+    html: '<div class="live-marker joiner" aria-hidden="true">🏃</div>',
+    iconSize: [44, 44],
+    iconAnchor: [22, 22],
+    popupAnchor: [0, -24],
+  })
+
+  iconCache.set(key, icon)
+  return icon
+}

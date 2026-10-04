@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography'
 import TuneIcon from '@mui/icons-material/Tune'
 import EventMap from '../components/map/EventMap'
 import EventSheet from '../components/map/EventSheet'
+import ShowUpButton from '../components/live/ShowUpButton'
 import MapFilters, {
   countActiveFilters,
   EMPTY_FILTERS,
@@ -167,6 +168,9 @@ export default function MapPage({ city }: { city: City }) {
           </Alert>
         )}
       </Box>
+
+      {/* karta wydarzenia zajmuje dół mapy — przycisk wraca po jej zamknięciu */}
+      {!selectedEvent && <ShowUpButton />}
 
       {selectedEvent && (
         <EventSheet
