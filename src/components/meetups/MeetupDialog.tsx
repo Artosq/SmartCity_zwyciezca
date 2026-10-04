@@ -16,6 +16,7 @@ import { getMeetupType } from '../../data/meetupTypes'
 import { formatLongDate } from '../../lib/eventDisplay'
 import { supabase } from '../../lib/supabase'
 import type { MeetupWithHost } from '../../lib/types'
+import ReportButton from '../ReportButton'
 import { HostLine, MeetupTags } from './MeetupCard'
 
 interface Props {
@@ -112,6 +113,9 @@ export default function MeetupDialog({ meetup, user, isAdult, onClose, onChanged
           {!isHost && !isGuest && taken && <Alert severity="warning">To spotkanie jest już zajęte.</Alert>}
 
           {error && <Alert severity="error">{error}</Alert>}
+          {!isHost && (
+            <ReportButton targetType="meetup" targetId={meetup.id} reportedUserId={meetup.host_id} label="Zgłoś spotkanie" />
+          )}
         </Stack>
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 3, gap: 1 }}>

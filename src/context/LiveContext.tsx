@@ -145,7 +145,12 @@ export function LiveProvider({ children }: { children: ReactNode }) {
               expires_at: sharing.current.expiresAt,
             })
             if (error) {
-              setError('Nie udało się udostępnić położenia. Jeśli to świeża baza, uruchom migrację 008.')
+              // ban albo odrzucona notka mają własny komunikat z bazy; inaczej ogólny
+              setError(
+                /wulgaryzm|policy/i.test(error.message)
+                  ? 'Nie możesz się teraz pokazać: konto jest zablokowane albo notka zawiera niedozwolone słowa.'
+                  : 'Nie udało się udostępnić położenia. Jeśli to świeża baza, uruchom migrację 008.',
+              )
               await hide()
             }
           }

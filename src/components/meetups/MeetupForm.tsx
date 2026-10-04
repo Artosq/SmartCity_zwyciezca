@@ -16,6 +16,7 @@ import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined'
 import type { City } from '../../data/cities'
 import { MEETUP_TYPES } from '../../data/meetupTypes'
 import { useProfile } from '../../hooks/useProfile'
+import { containsProfanity, explainDbError, PROFANITY_MESSAGE } from '../../lib/profanity'
 import { supabase } from '../../lib/supabase'
 import LocationPicker, { type Pos } from '../LocationPicker'
 import SectionCard from '../SectionCard'
@@ -46,6 +47,10 @@ export default function MeetupForm({ city }: { city: City }) {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     if (!user || !pos) return
+    if (containsProfanity(title, description, placeName, tags)) {
+      setError(PROFANITY_MESSAGE)
+      return
+    }
     setError('')
     setSubmitting(true)
 
@@ -73,7 +78,7 @@ export default function MeetupForm({ city }: { city: City }) {
       setError(
         error.message.includes('meetups_type_check')
           ? 'Baza nie zna jeszcze tego rodzaju spotkania. Uruchom migrację 007_uploads_and_shopping.sql.'
-          : error.message,
+          : explainDbError(error.message),
       )
     } else setCreated(true)
   }

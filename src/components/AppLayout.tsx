@@ -29,10 +29,12 @@ import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined'
 import SearchIcon from '@mui/icons-material/Search'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import { useAccessibility } from '../context/AccessibilityContext'
+
 import { useCity } from '../context/CityContext'
 import { CITIES } from '../data/cities'
 import { useLang } from '../i18n/LanguageContext'
 import { BRAND } from '../theme'
+import BanBanner from './BanBanner'
 import LanguageSwitcher from './LanguageSwitcher'
 import LiveBanner from './live/LiveBanner'
 import SeniorModeSwitch from './SeniorModeSwitch'
@@ -322,6 +324,7 @@ export default function AppLayout() {
         </Box>
       )}
 
+      <BanBanner />
       <LiveBanner />
 
       <Drawer anchor="right" open={menuOpen} onClose={() => setMenuOpen(false)}>

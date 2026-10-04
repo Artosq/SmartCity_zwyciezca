@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import Button from '@mui/material/Button'
+import ReportButton from '../components/ReportButton'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import Avatar from '@mui/material/Avatar'
@@ -357,6 +358,11 @@ export default function ChatPage() {
                     ● Czat uczestników
                   </Typography>
                 </Box>
+                {activeEvent.scope === 'meetup' && (
+                  <Box sx={{ ml: 'auto' }}>
+                    <ReportButton targetType="meetup_chat" targetId={activeEvent.id} label="Zgłoś rozmowę" />
+                  </Box>
+                )}
               </Box>
 
               {/* Messages Area */}
@@ -455,6 +461,9 @@ export default function ChatPage() {
                               {formatTime(msg.created_at)}
                             </Typography>
                           </Paper>
+                          {!isMe && (
+                            <ReportButton targetType="message" targetId={msg.id} reportedUserId={msg.user_id} compact />
+                          )}
                         </Box>
                       </Box>
                     </Box>

@@ -18,6 +18,7 @@ import { useProfile } from '../hooks/useProfile'
 import { supabase } from '../lib/supabase'
 import { BRAND } from '../theme'
 import ActivityCalendar from './ActivityCalendar'
+import HiddenContentNotice from './HiddenContentNotice'
 import PendingRatings from './PendingRatings'
 import SectionCard from './SectionCard'
 
@@ -140,6 +141,8 @@ export default function AccountPanel() {
             </Typography>
           </Box>
         </Paper>
+
+        <HiddenContentNotice userId={user.id} />
 
         <SectionCard
           icon={<CalendarMonthIcon />}

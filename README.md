@@ -58,6 +58,14 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
   Facebook — tylko przez oficjalne API, dla stron, które dadzą dostęp.
 - **Pomoc** (w nawigacji zamiast tablicy ogłoszeń): najczęstsze pytania z rozwijanymi odpowiedziami,
   wyszukiwarka oraz formularze „Napisz do nas" i „Zgłoś błąd" zapisywane w bazie.
+- **Panel administratora** (`/admin`, bez linku w aplikacji): kolejka zgłoszeń od użytkowników,
+  automatyczne flagi (wulgaryzmy na czacie, zalew wiadomości, wielokrotnie zgłaszane osoby, niskie oceny),
+  wgląd w czaty wydarzeń, ukrywanie i przywracanie treści, bany czasowe i bezterminowe z powodem,
+  odpowiedzi na wiadomości z Pomocy, nadawanie uprawnień i dziennik działań. Uprawnień pilnuje baza.
+  Prywatne czaty „We dwoje" są dostępne dla admina tylko po zgłoszeniu przez jedną z dwóch osób.
+- **Filtr wulgaryzmów**: wydarzenia, spotkania i notki „Pokaż się" z wulgaryzmami są odrzucane
+  w formularzu i dodatkowo przez bazę, więc filtra nie da się obejść.
+- **Zgłaszanie**: przycisk „Zgłoś" przy wiadomościach, wydarzeniach, spotkaniach i osobach na mapie.
 - **Konto demo** (tymczasowe, na prezentację): przycisk na ekranie logowania tworzy anonimowe konto
   bez e-maila, od razu pełnoletnie — do sprawdzania wszystkich funkcji. Wymaga włączenia
   anonimowych logowań w Supabase; przed prawdziwym uruchomieniem do usunięcia.
@@ -120,6 +128,11 @@ profile_private — id→profiles, birth_date (widoczna tylko dla właściciela)
 live_presence   — user_id→profiles (PK), note, lat, lng, updated_at, expires_at
 live_joins      — target_id→live_presence, joiner_id→profiles, lat, lng, updated_at  [PK(target, joiner)]
 support_messages — id, user_id→profiles (opcjonalnie), kind(contact|bug), message, contact, page, created_at
+admins          — user_id→profiles (PK), added_by, created_at
+bans            — user_id→profiles (PK), reason, until (null = bezterminowo), banned_by, created_at
+reports         — id, reporter_id, target_type(message|event|meetup|user|meetup_chat), target_id,
+                  reported_user_id, reason, status(open|resolved), resolved_by, resolved_at, created_at
+admin_log       — id, admin_id, action, target_type, target_id, details, created_at
 ratings         — id, rater_id→profiles, ratee_id→profiles, scope(event|meetup), scope_id, stars,
                   created_at  [UNIQUE(rater_id, scope, scope_id)]
 categories      — id, slug, name, color, icon
@@ -150,6 +163,7 @@ Relacje: `profiles` 1—N `events`/`rsvps`/`messages`/`announcements`;
 | `/dodaj`           | Dodawanie wydarzenia albo propozycji spotkania we dwoje (wybór miejsca na mapie) |
 | `/login`           | Logowanie bez hasła (imię + e-mail / magic link); Konto: kalendarz miesiąca z aktywnościami (zapisy, własne wydarzenia, spotkania we dwoje), data urodzenia, własna ocena, lista „Do oceny" |
 | `/czat`            | Czat w czasie rzeczywistym _(w budowie)_                    |
+| `/admin`           | Panel administratora: zgłoszenia, flagi, czaty, treści, użytkownicy, Pomoc, dziennik (tylko dla kont z tabeli `admins`) |
 | `/pomoc`           | Pomoc: wyszukiwarka i FAQ z rozwijanymi odpowiedziami, „Napisz do nas", „Zgłoś błąd", linki do regulaminu i polityki prywatności |
 | `/miasto`          | _(wyróżnik)_ mapa aktywności dzielnic                        |
 

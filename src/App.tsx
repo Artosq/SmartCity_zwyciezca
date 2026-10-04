@@ -5,6 +5,7 @@ import CityPicker from './components/CityPicker'
 import { useCity } from './context/CityContext'
 import { LiveProvider } from './context/LiveContext'
 import AddPage from './pages/AddPage'
+import AdminPage from './pages/admin/AdminPage'
 import ChatPage from './pages/ChatPage'
 import HelpPage from './pages/HelpPage'
 import HomePage from './pages/HomePage'
@@ -45,6 +46,7 @@ export default function App() {
           <Route path="/regulamin" element={<RegulaminPage />} />
           <Route path="/prywatnosc" element={<PrywatnoscPage />} />
           <Route path="/ustawienia" element={<UstawieniaPage />} />
+          <Route path="/admin" element={<AdminPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

@@ -19,6 +19,7 @@ import SectionCard from '../components/SectionCard'
 import type { City } from '../data/cities'
 import { TARGET_GROUPS } from '../data/targetGroups'
 import { useAuth } from '../hooks/useAuth'
+import { containsProfanity, explainDbError, PROFANITY_MESSAGE } from '../lib/profanity'
 import { supabase } from '../lib/supabase'
 import type { Category } from '../lib/types'
 
@@ -68,6 +69,10 @@ export default function AddEventPage({ city }: { city: City }) {
       setError('Wskaż miejsce na mapie.')
       return
     }
+    if (containsProfanity(title, description, placeName)) {
+      setError(PROFANITY_MESSAGE)
+      return
+    }
 
     setSubmitting(true)
 
@@ -91,7 +96,7 @@ export default function AddEventPage({ city }: { city: City }) {
       .single()
 
     if (insertError || !event) {
-      setError(insertError?.message ?? 'Nie udało się dodać wydarzenia.')
+      setError(insertError ? explainDbError(insertError.message) : 'Nie udało się dodać wydarzenia.')
       setSubmitting(false)
       return
     }

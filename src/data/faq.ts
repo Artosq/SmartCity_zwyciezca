@@ -24,7 +24,7 @@ export const FAQ: FaqItem[] = [
     popular: true,
     question: 'Jak zgłosić nieodpowiednią osobę?',
     answer:
-      'Kliknij „Napisz do nas" na dole tej strony i opisz, co się stało: podaj imię tej osoby oraz wydarzenie albo spotkanie, którego to dotyczy. Zespół przeczyta zgłoszenie i zareaguje. Jeśli ktoś jest w bezpośrednim niebezpieczeństwie, zadzwoń pod numer alarmowy 112.',
+      'Użyj przycisku „Zgłoś": jest przy wiadomościach na czacie, w szczegółach wydarzenia i spotkania „We dwoje" oraz przy osobie widocznej na mapie. Opisz krótko, co się stało. Zgłoszenie trafia do zespołu, który może ukryć treść albo zablokować konto. Prywatną rozmowę „We dwoje" zespół może przeczytać dopiero wtedy, gdy zgłosi ją jedna z dwóch osób. Jeśli ktoś jest w bezpośrednim niebezpieczeństwie, zadzwoń pod numer alarmowy 112.',
   },
   {
     popular: true,

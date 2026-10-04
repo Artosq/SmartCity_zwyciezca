@@ -12,6 +12,7 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { LIVE_MINUTES, LIVE_NOTE_MAX, useLive } from '../../context/LiveContext'
+import { containsProfanity, PROFANITY_MESSAGE } from '../../lib/profanity'
 
 const SUGGESTIONS = ['Biegam, dołącz!', 'Spacer z psem, zapraszam', 'Mam czas na kawę', 'Gram w kosza, brakuje jednej osoby']
 
@@ -21,11 +22,16 @@ export default function ShowUpButton() {
   const { available, userId, live, show, hide } = useLive()
   const [open, setOpen] = useState(false)
   const [note, setNote] = useState('')
+  const [noteError, setNoteError] = useState('')
 
   const submit = (e: FormEvent) => {
     e.preventDefault()
     const trimmed = note.trim()
     if (!trimmed) return
+    if (containsProfanity(trimmed)) {
+      setNoteError(PROFANITY_MESSAGE)
+      return
+    }
     show(trimmed)
     setOpen(false)
   }
@@ -127,9 +133,13 @@ export default function ShowUpButton() {
                   autoFocus
                   required
                   value={note}
-                  onChange={(e) => setNote(e.target.value.slice(0, LIVE_NOTE_MAX))}
+                  onChange={(e) => {
+                    setNote(e.target.value.slice(0, LIVE_NOTE_MAX))
+                    setNoteError('')
+                  }}
+                  error={Boolean(noteError)}
                   placeholder="np. Biegam po Błoniach, dołącz!"
-                  helperText={`${note.length}/${LIVE_NOTE_MAX} znaków`}
+                  helperText={noteError || `${note.length}/${LIVE_NOTE_MAX} znaków`}
                   slotProps={{ htmlInput: { maxLength: LIVE_NOTE_MAX } }}
                 />
                 <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1 }}>

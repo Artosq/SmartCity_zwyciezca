@@ -151,10 +151,13 @@ export const TERMS: LegalSection[] = [
   {
     title: '12. Zgłaszanie naruszeń i moderacja',
     blocks: [
-      `Każdy może zgłosić Treść, którą uważa za niezgodną z prawem lub Regulaminem, a także niewłaściwe zachowanie innego Użytkownika. Można to zrobić ${contact}. Zgłoszenie powinno wskazywać, czego dotyczy (np. nazwę Wydarzenia, imię osoby) oraz powód.`,
+      `Każdy może zgłosić Treść, którą uważa za niezgodną z prawem lub Regulaminem, a także niewłaściwe zachowanie innego Użytkownika. Można to zrobić ${contact}. Służy do tego także przycisk „Zgłoś" dostępny przy wiadomościach, Wydarzeniach, Spotkaniach i osobach widocznych na mapie. Zgłoszenie powinno wskazywać, czego dotyczy, oraz powód.`,
       'Usługodawca rozpatruje zgłoszenia bez zbędnej zwłoki. W razie stwierdzenia naruszenia może: usunąć lub ukryć Treść, odwołać Wydarzenie lub Spotkanie, ograniczyć dostęp do wybranych funkcji, a przy poważnych lub powtarzających się naruszeniach zawiesić lub usunąć Konto.',
       'O podjętej decyzji i jej powodach Usługodawca informuje Użytkownika, którego decyzja dotyczy, o ile dysponuje jego danymi kontaktowymi. Użytkownik może się od decyzji odwołać, kontaktując się z Usługodawcą w terminie 14 dni; odwołanie zostanie rozpatrzone w ciągu 14 dni.',
-      'Usługodawca nie ma obowiązku uprzedniego sprawdzania Treści zamieszczanych przez Użytkowników.',
+      'Wydarzenia, Spotkania i notki funkcji „Pokaż się" zawierające wulgaryzmy są odrzucane automatycznie, przed publikacją. Serwis jest przestrzenią rodzinną i sąsiedzką.',
+      'Zablokowany Użytkownik może przeglądać Serwis, ale nie może dodawać Treści, zapisywać się ani pisać na czacie, a jego Treści nie są w tym czasie widoczne dla innych. Blokada może być czasowa albo bezterminowa. Użytkownik widzi w Serwisie jej powód i termin.',
+      'Ukryta Treść pozostaje widoczna dla jej autora wraz z powodem ukrycia i może zostać przywrócona po uwzględnieniu odwołania.',
+      'Poza automatycznym filtrem wulgaryzmów Usługodawca nie ma obowiązku uprzedniego sprawdzania Treści zamieszczanych przez Użytkowników.',
     ],
   },
   {
@@ -220,7 +223,8 @@ export const PRIVACY: LegalSection[] = [
         'oceny, które wystawiasz i otrzymujesz;',
         'położenie na żywo oraz notka - wyłącznie wtedy, gdy włączysz funkcję „Pokaż się" albo wybierzesz „Dołączam";',
         'położenie urządzenia do liczenia odległości - wyłącznie w Twojej przeglądarce, po udzieleniu przez Ciebie zgody; tego położenia nie zapisujemy na serwerze;',
-        'wiadomości wysłane przez formularze „Napisz do nas" i „Zgłoś błąd", wraz z podanym opcjonalnie adresem e-mail;',
+        'wiadomości wysłane przez formularze „Napisz do nas" i „Zgłoś błąd", wraz z podanym opcjonalnie adresem e-mail, oraz odpowiedzi zespołu;',
+        'zgłoszenia naruszeń, które składasz lub które Ciebie dotyczą, oraz informacje o blokadzie Konta i jej powodzie;',
         'dane techniczne: adres IP, rodzaj przeglądarki i urządzenia, daty i godziny żądań - rejestrowane automatycznie przez dostawców infrastruktury.',
       ],
       'Nie zbieramy danych o Twojej aktywności poza Serwisem, nie tworzymy profili reklamowych i nie przetwarzamy szczególnych kategorii danych (np. o zdrowiu). Prosimy, aby nie zamieszczać takich danych w opisach ani na czacie.',
@@ -254,6 +258,7 @@ export const PRIVACY: LegalSection[] = [
         'dla osoby, przy której wybierzesz „Dołączam": Twoje imię i położenie, do czasu rezygnacji.',
       ],
       'Nigdy nie pokazujemy innym Użytkownikom Twojego adresu e-mail ani daty urodzenia. Inni nie widzą też, jaką ocenę komu wystawiłeś(-aś).',
+      'Osoby z zespołu moderującego Serwis mają dostęp do Treści w zakresie potrzebnym do dbania o bezpieczeństwo: widzą Wydarzenia, Spotkania, zgłoszenia i czaty Wydarzeń. Prywatną rozmowę Spotkania „We dwoje" mogą przeczytać wyłącznie wtedy, gdy zgłosi ją jedna z dwóch uczestniczących w niej osób. Działania moderatorów są zapisywane w dzienniku.',
     ],
   },
   {

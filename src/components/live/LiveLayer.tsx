@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography'
 import { useLive } from '../../context/LiveContext'
 import { getJoinerIcon, getLiveIcon } from '../map/eventIcon'
 import RatingBadge from '../RatingBadge'
+import ReportButton from '../ReportButton'
 
 // Przybliżenie, przy którym po „Pokaż się" widać własną pinezkę i najbliższą okolicę.
 const SELF_ZOOM = 16
@@ -86,6 +87,7 @@ export default function LiveLayer() {
                       ? 'Ta osoba widzi, że do niej idziesz, i Twoje położenie.'
                       : 'Po kliknięciu ta osoba zobaczy Twoje imię i położenie.'}
                   </Typography>
+                  <ReportButton targetType="user" targetId={person.user_id} reportedUserId={person.user_id} label="Zgłoś osobę" compact />
                 </Stack>
               </Popup>
             </Marker>

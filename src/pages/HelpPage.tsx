@@ -18,6 +18,7 @@ import AddIcon from '@mui/icons-material/Add'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import RemoveIcon from '@mui/icons-material/Remove'
 import SearchIcon from '@mui/icons-material/Search'
+import MySupportMessages from '../components/MySupportMessages'
 import { FAQ } from '../data/faq'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
@@ -168,6 +169,8 @@ const LINKS = [
 export default function HelpPage() {
   const [query, setQuery] = useState('')
   const [dialog, setDialog] = useState<Kind | null>(null)
+  const { user } = useAuth()
+  const [refreshKey, setRefreshKey] = useState(0)
 
   // Bez wpisanego hasła — cztery popularne pytania; z hasłem — szukamy we wszystkich.
   const visible = useMemo(() => {
@@ -247,6 +250,8 @@ export default function HelpPage() {
           </Stack>
         </Box>
 
+        {user && <MySupportMessages userId={user.id} refreshKey={refreshKey} />}
+
         <Box component="nav" aria-label="Dokumenty" sx={{ borderRadius: '22px', bgcolor: '#f4f4f5', overflow: 'hidden' }}>
           {LINKS.map((link, index) => (
             <ButtonBase
@@ -273,7 +278,15 @@ export default function HelpPage() {
         </Box>
       </Stack>
 
-      {dialog && <SupportDialog kind={dialog} onClose={() => setDialog(null)} />}
+      {dialog && (
+        <SupportDialog
+          kind={dialog}
+          onClose={() => {
+            setDialog(null)
+            setRefreshKey((key) => key + 1)
+          }}
+        />
+      )}
     </Container>
   )
 }

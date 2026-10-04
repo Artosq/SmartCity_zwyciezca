@@ -13,6 +13,7 @@ const ROUTES = [
   'regulamin',
   'prywatnosc',
   'ustawienia',
+  'admin',
 ]
 
 for (const route of ROUTES) {

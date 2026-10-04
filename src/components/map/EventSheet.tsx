@@ -23,6 +23,7 @@ import { supabase } from '../../lib/supabase'
 import { formatLongDate, getEventImage } from '../../lib/eventDisplay'
 import type { EventWithStats } from '../../lib/types'
 import { EventMeta, OrganizerLine } from '../EventCard'
+import ReportButton from '../ReportButton'
 import { GroupDot } from '../TargetGroupFilter'
 
 // External services from which the bot imports events
@@ -248,6 +249,10 @@ export default function EventSheet({
             </Button>
           )}
           {joined && <Alert severity="success">Jesteś zapisany(-a) na to wydarzenie.</Alert>}
+          {/* własnego wydarzenia ani wydarzenia z miejskiego kalendarza się nie zgłasza */}
+          {!event.source && event.organizer_id !== user?.id && (
+            <ReportButton targetType="event" targetId={event.id} reportedUserId={event.organizer_id} label="Zgłoś wydarzenie" />
+          )}
         </Stack>
       </Collapse>
     </Paper>
