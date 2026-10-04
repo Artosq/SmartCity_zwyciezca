@@ -109,7 +109,7 @@ wyłączane przy systemowym ustawieniu ograniczenia ruchu.
 ### Model danych
 
 ```
-profiles        — id (=auth.users.id), name, email, rating_avg, rating_count, created_at
+profiles        — id (=auth.users.id), name, rating_avg, rating_count, created_at (publiczny; e-mail zostaje tylko w auth.users)
 profile_private — id→profiles, birth_date (widoczna tylko dla właściciela)
 live_presence   — user_id→profiles (PK), note, lat, lng, updated_at, expires_at
 live_joins      — target_id→live_presence, joiner_id→profiles, lat, lng, updated_at  [PK(target, joiner)]
@@ -157,6 +157,10 @@ Relacje: `profiles` 1—N `events`/`rsvps`/`messages`/`announcements`;
 - **Dokładny adres prywatny** widoczny dopiero po zapisie (egzekwowane przez RLS).
 - **Czat**: zgłaszanie wiadomości + prosty filtr wulgaryzmów.
 - **Sekrety** wyłącznie w zmiennych środowiskowych, nigdy w repozytorium.
+- **Regulamin i Polityka prywatności** (`/regulamin`, `/prywatnosc`): pełne dokumenty opisujące faktyczny
+  zakres danych; treść w `src/data/legal.ts`. Przed prawdziwym uruchomieniem trzeba uzupełnić dane
+  usługodawcy (nazwa, adres, e-mail) i dać dokumenty do przejrzenia prawnikowi.
+- **Adres e-mail** użytkownika nie trafia do publicznego profilu (migracja 010).
 
 ---
 

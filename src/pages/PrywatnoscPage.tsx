@@ -1,16 +1,7 @@
-import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
-import { useLang } from '../i18n/LanguageContext'
+import LegalDocument from '../components/LegalDocument'
+import { PRIVACY } from '../data/legal'
 
-// Polityka prywatności.
+// Polityka prywatności — treść w src/data/legal.ts.
 export default function PrywatnoscPage() {
-  const { t } = useLang()
-  return (
-    <Container maxWidth="md" className="stagger" sx={{ py: 4 }}>
-      <Typography variant="h1" sx={{ mb: 2 }}>
-        {t('privacy.title')}
-      </Typography>
-      <Typography color="text.secondary">{t('privacy.body')}</Typography>
-    </Container>
-  )
+  return <LegalDocument title="Polityka prywatności" sections={PRIVACY} />
 }

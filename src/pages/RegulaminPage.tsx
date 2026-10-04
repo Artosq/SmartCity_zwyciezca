@@ -1,16 +1,7 @@
-import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
-import { useLang } from '../i18n/LanguageContext'
+import LegalDocument from '../components/LegalDocument'
+import { TERMS } from '../data/legal'
 
-// Warunki korzystania (regulamin).
+// Regulamin serwisu — treść w src/data/legal.ts.
 export default function RegulaminPage() {
-  const { t } = useLang()
-  return (
-    <Container maxWidth="md" className="stagger" sx={{ py: 4 }}>
-      <Typography variant="h1" sx={{ mb: 2 }}>
-        {t('terms.title')}
-      </Typography>
-      <Typography color="text.secondary">{t('terms.body')}</Typography>
-    </Container>
-  )
+  return <LegalDocument title="Regulamin" sections={TERMS} />
 }

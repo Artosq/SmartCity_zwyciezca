@@ -115,8 +115,9 @@ language plpgsql
 security definer set search_path = public
 as $$
 begin
-  insert into public.profiles (id, name, email)
-  values (new.id, new.raw_user_meta_data->>'name', new.email)
+  -- bez adresu e-mail: tabela profiles jest publicznie czytelna (migracja 010)
+  insert into public.profiles (id, name)
+  values (new.id, new.raw_user_meta_data->>'name')
   on conflict (id) do nothing;
   return new;
 end;

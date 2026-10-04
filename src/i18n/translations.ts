@@ -17,8 +17,8 @@ const pl: Dict = {
   'nav.account': 'Konto',
   // Menu „więcej"
   'menu.more': 'Więcej',
-  'menu.terms': 'Warunki korzystania',
-  'menu.privacy': 'Prywatność',
+  'menu.terms': 'Regulamin',
+  'menu.privacy': 'Polityka prywatności',
   'menu.settings': 'Ustawienia',
   'menu.language': 'Język',
   // Nagłówek / wspólne
