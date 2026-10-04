@@ -1,22 +1,14 @@
 import type { LatLngTuple } from 'leaflet'
+import { CATEGORY_ORDER, LEGACY_CATEGORY } from '../data/categories'
 import type { EventWithStats } from './types'
 
-const CATEGORY_IMAGES = [
-  'sasiedzkie',
-  'dzieci',
-  'seniorzy',
-  'kultura',
-  'sport',
-  'edukacja',
-  'impreza',
-  'inne',
-]
 
 // Zdjęcie wydarzenia; gdy organizator go nie podał — ilustracja kategorii.
 export function getEventImage(event: EventWithStats) {
   if (event.image_url) return event.image_url
-  const slug = event.category?.slug
-  return `/img/events/${slug && CATEGORY_IMAGES.includes(slug) ? slug : 'inne'}.svg`
+  const raw = event.category?.slug ?? 'inne'
+  const slug = LEGACY_CATEGORY[raw] ?? raw
+  return `/img/events/${CATEGORY_ORDER.includes(slug) ? slug : 'inne'}.svg`
 }
 
 const shortDate = new Intl.DateTimeFormat('pl-PL', {

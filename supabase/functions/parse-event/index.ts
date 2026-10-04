@@ -37,7 +37,7 @@ Deno.serve(async (req: Request) => {
     const catSlugs: string[] =
       Array.isArray(categories) && categories.length
         ? categories.map((c: { slug: string }) => c.slug)
-        : ['sasiedzkie', 'dzieci', 'seniorzy', 'kultura', 'sport', 'edukacja', 'impreza', 'inne']
+        : ['edukacja', 'sport', 'kultura', 'rekreacja', 'integracja', 'celebracja', 'inne']
 
     const nowText = typeof now === 'string' ? now : new Date().toISOString()
 

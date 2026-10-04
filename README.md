@@ -46,7 +46,8 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
 - **Zasięg: Kraków.** Kolejne miasta są przygotowane w `src/data/cities.ts`, ale na razie wyłączone.
 - **Mapa miasta**: pinezki wydarzeń łączą się w grupy z liczbą i rozwijają po przybliżeniu.
   Jeden przycisk „Filtry" otwiera menu: wiek (małe dzieci, starsze dzieci, młodzież, dorośli,
-  seniorzy), dostępność dla osób z niepełnosprawnościami, cel wydarzenia (kategoria) oraz
+  seniorzy), dostępność dla osób z niepełnosprawnościami, cel wydarzenia (edukacyjne, sportowe, kulturalne,
+  rekreacyjne, integracyjne, celebracyjne, inne; cel nie powiela grup docelowych) oraz
   spotkania we dwoje z podziałem na rodzaje. Spotkania we dwoje widzą na mapie tylko
   zalogowani dorośli.
 - **Dodawanie wydarzenia**: tytuł, opis, kategoria, grupy docelowe, miejsce na mapie,

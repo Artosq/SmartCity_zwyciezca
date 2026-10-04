@@ -197,16 +197,16 @@ create policy "ann_delete_own" on announcements for delete
 
 
 -- ---------- 4. DANE: KATEGORIE ----------
+-- Kategoria to CEL wydarzenia. Dla kogo ono jest, mówią grupy docelowe (target_groups).
 
 insert into categories (slug, name, color, icon) values
-  ('sasiedzkie', 'Sąsiedzkie',  '#16a34a', '🏘️'),
-  ('dzieci',     'Dla dzieci',  '#f59e0b', '🧒'),
-  ('seniorzy',   'Seniorzy',    '#0ea5e9', '👵'),
-  ('kultura',    'Kultura',     '#8b5cf6', '🎭'),
-  ('sport',      'Sport',       '#ef4444', '⚽'),
-  ('edukacja',   'Edukacja',    '#14b8a6', '📚'),
-  ('impreza',    'Imprezy',     '#ec4899', '🎉'),
-  ('inne',       'Inne',        '#64748b', '📌')
+  ('edukacja',   'Edukacyjne',   '#14b8a6', '📚'),
+  ('sport',      'Sportowe',     '#ef4444', '⚽'),
+  ('kultura',    'Kulturalne',   '#8b5cf6', '🎭'),
+  ('rekreacja',  'Rekreacyjne',  '#f59e0b', '🌳'),
+  ('integracja', 'Integracyjne', '#16a34a', '🤝'),
+  ('celebracja', 'Celebracyjne', '#ec4899', '🎉'),
+  ('inne',       'Inne',         '#64748b', '📌')
 on conflict (slug) do nothing;
 
 -- ---------- 5. UPRAWNIENIA (GRANT) ----------

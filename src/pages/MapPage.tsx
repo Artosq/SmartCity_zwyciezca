@@ -18,6 +18,7 @@ import MapFilters, {
 } from '../components/map/MapFilters'
 import MeetupDialog from '../components/meetups/MeetupDialog'
 import { useUserLocation } from '../context/LocationContext'
+import { sortCategories } from '../data/categories'
 import type { City } from '../data/cities'
 import { useLang } from '../i18n/LanguageContext'
 import { useCityEvents } from '../hooks/useCityEvents'
@@ -52,7 +53,7 @@ export default function MapPage({ city }: { city: City }) {
   const categories = useMemo(() => {
     const bySlug = new Map<string, string>()
     for (const event of events) if (event.category) bySlug.set(event.category.slug, event.category.name)
-    return [...bySlug].map(([slug, name]) => ({ slug, name })).sort((a, b) => a.name.localeCompare(b.name, 'pl'))
+    return sortCategories([...bySlug].map(([slug, name]) => ({ slug, name })))
   }, [events])
 
   // Pusty filtr = bez ograniczeń. Wydarzenie bez przypisanych grup przechodzi filtr wieku zawsze.

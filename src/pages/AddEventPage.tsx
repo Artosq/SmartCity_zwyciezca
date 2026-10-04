@@ -17,6 +17,7 @@ import ImageUpload from '../components/ImageUpload'
 import LocationPicker, { type Pos } from '../components/LocationPicker'
 import OneSentenceEvent, { type ParsedEvent } from '../components/OneSentenceEvent'
 import SectionCard from '../components/SectionCard'
+import { sortCategories } from '../data/categories'
 import type { City } from '../data/cities'
 import { TARGET_GROUPS } from '../data/targetGroups'
 import { useAuth } from '../hooks/useAuth'
@@ -52,7 +53,7 @@ export default function AddEventPage({ city }: { city: City }) {
       .from('categories')
       .select('*')
       .order('id')
-      .then(({ data }) => setCategories((data as Category[] | null) ?? []))
+      .then(({ data }) => setCategories(sortCategories((data as Category[] | null) ?? [])))
   }, [])
 
   const canSubmit = Boolean(

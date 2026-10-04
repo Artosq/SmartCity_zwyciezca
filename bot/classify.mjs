@@ -12,10 +12,9 @@ const GROUP_RULES = [
   ['niepelnosprawni', words('niepełnospraw', 'pjm', 'migow', 'audiodeskrypc', 'bez barier')],
 ]
 
+// Kategoria to cel wydarzenia (dla kogo ono jest, mówią grupy docelowe powyżej).
 // Kolejność ma znaczenie — wygrywa pierwsza pasująca kategoria.
 const CATEGORY_RULES = [
-  ['dzieci', words('dziec', 'maluch', 'rodzinn', 'familijn', 'bajk')],
-  ['seniorzy', words('senior', '60\\+', 'emeryt')],
   [
     'kultura',
     words('koncert', 'spektakl', 'wystaw', 'film', 'festiwal', 'teatr', 'muzy', 'kino', 'galeri', 'muzeum', 'kabaret', 'stand-up'),
@@ -25,8 +24,9 @@ const CATEGORY_RULES = [
     'edukacja',
     words('warsztat', 'wykład', 'kurs', 'spotkanie autorskie', 'literatur', 'bibliotek', 'lekcj', 'debat'),
   ],
-  ['impreza', words('potańców', 'impreza', 'party', 'pub crawl', 'karaoke')],
-  ['sasiedzkie', words('sąsiedzk', 'piknik', 'osiedl', 'kiermasz', 'wymian')],
+  ['celebracja', words('potańców', 'impreza', 'party', 'pub crawl', 'karaoke', 'urodzin', 'jubileusz', 'festyn', 'święt', 'dożynk')],
+  ['integracja', words('sąsiedzk', 'piknik', 'osiedl', 'kiermasz', 'wymian')],
+  ['rekreacja', words('spacer', 'wyciecz', 'planszów', 'zabaw', 'animacj', 'rodzinn', 'familijn')],
 ]
 
 export function classify(event) {
