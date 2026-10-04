@@ -56,13 +56,14 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
   regułami słów kluczowych i dodaje je do bazy bez duplikatów, z linkiem do oryginału.
   Harmonogram: GitHub Actions (`.github/workflows/bot.yml`).
   Facebook — tylko przez oficjalne API, dla stron, które dadzą dostęp.
+- **Pomoc** (w nawigacji zamiast tablicy ogłoszeń): najczęstsze pytania z rozwijanymi odpowiedziami,
+  wyszukiwarka oraz formularze „Napisz do nas" i „Zgłoś błąd" zapisywane w bazie.
 - **Konto demo** (tymczasowe, na prezentację): przycisk na ekranie logowania tworzy anonimowe konto
   bez e-maila, od razu pełnoletnie — do sprawdzania wszystkich funkcji. Wymaga włączenia
   anonimowych logowań w Supabase; przed prawdziwym uruchomieniem do usunięcia.
 - **Logowanie bez haseł** (imię + e-mail / magic link).
 - **PWA** — instalacja na ekranie głównym telefonu.
 - **Czat w czasie rzeczywistym** — kanał dla każdej kategorii i każdego wydarzenia.
-- **Tablica ogłoszeń** — krótkie wpisy z kategorią i lokalizacją.
 
 ### Wyróżniki (robimy po domknięciu podstaw 1–5)
 
@@ -112,6 +113,7 @@ profiles        — id (=auth.users.id), name, email, rating_avg, rating_count, 
 profile_private — id→profiles, birth_date (widoczna tylko dla właściciela)
 live_presence   — user_id→profiles (PK), note, lat, lng, updated_at, expires_at
 live_joins      — target_id→live_presence, joiner_id→profiles, lat, lng, updated_at  [PK(target, joiner)]
+support_messages — id, user_id→profiles (opcjonalnie), kind(contact|bug), message, contact, page, created_at
 ratings         — id, rater_id→profiles, ratee_id→profiles, scope(event|meetup), scope_id, stars,
                   created_at  [UNIQUE(rater_id, scope, scope_id)]
 categories      — id, slug, name, color, icon
@@ -142,7 +144,7 @@ Relacje: `profiles` 1—N `events`/`rsvps`/`messages`/`announcements`;
 | `/dodaj`           | Dodawanie wydarzenia albo propozycji spotkania we dwoje (wybór miejsca na mapie) |
 | `/login`           | Logowanie bez hasła (imię + e-mail / magic link); Konto: kalendarz miesiąca z aktywnościami (zapisy, własne wydarzenia, spotkania we dwoje), data urodzenia, własna ocena, lista „Do oceny" |
 | `/czat`            | Czat w czasie rzeczywistym _(w budowie)_                    |
-| `/ogloszenia`      | Tablica ogłoszeń _(w budowie)_                              |
+| `/pomoc`           | Pomoc: wyszukiwarka i FAQ z rozwijanymi odpowiedziami, „Napisz do nas", „Zgłoś błąd", linki do regulaminu i polityki prywatności |
 | `/miasto`          | _(wyróżnik)_ mapa aktywności dzielnic                        |
 
 ---

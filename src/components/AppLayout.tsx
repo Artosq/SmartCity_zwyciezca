@@ -21,7 +21,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import GavelIcon from '@mui/icons-material/Gavel'
 import HomeIcon from '@mui/icons-material/Home'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
-import MailIcon from '@mui/icons-material/Mail'
+import HelpIcon from '@mui/icons-material/Help'
 import MapIcon from '@mui/icons-material/Map'
 import MenuIcon from '@mui/icons-material/Menu'
 import PersonIcon from '@mui/icons-material/Person'
@@ -40,8 +40,8 @@ const NAV = [
   { to: '/', labelKey: 'nav.start', icon: <HomeIcon />, bottom: true },
   { to: '/mapa', labelKey: 'nav.map', icon: <MapIcon />, bottom: false },
   { to: '/czat', labelKey: 'nav.chat', icon: <ChatIcon />, bottom: true },
-  { to: '/ogloszenia', labelKey: 'nav.announcements', icon: <MailIcon />, bottom: true },
   { to: '/dodaj', labelKey: 'nav.add', icon: <AddCircleIcon />, bottom: true },
+  { to: '/pomoc', labelKey: 'nav.help', icon: <HelpIcon />, bottom: true },
   { to: '/login', labelKey: 'nav.account', icon: <PersonIcon />, bottom: true },
 ]
 
@@ -78,8 +78,8 @@ export default function AppLayout() {
   const bottomNav = NAV.filter((item) => item.bottom)
   const activeBottom = bottomNav.findIndex((item) => item.to === active)
 
-  // Wyszukiwarka tylko na stronie głównej i tablicy ogłoszeń.
-  const showSearch = pathname === '/' || pathname.startsWith('/ogloszenia')
+  // Wyszukiwarka wydarzeń tylko na stronie głównej (Pomoc ma własną).
+  const showSearch = pathname === '/'
 
   // Jedno pole wyszukiwania — w nagłówku na desktopie, osobnym paskiem na telefonie.
   const searchField = (

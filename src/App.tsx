@@ -5,8 +5,8 @@ import CityPicker from './components/CityPicker'
 import { useCity } from './context/CityContext'
 import { LiveProvider } from './context/LiveContext'
 import AddPage from './pages/AddPage'
-import AnnouncementsPage from './pages/AnnouncementsPage'
 import ChatPage from './pages/ChatPage'
+import HelpPage from './pages/HelpPage'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import MapPage from './pages/MapPage'
@@ -39,7 +39,8 @@ export default function App() {
           <Route path="/mapa" element={<MapPage city={city} />} />
           <Route path="/dodaj" element={<AddPage city={city} />} />
           <Route path="/czat" element={<ChatPage />} />
-          <Route path="/ogloszenia" element={<AnnouncementsPage />} />
+          <Route path="/pomoc" element={<HelpPage />} />
+          <Route path="/ogloszenia" element={<Navigate to="/pomoc/" replace />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/regulamin" element={<RegulaminPage />} />
           <Route path="/prywatnosc" element={<PrywatnoscPage />} />

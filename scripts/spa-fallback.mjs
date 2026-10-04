@@ -7,6 +7,7 @@ const ROUTES = [
   'mapa',
   'dodaj',
   'czat',
+  'pomoc',
   'ogloszenia',
   'login',
   'regulamin',
