@@ -8,6 +8,7 @@ const ROUTES = [
   'dodaj',
   'czat',
   'pomoc',
+  'bezpieczna-siec',
   'ogloszenia',
   'login',
   'regulamin',

@@ -27,6 +27,7 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
 
 - **Strona główna** z propozycjami wydarzeń w mieście: najbliższe terminy,
   dopasowane do preferencji (grupy docelowe) i „lubiane przez innych" (najwięcej zapisanych).
+  Wydarzenie znika ze strony głównej i z mapy 3 godziny po rozpoczęciu (baza nie przechowuje godziny zakończenia).
   Karty ze zdjęciem wydarzenia, liczbą zapisanych, odległością i terminem. Odległość liczy się
   od użytkownika, jeśli zgodził się na lokalizację (pytamy dopiero po kliknięciu); inaczej od centrum miasta.
 - **We dwoje** (przełącznik na stronie głównej): spacer, kawa, sport, rozmowa albo pomoc z zakupami z jedną osobą
@@ -58,6 +59,11 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
   Facebook — tylko przez oficjalne API, dla stron, które dadzą dostęp.
 - **Pomoc** (w nawigacji zamiast tablicy ogłoszeń): najczęstsze pytania z rozwijanymi odpowiedziami,
   wyszukiwarka oraz formularze „Napisz do nas" i „Zgłoś błąd" zapisywane w bazie.
+- **Bezpieczna sieć** (`/bezpieczna-siec`, w menu „Więcej" i na stronie Pomoc): sekcja edukacyjna dla seniorów
+  oraz dzieci i młodzieży. Trzy kroki przed kliknięciem, sposoby działania oszustów z przykładowymi zdaniami,
+  lista danych, których nie wolno podawać, krótkie lekcje krok po kroku z zapamiętywanym postępem,
+  quiz „Sprawdź swoją czujność" oraz plan „Co zrobić, gdy coś się stało" z numerami alarmowymi.
+  Treści w trzech wariantach (wszyscy, seniorzy, dzieci i młodzież) w `src/data/safety.ts`.
 - **Panel administratora** (`/admin`, bez linku w aplikacji): kolejka zgłoszeń od użytkowników,
   automatyczne flagi (wulgaryzmy na czacie, zalew wiadomości, wielokrotnie zgłaszane osoby, niskie oceny),
   wgląd w czaty wydarzeń, ukrywanie i przywracanie treści, bany czasowe i bezterminowe z powodem,
@@ -165,6 +171,7 @@ Relacje: `profiles` 1—N `events`/`rsvps`/`messages`/`announcements`;
 | `/czat`            | Czat w czasie rzeczywistym _(w budowie)_                    |
 | `/admin`           | Panel administratora: zgłoszenia, flagi, czaty, treści, użytkownicy, Pomoc, dziennik (tylko dla kont z tabeli `admins`) |
 | `/pomoc`           | Pomoc: wyszukiwarka i FAQ z rozwijanymi odpowiedziami, „Napisz do nas", „Zgłoś błąd", linki do regulaminu i polityki prywatności |
+| `/bezpieczna-siec` | Bezpieczna sieć: porady, lekcje i quiz o bezpieczeństwie w internecie dla seniorów oraz dzieci i młodzieży |
 | `/miasto`          | _(wyróżnik)_ mapa aktywności dzielnic                        |
 
 ---

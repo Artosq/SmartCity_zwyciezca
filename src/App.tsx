@@ -13,6 +13,7 @@ import LoginPage from './pages/LoginPage'
 import MapPage from './pages/MapPage'
 import PrywatnoscPage from './pages/PrywatnoscPage'
 import RegulaminPage from './pages/RegulaminPage'
+import SafetyPage from './pages/SafetyPage'
 import UstawieniaPage from './pages/UstawieniaPage'
 
 export default function App() {
@@ -41,6 +42,7 @@ export default function App() {
           <Route path="/dodaj" element={<AddPage city={city} />} />
           <Route path="/czat" element={<ChatPage />} />
           <Route path="/pomoc" element={<HelpPage />} />
+          <Route path="/bezpieczna-siec" element={<SafetyPage />} />
           <Route path="/ogloszenia" element={<Navigate to="/pomoc/" replace />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/regulamin" element={<RegulaminPage />} />

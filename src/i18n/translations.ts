@@ -17,6 +17,7 @@ const pl: Dict = {
   'nav.account': 'Konto',
   // Menu „więcej"
   'menu.more': 'Więcej',
+  'menu.safety': 'Bezpieczna sieć',
   'menu.terms': 'Regulamin',
   'menu.privacy': 'Polityka prywatności',
   'menu.settings': 'Ustawienia',
@@ -80,6 +81,7 @@ const en: Dict = {
   'nav.addEvent': 'Add event',
   'nav.account': 'Account',
   'menu.more': 'More',
+  'menu.safety': 'Safe internet',
   'menu.terms': 'Terms of use',
   'menu.privacy': 'Privacy',
   'menu.settings': 'Settings',

@@ -28,6 +28,7 @@ import PersonIcon from '@mui/icons-material/Person'
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined'
 import SearchIcon from '@mui/icons-material/Search'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
+import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined'
 import { useAccessibility } from '../context/AccessibilityContext'
 
 import { useCity } from '../context/CityContext'
@@ -51,6 +52,7 @@ const NAV = [
 
 // Menu dodatkowe (hamburger) — NIE powiela głównej nawigacji; linki pomocnicze.
 const MORE = [
+  { to: '/bezpieczna-siec', labelKey: 'menu.safety', icon: <ShieldOutlinedIcon /> },
   { to: '/regulamin', labelKey: 'menu.terms', icon: <GavelIcon /> },
   { to: '/prywatnosc', labelKey: 'menu.privacy', icon: <LockOutlinedIcon /> },
   { to: '/ustawienia', labelKey: 'menu.settings', icon: <SettingsOutlinedIcon /> },

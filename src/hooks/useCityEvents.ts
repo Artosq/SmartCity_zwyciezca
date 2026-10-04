@@ -5,6 +5,10 @@ import type { Category, EventItem, EventWithStats, Organizer } from '../lib/type
 
 export type EventsStatus = 'loading' | 'ready' | 'error'
 
+// Wydarzenia nie mają godziny zakończenia, więc przyjmujemy, że trwają tyle godzin od rozpoczęcia.
+// Po tym czasie znikają ze strony głównej i z mapy.
+const ASSUMED_DURATION_HOURS = 3
+
 type EventRow = EventItem & {
   categories: Pick<Category, 'slug' | 'name'> | null
   organizer?: Organizer | null
@@ -16,7 +20,7 @@ const SELECT_WITH_RATING =
 // zapas dla bazy bez migracji 006 (brak kolumn z oceną) — aplikacja działa, tylko bez ocen
 const SELECT_BASIC = '*, categories(slug, name), organizer:profiles(name), rsvps(count)'
 
-// Nadchodzące wydarzenia miasta (współrzędne w jego prostokącie),
+// Nadchodzące i trwające wydarzenia miasta (współrzędne w jego prostokącie),
 // z kategorią i liczbą zapisanych. Wspólne dla strony głównej i mapy.
 export function useCityEvents(city: City) {
   const [events, setEvents] = useState<EventWithStats[]>([])
@@ -25,8 +29,7 @@ export function useCityEvents(city: City) {
   useEffect(() => {
     let cancelled = false
     const [[south, west], [north, east]] = city.bounds
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
+    const visibleFrom = new Date(Date.now() - ASSUMED_DURATION_HOURS * 60 * 60 * 1000)
 
     const query = (select: string) =>
       supabase
@@ -36,7 +39,7 @@ export function useCityEvents(city: City) {
         .lte('lat', north)
         .gte('lng', west)
         .lte('lng', east)
-        .gte('starts_at', today.toISOString())
+        .gte('starts_at', visibleFrom.toISOString())
         .order('starts_at')
 
     setStatus('loading')

@@ -1,5 +1,5 @@
-import { useMemo, useState, type FormEvent } from 'react'
-import { Link as RouterLink, useLocation } from 'react-router-dom'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { Link as RouterLink, useLocation, useSearchParams } from 'react-router-dom'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -161,6 +161,7 @@ function SupportDialog({ kind, onClose }: { kind: Kind; onClose: () => void }) {
 }
 
 const LINKS = [
+  { to: '/bezpieczna-siec/', label: '🛡️ Bezpieczna sieć: jak nie dać się oszukać' },
   { to: '/regulamin/', label: 'Regulamin' },
   { to: '/prywatnosc/', label: 'Polityka prywatności' },
 ]
@@ -171,6 +172,14 @@ export default function HelpPage() {
   const [dialog, setDialog] = useState<Kind | null>(null)
   const { user } = useAuth()
   const [refreshKey, setRefreshKey] = useState(0)
+  const [params, setParams] = useSearchParams()
+
+  // Wejście z adresu /pomoc/?napisz=1 (np. „Zgłoś podejrzaną osobę" w Bezpiecznej sieci) od razu otwiera formularz.
+  useEffect(() => {
+    if (params.get('napisz') !== '1') return
+    setDialog('contact')
+    setParams({}, { replace: true })
+  }, [params, setParams])
 
   // Bez wpisanego hasła — cztery popularne pytania; z hasłem — szukamy we wszystkich.
   const visible = useMemo(() => {
@@ -252,7 +261,7 @@ export default function HelpPage() {
 
         {user && <MySupportMessages userId={user.id} refreshKey={refreshKey} />}
 
-        <Box component="nav" aria-label="Dokumenty" sx={{ borderRadius: '22px', bgcolor: '#f4f4f5', overflow: 'hidden' }}>
+        <Box component="nav" aria-label="Poradnik i dokumenty" sx={{ borderRadius: '22px', bgcolor: '#f4f4f5', overflow: 'hidden' }}>
           {LINKS.map((link, index) => (
             <ButtonBase
               key={link.to}
