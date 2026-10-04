@@ -1,5 +1,6 @@
-import { useState, type FormEvent } from 'react'
+import { useState, type FormEvent, useEffect } from 'react'
 import Alert from '@mui/material/Alert'
+import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import ButtonBase from '@mui/material/ButtonBase'
@@ -9,12 +10,31 @@ import Rating from '@mui/material/Rating'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import List from '@mui/material/List'
+import ListItemButton from '@mui/material/ListItemButton'
+import ListItemText from '@mui/material/ListItemText'
+import InputAdornment from '@mui/material/InputAdornment'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+
+// Icons
 import CakeOutlinedIcon from '@mui/icons-material/CakeOutlined'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 import EmojiEmotionsOutlinedIcon from '@mui/icons-material/EmojiEmotionsOutlined'
 import LogoutIcon from '@mui/icons-material/Logout'
 import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined'
 import VerifiedIcon from '@mui/icons-material/Verified'
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined'
+import FitnessCenterIcon from '@mui/icons-material/FitnessCenter'
+import PaletteIcon from '@mui/icons-material/Palette'
+import SchoolIcon from '@mui/icons-material/School'
+import CelebrationIcon from '@mui/icons-material/Celebration'
+import ComputerIcon from '@mui/icons-material/Computer'
+import MusicNoteIcon from '@mui/icons-material/MusicNote'
+import PeopleIcon from '@mui/icons-material/People'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
+
 import { AVATARS } from '../data/avatars'
 import { useProfile } from '../hooks/useProfile'
 import { supabase } from '../lib/supabase'
@@ -25,13 +45,47 @@ import PendingRatings from './PendingRatings'
 import ProfileAvatar from './ProfileAvatar'
 import SectionCard from './SectionCard'
 
-// Panel zalogowanego: awatar i ocena na górze, niżej kalendarz aktywności, data urodzenia i lista „Do oceny".
+const AVAILABLE_INTERESTS = [
+  { id: 'Sport', label: 'Sport i rekreacja', icon: <FitnessCenterIcon />, color: '#ef4444' },
+  { id: 'Kultura', label: 'Kultura i Sztuka', icon: <PaletteIcon />, color: '#f59e0b' },
+  { id: 'Edukacja', label: 'Rozwój i Edukacja', icon: <SchoolIcon />, color: '#10b981' },
+  { id: 'Rozrywka', label: 'Rozrywka i Gry', icon: <CelebrationIcon />, color: '#8b5cf6' },
+  { id: 'Technologia', label: 'IT i Technologia', icon: <ComputerIcon />, color: '#3b82f6' },
+  { id: 'Muzyka', label: 'Koncerty i Muzyka', icon: <MusicNoteIcon />, color: '#ec4899' },
+  { id: 'Networking', label: 'Spotkania i Biznes', icon: <PeopleIcon />, color: '#14b8a6' },
+]
+
 export default function AccountPanel() {
-  const { user, loading, birthDate, avatar, isAdult, rating, saveBirthDate, saveAvatar } = useProfile()
-  const [draft, setDraft] = useState<string | null>(null)
-  const [saved, setSaved] = useState(false)
-  const [error, setError] = useState('')
+  const { 
+    user, loading, birthDate, phone, bio, interests, 
+    isAdult, ageCategory, rating, avatar, 
+    saveBirthDate, saveAdditionalData, saveAvatar 
+  } = useProfile()
+  
+  const [draftDate, setDraftDate] = useState<string | null>(null)
+  const [savedDate, setSavedDate] = useState(false)
+  const [errorDate, setErrorDate] = useState('')
   const [avatarError, setAvatarError] = useState('')
+
+  const [phoneCode, setPhoneCode] = useState('+48')
+  const [draftPhone, setDraftPhone] = useState('')
+  const [draftBio, setDraftBio] = useState('')
+  const [draftInterests, setDraftInterests] = useState<string[]>([])
+  const [savedProfile, setSavedProfile] = useState(false)
+  const [errorProfile, setErrorProfile] = useState('')
+
+  useEffect(() => {
+    if (!loading) {
+      if (phone) {
+        if (phone.startsWith('+380')) { setPhoneCode('+380'); setDraftPhone(phone.slice(4).trim()); }
+        else if (phone.startsWith('+1')) { setPhoneCode('+1'); setDraftPhone(phone.slice(2).trim()); }
+        else if (phone.startsWith('+48')) { setPhoneCode('+48'); setDraftPhone(phone.slice(3).trim()); }
+        else { setPhoneCode('+48'); setDraftPhone(phone); }
+      }
+      setDraftBio(bio)
+      setDraftInterests(interests)
+    }
+  }, [loading, phone, bio, interests])
 
   if (!user || loading) {
     return (
@@ -42,33 +96,57 @@ export default function AccountPanel() {
   }
 
   const name = (user.user_metadata?.name as string | undefined)?.trim() || user.email?.split('@')[0] || 'Sąsiad'
-  const value = draft ?? birthDate ?? ''
+  const dateValue = draftDate ?? birthDate ?? ''
   const today = new Date().toISOString().slice(0, 10)
   const hasRatings = rating.count > 0 && rating.avg !== null
   const average = Number(rating.avg ?? 0)
+  const needsOnboarding = !phone || interests.length === 0
 
-  async function handleSave(e: FormEvent) {
+  const fullDraftPhone = draftPhone.trim() ? `${phoneCode} ${draftPhone.trim()}` : ''
+  const isProfileChanged = fullDraftPhone !== phone || draftBio !== bio || JSON.stringify(draftInterests) !== JSON.stringify(interests)
+
+  async function handleSaveDate(e: FormEvent) {
     e.preventDefault()
-    setSaved(false)
-    const message = await saveBirthDate(value)
-    setError(message ?? '')
+    setSavedDate(false)
+    const message = await saveBirthDate(dateValue)
+    setErrorDate(message ?? '')
     if (!message) {
-      setSaved(true)
-      setDraft(null)
+      setSavedDate(true)
+      setDraftDate(null)
     }
   }
 
-  // Kliknięcie w awatar: ten sam zaznaczony = usunięcie (powrót do inicjałów).
+  async function handleSaveProfile(e: FormEvent) {
+    e.preventDefault()
+    setSavedProfile(false)
+    const message = await saveAdditionalData(fullDraftPhone, draftInterests, draftBio)
+    setErrorProfile(message ?? '')
+    if (!message) {
+      setSavedProfile(true)
+    }
+  }
+
   async function pickAvatar(id: string) {
     const next = avatar === id ? null : id
     const message = await saveAvatar(next)
     setAvatarError(message ?? '')
   }
 
+  const toggleInterest = (interestId: string) => {
+    setDraftInterests(prev => 
+      prev.includes(interestId) ? prev.filter(i => i !== interestId) : [...prev, interestId]
+    )
+  }
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Оставляем только цифры и ограничиваем длину до 15 символов
+    const onlyNums = e.target.value.replace(/\D/g, '').slice(0, 15)
+    setDraftPhone(onlyNums)
+  }
+
   return (
     <Container maxWidth="sm" sx={{ py: 3 }}>
       <Stack spacing={2.5} className="stagger">
-        {/* Wizytówka: awatar, imię i ocena jako organizatora */}
         <Paper
           elevation={0}
           sx={{
@@ -151,6 +229,7 @@ export default function AccountPanel() {
 
         <HiddenContentNotice userId={user.id} />
 
+        {/* Секция выбора аватара от коллеги */}
         <SectionCard
           icon={<EmojiEmotionsOutlinedIcon />}
           title="Twój awatar"
@@ -186,6 +265,120 @@ export default function AccountPanel() {
           {avatarError && <Alert severity="error" sx={{ mt: 1.5 }}>{avatarError}</Alert>}
         </SectionCard>
 
+        {needsOnboarding && (
+          <Alert severity="warning" sx={{ borderRadius: '12px', fontWeight: 'bold' }}>
+            Uzupełnij swój profil (telefon i zainteresowania), abyśmy mogli dopasować wydarzenia do Ciebie!
+          </Alert>
+        )}
+
+        {/* Твоя секция настройки профиля */}
+        <SectionCard icon={<AccountCircleOutlinedIcon />} title="O Tobie">
+          <Stack component="form" onSubmit={handleSaveProfile} spacing={2.5}>
+            <TextField
+              label="Krótki opis (O mnie)"
+              multiline
+              rows={3}
+              placeholder="Napisz kilka słów o sobie, co lubisz robić..."
+              value={draftBio}
+              onChange={(e) => setDraftBio(e.target.value)}
+              fullWidth
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+            />
+
+            <TextField
+              label="Numer telefonu"
+              type="tel"
+              placeholder="123 456 789"
+              value={draftPhone}
+              onChange={handlePhoneChange}
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Select
+                      value={phoneCode}
+                      onChange={(e) => setPhoneCode(e.target.value)}
+                      variant="standard"
+                      disableUnderline
+                      sx={{ 
+                        mr: 1, 
+                        fontWeight: 'bold', 
+                        color: 'text.secondary',
+                        '& .MuiSelect-select': { py: 0 }
+                      }}
+                    >
+                      <MenuItem value="+48">🇵🇱 +48</MenuItem>
+                      <MenuItem value="+380">🇺🇦 +380</MenuItem>
+                      <MenuItem value="+1">🇺🇸 +1</MenuItem>
+                    </Select>
+                  </InputAdornment>
+                ),
+              }}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+            />
+            
+            <Box>
+              <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 'bold', color: 'text.secondary' }}>
+                Wybierz swoje zainteresowania:
+              </Typography>
+              <List disablePadding sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                {AVAILABLE_INTERESTS.map((item) => {
+                  const isSelected = draftInterests.includes(item.id)
+                  return (
+                    <ListItemButton
+                      key={item.id}
+                      onClick={() => toggleInterest(item.id)}
+                      sx={{
+                        borderRadius: '12px',
+                        border: '1px solid',
+                        borderColor: isSelected ? 'primary.main' : 'grey.200',
+                        bgcolor: isSelected ? 'primary.50' : 'white',
+                        transition: 'all 0.2s',
+                        py: 1,
+                        px: 2,
+                        '&:hover': { bgcolor: isSelected ? 'primary.100' : 'grey.50' }
+                      }}
+                    >
+                      <Avatar 
+                        sx={{ 
+                          bgcolor: isSelected ? 'primary.main' : `${item.color}15`, 
+                          color: isSelected ? 'white' : item.color, 
+                          mr: 2,
+                          width: 40,
+                          height: 40
+                        }}
+                      >
+                        {item.icon}
+                      </Avatar>
+                      <ListItemText 
+                        primary={item.label} 
+                        primaryTypographyProps={{ fontWeight: isSelected ? 800 : 500, color: isSelected ? 'primary.main' : 'text.primary' }} 
+                      />
+                      {isSelected ? (
+                        <CheckCircleIcon color="primary" />
+                      ) : (
+                        <RadioButtonUncheckedIcon sx={{ color: 'grey.300' }} />
+                      )}
+                    </ListItemButton>
+                  )
+                })}
+              </List>
+            </Box>
+
+            {errorProfile && <Alert severity="error">{errorProfile}</Alert>}
+            {savedProfile && <Alert severity="success">Dane profilowe zostały zapisane.</Alert>}
+            
+            <Button 
+              type="submit" 
+              variant="contained" 
+              disabled={!isProfileChanged}
+              sx={{ py: 1.5, borderRadius: '12px', fontWeight: 'bold' }}
+            >
+              Zapisz dane
+            </Button>
+          </Stack>
+        </SectionCard>
+
         <SectionCard
           icon={<CalendarMonthIcon />}
           title="Twój kalendarz"
@@ -194,21 +387,32 @@ export default function AccountPanel() {
           <ActivityCalendar userId={user.id} />
         </SectionCard>
 
-        <SectionCard icon={<CakeOutlinedIcon />} title="Data urodzenia">
-          <Stack component="form" onSubmit={handleSave} spacing={1.5}>
+        <SectionCard icon={<CakeOutlinedIcon />} title="Wiek i data urodzenia">
+          <Stack component="form" onSubmit={handleSaveDate} spacing={2}>
             <Typography color="text.secondary">
               Potrzebna do spotkań we dwoje, które są dostępne od 18 lat. Widzisz ją tylko Ty.
             </Typography>
+            
+            {birthDate && (
+              <Box sx={{ bgcolor: 'grey.50', p: 1.5, borderRadius: '12px', border: '1px solid', borderColor: 'grey.200' }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                  Twoja kategoria wiekowa: <Typography component="span" color="primary.main" fontWeight="bold">{ageCategory}</Typography>
+                </Typography>
+                <Typography variant="caption" color="text.secondary">Obliczona automatycznie na podstawie daty urodzenia.</Typography>
+              </Box>
+            )}
+
             <TextField
               label="Data urodzenia"
               type="date"
               required
-              value={value}
-              onChange={(e) => setDraft(e.target.value)}
+              value={dateValue}
+              onChange={(e) => setDraftDate(e.target.value)}
               slotProps={{ inputLabel: { shrink: true }, htmlInput: { min: '1900-01-02', max: today } }}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
             />
-            {error && <Alert severity="error">{error}</Alert>}
-            {saved && (
+            {errorDate && <Alert severity="error">{errorDate}</Alert>}
+            {savedDate && (
               <Alert severity="success">
                 Zapisano.{' '}
                 {isAdult
@@ -216,7 +420,7 @@ export default function AccountPanel() {
                   : 'Spotkania we dwoje będą dostępne po ukończeniu 18 lat.'}
               </Alert>
             )}
-            <Button type="submit" variant="contained" disabled={!value || value === birthDate}>
+            <Button type="submit" variant="contained" disabled={!dateValue || dateValue === birthDate} sx={{ py: 1.5, borderRadius: '12px', fontWeight: 'bold' }}>
               Zapisz datę urodzenia
             </Button>
           </Stack>
@@ -231,6 +435,7 @@ export default function AccountPanel() {
           size="large"
           startIcon={<LogoutIcon />}
           onClick={() => supabase.auth.signOut()}
+          sx={{ borderRadius: '12px', py: 1.5, fontWeight: 'bold' }}
         >
           Wyloguj się
         </Button>
