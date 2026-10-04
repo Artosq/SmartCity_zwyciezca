@@ -68,8 +68,14 @@ export default function MeetupForm({ city }: { city: City }) {
     })
 
     setSubmitting(false)
-    if (error) setError(error.message)
-    else setCreated(true)
+    if (error) {
+      // nowy rodzaj spotkania, którego baza jeszcze nie zna — brakuje migracji
+      setError(
+        error.message.includes('meetups_type_check')
+          ? 'Baza nie zna jeszcze tego rodzaju spotkania. Uruchom migrację 007_uploads_and_shopping.sql.'
+          : error.message,
+      )
+    } else setCreated(true)
   }
 
   if (loadingAuth) return <Typography color="text.secondary">Ładowanie…</Typography>

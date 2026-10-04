@@ -27,7 +27,8 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
 
 - **Strona główna** z propozycjami wydarzeń w mieście: najbliższe terminy,
   dopasowane do preferencji (grupy docelowe) i „lubiane przez innych" (najwięcej zapisanych).
-  Karty ze zdjęciem wydarzenia, liczbą zapisanych, odległością od centrum i terminem.
+  Karty ze zdjęciem wydarzenia, liczbą zapisanych, odległością i terminem. Odległość liczy się
+  od użytkownika, jeśli zgodził się na lokalizację (pytamy dopiero po kliknięciu); inaczej od centrum miasta.
 - **We dwoje** (przełącznik na stronie głównej): spacer, kawa, sport, rozmowa albo pomoc z zakupami z jedną osobą
   w miejscu publicznym. Ktoś proponuje, pierwsza chętna osoba klika „Idę" i obie dostają prywatny
   czat. Tylko dla zalogowanych dorosłych: wiek wynika z daty urodzenia w profilu, a baza nie

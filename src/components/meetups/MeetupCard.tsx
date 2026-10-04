@@ -4,6 +4,7 @@ import ButtonBase from '@mui/material/ButtonBase'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import PlaceIcon from '@mui/icons-material/Place'
+import { useUserLocation } from '../../context/LocationContext'
 import { getMeetupType } from '../../data/meetupTypes'
 import { formatRelativeDate } from '../../lib/eventDisplay'
 import type { MeetupWithHost, Organizer } from '../../lib/types'
@@ -62,6 +63,7 @@ export function HostLine({ host }: { host: Organizer | null }) {
 
 // Karta spotkania we dwoje: kolorowe tło z symbolem rodzaju, odległość i termin, pod spodem tytuł i osoba.
 export default function MeetupCard({ meetup, distanceKm, badge, onOpen }: Props) {
+  const fromUser = useUserLocation().position !== null
   const type = getMeetupType(meetup.type)
 
   return (
@@ -97,9 +99,9 @@ export default function MeetupCard({ meetup, distanceKm, badge, onOpen }: Props)
             {badge}
           </Box>
         )}
-        <Box sx={{ ...pill, left: 12, bgcolor: 'secondary.main' }} aria-label={`${distanceKm.toFixed(1)} km od centrum miasta`}>
+        <Box sx={{ ...pill, left: 12, bgcolor: 'secondary.main' }} aria-label={`${distanceKm.toFixed(1)} km ${fromUser ? 'od Ciebie' : 'od centrum miasta'}`}>
           <PlaceIcon sx={{ fontSize: 16, color: 'error.main' }} />
-          {distanceKm.toFixed(1)} km
+          {distanceKm.toFixed(1)} km{fromUser ? '' : ' od centrum'}
         </Box>
         <Box sx={{ ...pill, right: 12, bgcolor: 'background.paper' }}>
           {formatRelativeDate(meetup.starts_at)}

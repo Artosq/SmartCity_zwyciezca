@@ -8,6 +8,7 @@ import PlaceIcon from '@mui/icons-material/Place'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import type { ReactNode } from 'react'
 import { formatShortDate, getEventImage } from '../lib/eventDisplay'
+import { useUserLocation } from '../context/LocationContext'
 import type { EventWithStats } from '../lib/types'
 import RatingBadge from './RatingBadge'
 
@@ -31,8 +32,10 @@ function Meta({ icon, label, children }: { icon: ReactNode; label: string; child
   )
 }
 
-// Wiersz liczb pod tytułem: zapisani, odległość od centrum, termin.
+// Wiersz liczb pod tytułem: zapisani, odległość, termin.
+// Odległość liczy się od użytkownika, gdy znamy jego położenie; inaczej od centrum miasta — z dopiskiem.
 export function EventMeta({ event, distanceKm }: { event: EventWithStats; distanceKm: number }) {
+  const fromUser = useUserLocation().position !== null
   return (
     <Stack direction="row" sx={{ mt: 0.75, columnGap: 1.5, rowGap: 0.25, flexWrap: 'wrap' }}>
       <Meta
@@ -47,10 +50,10 @@ export function EventMeta({ event, distanceKm }: { event: EventWithStats; distan
           : `${event.attendees}/${event.capacity}`}
       </Meta>
       <Meta
-        label={`${distanceKm.toFixed(1)} km od centrum miasta`}
+        label={`${distanceKm.toFixed(1)} km ${fromUser ? 'od Ciebie' : 'od centrum miasta'}`}
         icon={<PlaceIcon sx={{ fontSize: 18, color: 'error.main' }} />}
       >
-        {distanceKm.toFixed(1)} km
+        {distanceKm.toFixed(1)} km{fromUser ? '' : ' od centrum'}
       </Meta>
       <Meta
         label={`Termin: ${formatShortDate(event.starts_at)}`}

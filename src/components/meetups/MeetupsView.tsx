@@ -8,6 +8,7 @@ import Fab from '@mui/material/Fab'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
 import AddIcon from '@mui/icons-material/Add'
+import { useUserLocation } from '../../context/LocationContext'
 import type { City } from '../../data/cities'
 import { MEETUP_TYPES } from '../../data/meetupTypes'
 import { useProfile } from '../../hooks/useProfile'
@@ -18,12 +19,15 @@ import ScrollRow from '../ScrollRow'
 import MeetupCard from './MeetupCard'
 import MeetupDialog from './MeetupDialog'
 
-// Widok „We dwoje" na stronie głównej (tylko dla zalogowanych dorosłych): chipy rodzajów i lista kart od najbliższych centrum.
+// Widok „We dwoje" na stronie głównej (tylko dla zalogowanych dorosłych): chipy rodzajów i lista kart od najbliższych.
 export default function MeetupsView({ city }: { city: City }) {
   const { user, loading: loadingProfile, birthDate, isAdult } = useProfile()
   const { meetups, status, reload } = useMeetups(city)
   const [type, setType] = useState<string | null>(null)
   const [openId, setOpenId] = useState<string | null>(null)
+  // odległości od użytkownika, gdy znamy jego położenie; inaczej od centrum miasta
+  const { position } = useUserLocation()
+  const origin = position ?? city.center
 
   // Wolne wyjścia oraz te, w których zalogowany bierze udział; zajęte przez innych znikają z listy.
   const visible = useMemo(
@@ -34,9 +38,9 @@ export default function MeetupsView({ city }: { city: City }) {
             meetup.guest_id === null || meetup.host_id === user?.id || meetup.guest_id === user?.id,
         )
         .filter((meetup) => type === null || meetup.type === type)
-        .map((meetup) => ({ meetup, km: distanceKm(city.center, [meetup.lat, meetup.lng]) }))
+        .map((meetup) => ({ meetup, km: distanceKm(origin, [meetup.lat, meetup.lng]) }))
         .sort((a, b) => a.km - b.km),
-    [meetups, type, user?.id, city.center],
+    [meetups, type, user?.id, origin],
   )
 
   const open = meetups.find((meetup) => meetup.id === openId)
@@ -105,7 +109,7 @@ export default function MeetupsView({ city }: { city: City }) {
       </ScrollRow>
 
       <Typography variant="h2" sx={{ px: 2, mt: 1 }}>
-        Najbliżej centrum
+        {position ? 'Najbliżej Ciebie' : 'Najbliżej centrum'}
       </Typography>
 
       {status === 'error' && (

@@ -17,6 +17,7 @@ import MapFilters, {
   type MapFilterValues,
 } from '../components/map/MapFilters'
 import MeetupDialog from '../components/meetups/MeetupDialog'
+import { useUserLocation } from '../context/LocationContext'
 import type { City } from '../data/cities'
 import { useCityEvents } from '../hooks/useCityEvents'
 import { useMeetups } from '../hooks/useMeetups'
@@ -31,6 +32,8 @@ export default function MapPage({ city }: { city: City }) {
   // pełnoletność z profilu: bez niej baza nie zwraca spotkań we dwoje i nie ma ich na mapie
   const { user, isAdult: adult } = useProfile()
   const { events, status } = useCityEvents(city)
+  // odległość na karcie: od użytkownika, gdy znamy jego położenie; inaczej od centrum miasta
+  const origin = useUserLocation().position ?? city.center
   const { meetups, reload: reloadMeetups } = useMeetups(city)
   // Wybrane wydarzenie trzymamy w adresie (?event=id), żeby karty ze strony głównej mogły je otworzyć.
   const [searchParams, setSearchParams] = useSearchParams()
@@ -178,7 +181,7 @@ export default function MapPage({ city }: { city: City }) {
           event={selectedEvent}
           user={user}
           popular={popularIds.includes(selectedEvent.id)}
-          distanceKm={distanceKm(city.center, [selectedEvent.lat, selectedEvent.lng])}
+          distanceKm={distanceKm(origin, [selectedEvent.lat, selectedEvent.lng])}
           defaultExpanded={selectedEvent.id === linkedEventId}
           onClose={() => setSelectedEventId(null)}
         />

@@ -7,11 +7,13 @@ import Fab from '@mui/material/Fab'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
 import MapOutlinedIcon from '@mui/icons-material/MapOutlined'
+import MyLocationIcon from '@mui/icons-material/MyLocation'
 import EventCard from '../components/EventCard'
 import GroupChips from '../components/GroupChips'
 import MeetupsView from '../components/meetups/MeetupsView'
 import ModeToggle, { type Mode } from '../components/ModeToggle'
 import ScrollRow from '../components/ScrollRow'
+import { useUserLocation } from '../context/LocationContext'
 import type { City } from '../data/cities'
 import { useCityEvents } from '../hooks/useCityEvents'
 import { useLang } from '../i18n/LanguageContext'
@@ -69,13 +71,39 @@ export default function HomePage({ city }: { city: City }) {
           onChange={(next) => setSearchParams(next === '1na1' ? { widok: '1na1' } : {}, { replace: true })}
         />
       </Box>
+      <DistanceHint />
       {mode === '1na1' ? <MeetupsView city={city} /> : <EventsView city={city} />}
+    </Box>
+  )
+}
+
+// Skąd liczymy odległości na kartach. Pytanie o lokalizację pada dopiero po kliknięciu.
+function DistanceHint() {
+  const { position, status, request } = useUserLocation()
+  if (status === 'unsupported') return null
+
+  return (
+    <Box sx={{ px: 2, pb: 0.5, minHeight: 36, display: 'flex', alignItems: 'center' }}>
+      {position ? (
+        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+          📍 Odległości liczone od Twojej lokalizacji.
+        </Typography>
+      ) : status === 'denied' ? (
+        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+          Odległości liczone od centrum miasta (lokalizacja jest zablokowana w przeglądarce).
+        </Typography>
+      ) : (
+        <Button size="small" startIcon={<MyLocationIcon />} onClick={request} sx={{ minHeight: 36 }}>
+          Pokaż odległość ode mnie
+        </Button>
+      )}
     </Box>
   )
 }
 
 function EventsView({ city }: { city: City }) {
   const { t } = useLang()
+  const origin = useUserLocation().position ?? city.center
   const { events, status } = useCityEvents(city)
   const [preferences, setPreferences] = useState(readPreferences)
   const [searchParams] = useSearchParams()
@@ -121,7 +149,7 @@ function EventsView({ city }: { city: City }) {
         key={event.id}
         event={event}
         size={size}
-        distanceKm={distanceKm(city.center, [event.lat, event.lng])}
+        distanceKm={distanceKm(origin, [event.lat, event.lng])}
       />
     ))
 
