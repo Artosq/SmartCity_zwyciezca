@@ -1,0 +1,62 @@
+<!--
+  Szablon e-maila logowania (magic link) dla Sąsiedzko.
+  Wklej do: Supabase → Authentication → Emails → Templates → „Magic Link" → pole wiadomości (HTML).
+  Temat (Subject): Twój link do logowania — Sąsiedzko
+  Zmienna {{ .ConfirmationURL }} to jednorazowy link logowania (podstawia ją Supabase).
+-->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+       style="background:#f4f2ff;margin:0;padding:24px 0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
+  <tr>
+    <td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+             style="max-width:460px;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 8px 28px rgba(17,17,17,0.10);">
+        <!-- Nagłówek marki -->
+        <tr>
+          <td style="background:#4B3BF0;padding:22px 28px;">
+            <span style="font-size:22px;font-weight:800;color:#ffffff;letter-spacing:-0.02em;">
+              Sąsiedzko <span style="color:#C8FF00;">🗺️</span>
+            </span>
+          </td>
+        </tr>
+        <!-- Treść -->
+        <tr>
+          <td style="padding:32px 28px 8px;">
+            <h1 style="margin:0 0 12px;font-size:22px;font-weight:800;color:#111111;">
+              Twój link do logowania
+            </h1>
+            <p style="margin:0 0 24px;font-size:15px;line-height:1.55;color:#52525b;">
+              Kliknij przycisk poniżej, aby zalogować się do Sąsiedzka.
+              Link jest ważny tylko przez chwilę i działa jednorazowo.
+            </p>
+            <!-- Przycisk -->
+            <table role="presentation" cellpadding="0" cellspacing="0">
+              <tr>
+                <td align="center" style="border-radius:14px;background:#4B3BF0;">
+                  <a href="{{ .ConfirmationURL }}"
+                     style="display:inline-block;padding:15px 36px;font-size:16px;font-weight:700;color:#ffffff;text-decoration:none;border-radius:14px;">
+                    Zaloguj się
+                  </a>
+                </td>
+              </tr>
+            </table>
+            <p style="margin:24px 0 6px;font-size:13px;line-height:1.5;color:#9ca3af;">
+              Jeśli przycisk nie działa, skopiuj i wklej ten adres do przeglądarki:
+            </p>
+            <p style="margin:0 0 8px;font-size:12px;word-break:break-all;color:#4B3BF0;">
+              {{ .ConfirmationURL }}
+            </p>
+          </td>
+        </tr>
+        <!-- Stopka -->
+        <tr>
+          <td style="padding:18px 28px 28px;border-top:1px solid #f0f0f4;">
+            <p style="margin:12px 0 0;font-size:12px;line-height:1.5;color:#9ca3af;">
+              Jeśli to nie Ty prosiłeś(-aś) o logowanie, po prostu zignoruj tę wiadomość.<br />
+              Sąsiedzko — mapa sąsiedzkich wydarzeń.
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
