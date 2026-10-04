@@ -15,6 +15,7 @@ import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined'
 import GroupChip from '../components/GroupChip'
 import ImageUpload from '../components/ImageUpload'
 import LocationPicker, { type Pos } from '../components/LocationPicker'
+import OneSentenceEvent, { type ParsedEvent } from '../components/OneSentenceEvent'
 import SectionCard from '../components/SectionCard'
 import type { City } from '../data/cities'
 import { TARGET_GROUPS } from '../data/targetGroups'
@@ -57,6 +58,19 @@ export default function AddEventPage({ city }: { city: City }) {
   const canSubmit = Boolean(
     title.trim() && categoryId && targetGroups.length > 0 && pos && startsAt,
   )
+
+  // AI wypełnia pola ze zdania — nadpisujemy tylko te, które coś zwróciły.
+  const applyParsed = (f: ParsedEvent) => {
+    if (f.title) setTitle(f.title)
+    if (f.description) setDescription(f.description)
+    const cat = categories.find((c) => c.slug === f.category_slug)
+    if (cat) setCategoryId(String(cat.id))
+    const groups = (f.target_groups ?? []).filter((g) => TARGET_GROUPS.some((tg) => tg.slug === g))
+    if (groups.length) setTargetGroups(groups)
+    if (f.starts_at) setStartsAt(f.starts_at.slice(0, 16))
+    if (f.place_name) setPlaceName(f.place_name)
+    if (f.capacity != null) setCapacity(String(f.capacity))
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -161,6 +175,8 @@ export default function AddEventPage({ city }: { city: City }) {
       </Typography>
 
       <Stack component="form" onSubmit={handleSubmit} spacing={2.5} className="stagger">
+        <OneSentenceEvent categories={categories} onFilled={applyParsed} />
+
         <SectionCard icon={<EditNoteIcon />} title="Co się dzieje?">
           <Stack spacing={2}>
             <TextField
