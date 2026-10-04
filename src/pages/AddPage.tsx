@@ -22,9 +22,12 @@ export default function AddPage({ city }: { city: City }) {
       </Container>
 
       {mode === '1na1' ? (
-        <Container maxWidth="sm" className="stagger" sx={{ py: 3 }}>
-          <Typography variant="h1" sx={{ mb: 3 }}>
+        <Container maxWidth="sm" sx={{ py: 3 }}>
+          <Typography variant="h1" sx={{ mb: 0.5 }}>
             Zaproponuj spotkanie we dwoje
+          </Typography>
+          <Typography color="text.secondary" sx={{ mb: 2.5 }}>
+            Jedna osoba, publiczne miejsce, bez presji.
           </Typography>
           <MeetupForm city={city} />
         </Container>

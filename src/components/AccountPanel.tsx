@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type ReactNode } from 'react'
+import { useState, type FormEvent } from 'react'
 import Alert from '@mui/material/Alert'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
@@ -17,39 +17,7 @@ import { useProfile } from '../hooks/useProfile'
 import { supabase } from '../lib/supabase'
 import { BRAND } from '../theme'
 import PendingRatings from './PendingRatings'
-
-// Sekcja panelu: biała karta z ikoną i tytułem.
-function Card({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
-  return (
-    <Paper
-      component="section"
-      elevation={0}
-      sx={{ p: 2.5, borderRadius: '24px', boxShadow: '0 4px 20px rgba(17,17,17,0.07)' }}
-    >
-      <Stack direction="row" spacing={1.25} sx={{ alignItems: 'center', mb: 1.5 }}>
-        <Box
-          aria-hidden
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 40,
-            height: 40,
-            borderRadius: '14px',
-            bgcolor: 'rgba(75,59,240,0.1)',
-            color: 'primary.main',
-          }}
-        >
-          {icon}
-        </Box>
-        <Typography variant="h2" sx={{ fontSize: '1.2rem' }}>
-          {title}
-        </Typography>
-      </Stack>
-      {children}
-    </Paper>
-  )
-}
+import SectionCard from './SectionCard'
 
 // Panel zalogowanego: awatar i ocena na górze, niżej data urodzenia i lista „Do oceny".
 export default function AccountPanel() {
@@ -171,7 +139,7 @@ export default function AccountPanel() {
           </Box>
         </Paper>
 
-        <Card icon={<CakeOutlinedIcon />} title="Data urodzenia">
+        <SectionCard icon={<CakeOutlinedIcon />} title="Data urodzenia">
           <Stack component="form" onSubmit={handleSave} spacing={1.5}>
             <Typography color="text.secondary">
               Potrzebna do spotkań we dwoje, które są dostępne od 18 lat. Widzisz ją tylko Ty.
@@ -197,11 +165,11 @@ export default function AccountPanel() {
               Zapisz datę urodzenia
             </Button>
           </Stack>
-        </Card>
+        </SectionCard>
 
-        <Card icon={<RateReviewOutlinedIcon />} title="Do oceny">
+        <SectionCard icon={<RateReviewOutlinedIcon />} title="Do oceny">
           <PendingRatings userId={user.id} />
-        </Card>
+        </SectionCard>
 
         <Button
           variant="outlined"

@@ -3,15 +3,22 @@ import { Link as RouterLink } from 'react-router-dom'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import ButtonBase from '@mui/material/ButtonBase'
 import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import EditNoteIcon from '@mui/icons-material/EditNote'
+import EventIcon from '@mui/icons-material/Event'
+import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined'
 import type { City } from '../../data/cities'
 import { MEETUP_TYPES } from '../../data/meetupTypes'
 import { useProfile } from '../../hooks/useProfile'
 import { supabase } from '../../lib/supabase'
 import LocationPicker, { type Pos } from '../LocationPicker'
+import SectionCard from '../SectionCard'
 
 const DURATIONS = [30, 45, 60, 90, 120]
 const MAX_TAGS = 3
@@ -110,76 +117,132 @@ export default function MeetupForm({ city }: { city: City }) {
   }
 
   return (
-    <Stack component="form" onSubmit={handleSubmit} spacing={3} className="stagger">
-      <Alert severity="info">
-        „We dwoje” to spotkanie z jedną osobą. Wybierz miejsce publiczne — park, kawiarnię, boisko.
-      </Alert>
+    <Stack component="form" onSubmit={handleSubmit} spacing={2.5} className="stagger">
+      <SectionCard icon={<CategoryOutlinedIcon />} title="Na co masz ochotę? *">
+        {/* Kafelki zamiast listy rozwijanej: od razu widać wszystkie rodzaje. */}
+        <Box
+          role="radiogroup"
+          aria-label="Rodzaj spotkania"
+          sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)' }, gap: 1.5 }}
+        >
+          {MEETUP_TYPES.map((item) => {
+            const active = type === item.slug
+            return (
+              <ButtonBase
+                key={item.slug}
+                role="radio"
+                aria-checked={active}
+                onClick={() => setType(item.slug)}
+                sx={{
+                  position: 'relative',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  gap: 0.5,
+                  minHeight: 104,
+                  p: 1.5,
+                  borderRadius: '22px',
+                  color: '#ffffff',
+                  background: item.gradient,
+                  fontWeight: 800,
+                  textAlign: 'center',
+                  lineHeight: 1.2,
+                  // zaznaczony kafelek: limonkowa obwódka; pozostałe lekko przygaszone
+                  outline: active ? '4px solid' : '0 solid',
+                  outlineColor: 'secondary.main',
+                  outlineOffset: 2,
+                  opacity: type && !active ? 0.6 : 1,
+                  boxShadow: active ? '0 10px 24px rgba(17,17,17,0.28)' : '0 4px 12px rgba(17,17,17,0.14)',
+                  transform: active ? 'translateY(-3px)' : 'none',
+                  transition: 'transform .2s ease, opacity .2s ease, box-shadow .2s ease',
+                  '&:hover': { transform: 'translateY(-3px)', opacity: 1 },
+                  '&:active': { transform: 'scale(0.97)' },
+                }}
+              >
+                {active && (
+                  <CheckCircleIcon
+                    sx={{ position: 'absolute', top: 8, right: 8, color: 'secondary.main', fontSize: 24 }}
+                  />
+                )}
+                <Box component="span" aria-hidden sx={{ fontSize: 34, lineHeight: 1 }}>
+                  {item.emoji}
+                </Box>
+                <span>{item.name}</span>
+              </ButtonBase>
+            )
+          })}
+        </Box>
+      </SectionCard>
 
-      <TextField select label="Rodzaj" required value={type} onChange={(e) => setType(e.target.value)}>
-        {MEETUP_TYPES.map((item) => (
-          <MenuItem key={item.slug} value={item.slug}>
-            {item.emoji} {item.name}
-          </MenuItem>
-        ))}
-      </TextField>
+      <SectionCard icon={<EditNoteIcon />} title="Opisz spotkanie">
+        <Stack spacing={2}>
+          <TextField
+            label="Tytuł"
+            required
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="np. Spacer z psem po Błoniach"
+          />
+          <TextField
+            label="Opis"
+            multiline
+            minRows={2}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Kilka słów o sobie i o tym, na co masz ochotę."
+          />
+          <TextField
+            label="Tagi"
+            helperText={`Opcjonalnie, do ${MAX_TAGS}, oddzielone przecinkami — np. Z psem, Bezpłatnie`}
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+          />
+        </Stack>
+      </SectionCard>
 
-      <TextField
-        label="Tytuł"
-        required
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="np. Spacer z psem po Błoniach"
-      />
+      <SectionCard icon={<EventIcon />} title="Kiedy?">
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+          <TextField
+            label="Termin"
+            type="datetime-local"
+            required
+            value={startsAt}
+            onChange={(e) => setStartsAt(e.target.value)}
+            slotProps={{ inputLabel: { shrink: true } }}
+          />
+          <TextField select label="Czas trwania" value={duration} onChange={(e) => setDuration(e.target.value)}>
+            {DURATIONS.map((minutes) => (
+              <MenuItem key={minutes} value={String(minutes)}>
+                {minutes} min
+              </MenuItem>
+            ))}
+          </TextField>
+        </Stack>
+      </SectionCard>
 
-      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
-        <TextField
-          label="Termin"
-          type="datetime-local"
-          required
-          value={startsAt}
-          onChange={(e) => setStartsAt(e.target.value)}
-          slotProps={{ inputLabel: { shrink: true } }}
-        />
-        <TextField select label="Czas trwania" value={duration} onChange={(e) => setDuration(e.target.value)}>
-          {DURATIONS.map((minutes) => (
-            <MenuItem key={minutes} value={String(minutes)}>
-              {minutes} min
-            </MenuItem>
-          ))}
-        </TextField>
-      </Stack>
-
-      <Box>
-        <Typography sx={{ fontWeight: 700 }}>Miejsce spotkania *</Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-          Kliknij na mapie, aby wskazać miejsce ({city.name}).
-        </Typography>
-        <LocationPicker city={city} value={pos} onChange={setPos} />
-      </Box>
-
-      <TextField
-        label="Nazwa miejsca publicznego"
-        required
-        value={placeName}
-        onChange={(e) => setPlaceName(e.target.value)}
-        placeholder="np. Błonia, wejście od ul. Piastowskiej"
-      />
-
-      <TextField
-        label="Opis"
-        multiline
-        minRows={2}
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="Kilka słów o sobie i o tym, na co masz ochotę."
-      />
-
-      <TextField
-        label="Tagi"
-        helperText={`Opcjonalnie, do ${MAX_TAGS}, oddzielone przecinkami — np. Z psem, Bezpłatnie`}
-        value={tags}
-        onChange={(e) => setTags(e.target.value)}
-      />
+      <SectionCard
+        icon={<PlaceOutlinedIcon />}
+        title="Gdzie? *"
+        hint="Tylko miejsce publiczne — park, kawiarnia, boisko, targ."
+      >
+        <Stack spacing={2}>
+          <div>
+            <LocationPicker city={city} value={pos} onChange={setPos} />
+            <Typography
+              variant="body2"
+              sx={{ mt: 0.75, fontWeight: 600, color: pos ? 'success.main' : 'text.secondary' }}
+            >
+              {pos ? 'Miejsce zaznaczone na mapie.' : `Kliknij na mapie, aby wskazać miejsce (${city.name}).`}
+            </Typography>
+          </div>
+          <TextField
+            label="Nazwa miejsca publicznego"
+            required
+            value={placeName}
+            onChange={(e) => setPlaceName(e.target.value)}
+            placeholder="np. Błonia, wejście od ul. Piastowskiej"
+          />
+        </Stack>
+      </SectionCard>
 
       {error && <Alert severity="error">{error}</Alert>}
 

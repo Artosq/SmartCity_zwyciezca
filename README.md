@@ -28,7 +28,7 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
 - **Strona główna** z propozycjami wydarzeń w mieście: najbliższe terminy,
   dopasowane do preferencji (grupy docelowe) i „lubiane przez innych" (najwięcej zapisanych).
   Karty ze zdjęciem wydarzenia, liczbą zapisanych, odległością od centrum i terminem.
-- **We dwoje** (przełącznik na stronie głównej): spacer, kawa, sport albo rozmowa z jedną osobą
+- **We dwoje** (przełącznik na stronie głównej): spacer, kawa, sport, rozmowa albo pomoc z zakupami z jedną osobą
   w miejscu publicznym. Ktoś proponuje, pierwsza chętna osoba klika „Idę" i obie dostają prywatny
   czat. Tylko dla zalogowanych dorosłych: wiek wynika z daty urodzenia w profilu, a baza nie
   zwraca spotkań osobom niepełnoletnim ani niezalogowanym.
@@ -42,7 +42,7 @@ Wersja online jest wdrażana od pierwszej godziny pracy.
   spotkania we dwoje z podziałem na rodzaje. Spotkania we dwoje widzą na mapie tylko
   zalogowani dorośli.
 - **Dodawanie wydarzenia**: tytuł, opis, kategoria, grupy docelowe, miejsce na mapie,
-  termin, limit miejsc, opcjonalny link do zdjęcia. Wszystkie wydarzenia są publiczne — każdy może dołączyć.
+  termin, limit miejsc, opcjonalne zdjęcie przesyłane z pliku (Supabase Storage, do 5 MB). Wszystkie wydarzenia są publiczne — każdy może dołączyć.
 - **Szczegóły i zapis** jednym kliknięciem, licznik wolnych miejsc.
 - **Bot importujący wydarzenia** (`npm run bot`): raz dziennie losuje kilka wydarzeń z Karnetu
   (miejski kalendarz Krakowa) zaczynających się w ciągu 3 dni, dobiera kategorię i grupy docelowe
