@@ -1,4 +1,3 @@
-import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import Stack from '@mui/material/Stack'
@@ -8,6 +7,7 @@ import { useUserLocation } from '../../context/LocationContext'
 import { getMeetupType } from '../../data/meetupTypes'
 import { formatRelativeDate } from '../../lib/eventDisplay'
 import type { MeetupWithHost, Organizer } from '../../lib/types'
+import ProfileAvatar from '../ProfileAvatar'
 import RatingBadge from '../RatingBadge'
 
 interface Props {
@@ -52,9 +52,7 @@ export function HostLine({ host }: { host: Organizer | null }) {
   const name = host?.name ?? 'Sąsiad'
   return (
     <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-      <Avatar sx={{ width: 32, height: 32, fontSize: '0.8rem', fontWeight: 800, bgcolor: '#7dd3fc', color: 'text.primary' }}>
-        {name.slice(0, 2).toUpperCase()}
-      </Avatar>
+      <ProfileAvatar avatar={host?.avatar} name={name} size={32} bgcolor="#7dd3fc" />
       <Typography sx={{ fontWeight: 700, flex: 1 }}>{name}</Typography>
       <RatingBadge avg={host?.rating_avg} count={host?.rating_count} />
     </Stack>
